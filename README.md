@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <h1>🏛️ Sub-Prasojo Web</h1>
+  <p><strong>Dashboard Pelayanan Adminduk secara Online Masyarakat Sukoharjo</strong></p>
+  
+  <p>
+    Sistem web sub-dashboard interaktif untuk mengelola dan memantau pelayanan administrasi kependudukan (Adminduk) secara online bagi masyarakat di wilayah Sukoharjo.
+  </p>
 
-## Getting Started
+  <div>
+    <img src="https://img.shields.io/badge/next.js-%23000000.svg?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js" />
+    <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/react%20query-%23FF4154.svg?style=for-the-badge&logo=react%20query&logoColor=white" alt="React Query" />
+    <img src="https://img.shields.io/badge/axios-%235A29E4.svg?style=for-the-badge&logo=axios&logoColor=white" alt="Axios" />
+    <img src="https://img.shields.io/badge/react%20hook%20form-%23EC5990.svg?style=for-the-badge&logo=reacthookform&logoColor=white" alt="React Hook Form" />
+    <img src="https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white" alt="Bun" />
+    <img src="https://img.shields.io/badge/Biome-%23FBEB96.svg?style=for-the-badge&logo=biome&logoColor=black" alt="Biome" />
+    <img src="https://img.shields.io/badge/cloudinary-%233448C5.svg?style=for-the-badge&logo=cloudinary&logoColor=white" alt="Cloudinary" />
+  </div>
+</div>
 
-First, run the development server:
+---
 
+## ⚡ Tech Stack
+
+Aplikasi ini dibangun dengan mengutamakan performa, arsitektur modular, dan *developer experience* yang baik. 
+
+### 🏗️ Arsitektur & Framework
+- **Framework:** Next.js (App Router)
+- **Bahasa Utama:** TypeScript
+- **Arsitektur Utama:** Server-Side Rendering (SSR) & Component-Based Architecture
+
+### 🎨 Antarmuka & Styling
+- **Styling:** Tailwind CSS
+- **Ikonografi:** RemixIcon
+
+### 🛠️ Manajemen Data, API, & Form
+- **Data Fetching:** Axios
+- **State Management & Sinkronisasi Data:** TanStack Query (React Query)
+- **Manajemen Form:** React Hook Form
+- **Skema Validasi Form:** TypeBox
+- **Manajemen Media / Aset:** Cloudinary
+
+### ⚙️ Manajemen Package & Toolchain
+- **Package Manager:** Bun
+- **Linting & Formatting:** Biome
+
+---
+
+## 🚀 Memulai Proyek (Getting Started)
+
+### Prasyarat Instalasi
+Pastikan Anda sudah menginstal **[Bun](https://bun.sh/)** di perangkat Anda sebelum menjalankan perintah di bawah ini.
+
+### 1. Instalasi Dependensi
+Jalankan perintah ini di dalam *root directory* proyek untuk mengunduh semua package:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+bun install
+```
+
+### 2. Jalankan Dev Server
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Lihat Hasil
+Buka browser dan akses **[http://localhost:3000](http://localhost:3000)**. 
+Perubahan pada kode Anda (misalnya di `src/app/page.tsx`) akan secara otomatis tertampil pada browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 👨‍💻 Linting & Formatting
 
-## Learn More
+Kami menggunakan [Biome](https://biomejs.dev/) untuk memastikan seluruh format kode seragam serta mencegah *error* bawaan.
 
-To learn more about Next.js, take a look at the following resources:
+Untuk mengecek *linter*:
+```bash
+bun run lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Untuk melakukan format otomatis:
+```bash
+bun run format
+```
