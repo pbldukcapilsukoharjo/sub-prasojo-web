@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="./public/dukcapil-skh.png" alt="dukcapil-skh" height="200" />
   <h1>🏛️ Sub-Prasojo Web</h1>
   <p><strong>Dashboard Pelayanan Adminduk secara Online Masyarakat Sukoharjo</strong></p>
   
