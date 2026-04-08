@@ -29,7 +29,7 @@ Aplikasi ini dibangun dengan mengutamakan performa, arsitektur modular, dan *dev
 ### 🏗️ Arsitektur & Framework
 - **Framework:** Next.js (App Router)
 - **Bahasa Utama:** TypeScript
-- **Arsitektur Utama:** Server-Side Rendering (SSR), Component-Based Architecture & Repository Pattern
+- **Arsitektur Utama:** Server-Side Rendering (SSR), Component-Based Architecture & Data Access Layer (DAL)
 
 ### 🎨 Antarmuka & Styling
 - **Styling:** Tailwind CSS
