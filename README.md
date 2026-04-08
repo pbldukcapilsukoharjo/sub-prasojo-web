@@ -29,11 +29,13 @@ Aplikasi ini dibangun dengan mengutamakan performa, arsitektur modular, dan *dev
 ### 🏗️ Arsitektur & Framework
 - **Framework:** Next.js (App Router)
 - **Bahasa Utama:** TypeScript
-- **Arsitektur Utama:** Server-Side Rendering (SSR) & Component-Based Architecture
+- **Arsitektur Utama:** Server-Side Rendering (SSR), Component-Based Architecture & Repository Pattern
 
 ### 🎨 Antarmuka & Styling
 - **Styling:** Tailwind CSS
 - **Ikonografi:** RemixIcon
+- **Grafik & Chart:** ApexCharts
+- **Loading State:** React Loading Skeleton
 
 ### 🛠️ Manajemen Data, API, & Form
 - **Data Fetching:** Axios
