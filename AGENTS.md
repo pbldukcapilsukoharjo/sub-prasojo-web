@@ -19,3 +19,9 @@ Anda HARUS mengikuti tech stack dan batasan berikut saat menulis atau menganalis
 - **UI Components**: Gunakan React Loading Skeleton untuk loading skeleton dan ApexCharts untuk library grafik.
 - **Forms**: WAJIB menggunakan React Hook Form (RHF) yang divalidasi dengan resolver TypeBox.
 - **Tooling**: Gunakan Bun (`bun add`, `bun run`) sebagai package manager. Proyek ini menggunakan Biome untuk linting dan formatting.
+- **Theme & Language**: 
+  - Simpan preferensi warna (HEX) dan bahasa di `localStorage`.
+  - Gunakan CSS Variables (`--color-primary`, dll) untuk apply warna dinamis secara global.
+  - Terapkan `<script>` di `<head>` untuk membaca `localStorage` agar tidak terjadi FOUC (flicker of unstyled content).
+  - Terapkan sinkronisasi/update pada `useEffect` untuk integrasi hydration React.
+  - Tailwind harus tetap clean (menggunakan variabel yang di-inject).
