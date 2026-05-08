@@ -56,7 +56,9 @@ export default function LembarKerja() {
     },
   ];
 
-  const mappedData = dummyDB.ajuan.map((ajuan, index) => {
+  const mappedData = dummyDB.ajuan
+    .filter((ajuan) => ajuan.ajuan_status === 'PENGAJUAN' || ajuan.ajuan_status === 'DIPROSES')
+    .map((ajuan, index) => {
     const pelapor = dummyDB.user.find((u) => u.id === ajuan.ajuan_pelapor_id);
     const dateObj = new Date(ajuan.ajuan_create_datetime);
     const tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });

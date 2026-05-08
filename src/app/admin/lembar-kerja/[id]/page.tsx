@@ -63,7 +63,7 @@ export default function DetailLembarKerja() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <Button variant="primary" className="px-8 bg-[#800000]">
+            <Button variant="primary" className="px-8">
               VERIFIKASI
             </Button>
             <Button variant="secondary" className="px-8 text-gray-600 rounded-[20px] font-bold">
@@ -178,7 +178,7 @@ export default function DetailLembarKerja() {
               </div>
             </div>
 
-            <Button variant="primary" icon="ri-printer-line" className="w-full mt-6 bg-[#800000]">
+            <Button variant="primary" icon="ri-printer-line" className="w-full mt-6">
               CETAK BERKAS AJUAN
             </Button>
           </div>

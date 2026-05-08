@@ -34,7 +34,7 @@ export default function Table({ columns, data, className = '', onRowClick }: Tab
             <tr 
               key={rowIndex} 
               onClick={() => onRowClick && onRowClick(row)}
-              className={`transition-colors ${onRowClick ? 'cursor-pointer hover:bg-gray-50' : 'hover:bg-gray-50'}`}
+              className={`transition-colors ${onRowClick ? 'cursor-pointer hover:bg-gray-100 even:bg-gray-50' : 'hover:bg-gray-100 even:bg-gray-50'}`}
             >
               {columns.map((col) => (
                 <td
