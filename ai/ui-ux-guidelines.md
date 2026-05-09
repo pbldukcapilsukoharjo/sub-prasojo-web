@@ -16,3 +16,8 @@
 
 ## Strict Rule
 - DILARANG menggunakan library UI tambahan (seperti Shadcn, MUI, atau AntD) tanpa instruksi spesifik. Gunakan Tailwind murni.
+
+## Toast Styling (Feedback)
+- Pastikan toast menggunakan font yang sama dengan aplikasi.
+- Gunakan variabel CSS untuk background/border toast jika memungkinkan agar mengikuti tema HEX yang disimpan di `localStorage`.
+- Gunakan RemixIcon di dalam toast jika diperlukan ikon kustom.

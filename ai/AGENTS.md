@@ -1,27 +1,39 @@
-<!-- BEGIN:nextjs-agent-rules -->
-# This is NOT the Next.js you know
+# Agent Command Center - Adminduk Sukoharjo Dashboard
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
+## 🚨 IMPORTANT: CORE PROTOCOL
+Aplikasi ini adalah bagian dari ekosistem Pelayanan Adminduk Online Masyarakat Sukoharjo. 
+**Semua instruksi di bawah ini dan di dalam direktori `/ai` bersifat MANDATORY.**
 
-# Project Details for Agents
+---
 
-## Context
-Aplikasi ini adalah sub dari dashboard Pelayanan Adminduk secara Online Masyarakat Sukoharjo. 
+## 📂 Instruction Index
+Untuk detail teknis, Anda HARUS merujuk pada file spesifik di direktori `./ai/`:
 
-## Technology Stack Constraints
-Anda HARUS mengikuti tech stack dan batasan berikut saat menulis atau menganalisis kode untuk repository ini:
+1. **[System Rules](./ai/system-rules.md)**: Framework (Next.js App Router), Package Manager (Bun), dan Linting (Biome).
+2. **[Tech Stack](./ai/tech-stack.md)**: Konfigurasi Axios, TanStack Query, TypeBox, dan React Hot Toast.
+3. **[UI/UX Guidelines](./ai/ui-ux-guidelines.md)**: Tailwind CSS, RemixIcon, Theme Management (Local Storage), dan ApexCharts.
 
-- **Framework**: Next.js (App Router) dengan TypeScript.
-- **Arsitektur**: Server-Side Rendering (SSR), Component-Based Architecture, & Data Access Layer (DAL).
-- **Styling**: Tailwind CSS dan RemixIcon. TIDAK BOLEH menggunakan library UI/Styling tambahan tanpa izin.
-- **Data & State**: Gunakan Axios untuk request jaringan, TanStack Query (React Query) untuk state management/data fetching, dan Cloudinary untuk manajemen aset/gambar.
-- **UI Components**: Gunakan React Loading Skeleton untuk loading skeleton dan ApexCharts untuk library grafik.
-- **Forms**: WAJIB menggunakan React Hook Form (RHF) yang divalidasi dengan resolver TypeBox.
-- **Tooling**: Gunakan Bun (`bun add`, `bun run`) sebagai package manager. Proyek ini menggunakan Biome untuk linting dan formatting.
-- **Theme & Language**: 
-  - Simpan preferensi warna (HEX) dan bahasa di `localStorage`.
-  - Gunakan CSS Variables (`--color-primary`, dll) untuk apply warna dinamis secara global.
-  - Terapkan `<script>` di `<head>` untuk membaca `localStorage` agar tidak terjadi FOUC (flicker of unstyled content).
-  - Terapkan sinkronisasi/update pada `useEffect` untuk integrasi hydration React.
-  - Tailwind harus tetap clean (menggunakan variabel yang di-inject).
+---
+
+## 🛠️ Dev Workflow Essentials
+Setiap kali menulis kode, pastikan:
+- **Linting**: Gunakan perintah Biome, bukan ESLint/Prettier.
+- **Dependencies**: Gunakan `bun add` untuk instalasi library.
+- **Data Access Layer (DAL)**: Pisahkan logic fetcher di `src/lib/` atau `src/services/`.
+- **Form Handling**: Gunakan `react-hook-form` dengan `typebox` resolver.
+- **Feedback**: Gunakan `react-hot-toast` untuk semua response feedback user (Success/Error).
+
+---
+
+## 🎨 Design System & Theme
+- **Color Injection**: HEX color diambil dari `localStorage` dan diinjeksi ke CSS Variables (`--color-primary`).
+- **Anti-FOUC**: Eksekusi pembacaan tema harus dilakukan di `<head>` pada `layout.tsx`.
+- **Icons**: Hanya gunakan `RemixIcon`.
+
+---
+
+## 📋 Definition of Done
+1. Kode lulus linting Biome.
+2. Tipe data terdefinisi dengan TypeBox (bukan `any`).
+3. Respons API ditangani dengan TanStack Query hooks.
+4. UI responsif dengan Tailwind dan mendukung loading state (Skeleton).
