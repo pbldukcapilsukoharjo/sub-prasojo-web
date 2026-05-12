@@ -11,12 +11,14 @@ export default function Navbar() {
 
   if (pathname.includes('/lembar-kerja')) {
     title = 'Lembar Kerja';
-    subtitle = 'Daftar ajuan yang belum diproses dan membutuhkan verifikasi.';
+    subtitle = 'Daftar ajuan yang belum diproses dan membutuhkan verifikasi';
     badgeCount = 123;
   } else if (pathname.includes('/ajuan')) {
     title = 'Ajuan';
+    subtitle = 'Daftar semua ajuan';
   } else if (pathname.includes('/produk')) {
-    title = 'Produk';
+    title = 'Produk Layanan';
+    subtitle = 'Produk hasil dari pengajuan';
   }
 
   return (
