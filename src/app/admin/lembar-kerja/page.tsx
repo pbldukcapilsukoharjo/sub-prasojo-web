@@ -49,7 +49,7 @@ export default function LembarKerja() {
       key: 'status', 
       header: 'STATUS',
       render: (row: any) => (
-        <Badge variant={row.status === 'BELUM DIVERIFIKASI' ? 'outline-warning' : 'default'}>
+        <Badge variant={row.status === 'BELUM DIVERIFIKASI' ? 'warning' : 'default'}>
           {row.status}
         </Badge>
       )
@@ -107,13 +107,12 @@ export default function LembarKerja() {
             options={[{ label: 'Bulan Ini', value: 'this_month' }]} 
           />
         </div>
-        <div className="flex items-end gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
           <Select 
             label="Urutkan Dari" 
             options={[{ label: 'Terbaru', value: 'newest' }]} 
-            wrapperClassName="w-[200px]"
           />
-          <Button variant="primary" className="h-[44px]">
+          <Button variant="primary" className="h-[44px] w-[180px]">
             TERAPKAN FILTER
           </Button>
         </div>

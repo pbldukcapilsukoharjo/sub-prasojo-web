@@ -2,7 +2,7 @@ import React from 'react';
 
 interface BadgeProps {
   children: React.ReactNode;
-  variant?: 'pending' | 'success' | 'warning' | 'danger' | 'default' | 'outline-warning';
+  variant?: 'pending' | 'success' | 'warning' | 'danger' | 'default' | 'outline-warning' | 'primary' | 'outline-purple' | 'purple';
   className?: string;
 }
 
@@ -10,12 +10,21 @@ export default function Badge({ children, variant = 'default', className = '' }:
   let variantClass = '';
 
   switch (variant) {
+    case 'primary':
+      variantClass = 'bg-blue-100 text-blue-700 border-blue-200';
+      break;
     case 'pending':
     case 'default':
       variantClass = 'bg-gray-100 text-gray-500 border-gray-200';
       break;
     case 'outline-warning':
       variantClass = 'bg-transparent text-[#D97706] border-[#D97706]';
+      break;
+    case 'outline-purple':
+      variantClass = 'bg-transparent text-[#9333EA] border-[#9333EA]';
+      break;
+    case 'purple':
+      variantClass = 'bg-purple-100 text-purple-700 border-purple-200';
       break;
     case 'success':
       variantClass = 'bg-green-100 text-green-700 border-green-200';
