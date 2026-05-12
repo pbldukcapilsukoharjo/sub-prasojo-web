@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-export default function Sidebar() {
+export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
 
   const menuItems = [
@@ -14,11 +14,16 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="w-[260px] flex-shrink-0 bg-primary text-white flex flex-col h-full">
+    <aside className="w-[260px] flex-shrink-0 bg-primary text-white flex flex-col h-full shadow-xl lg:shadow-none">
       {/* Logo Area */}
-      <div className="p-6 pb-8">
-        <h1 className="text-2xl font-bold tracking-wider leading-tight">PRASOJO</h1>
-        <p className="text-[10px] font-semibold tracking-widest text-white/80">MONITORING SYSTEM</p>
+      <div className="p-6 pb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-wider leading-tight">PRASOJO</h1>
+          <p className="text-[10px] font-semibold tracking-widest text-white/80">MONITORING SYSTEM</p>
+        </div>
+        <button onClick={onClose} className="lg:hidden text-white/80 hover:text-white p-1">
+          <i className="ri-close-line text-2xl"></i>
+        </button>
       </div>
 
       {/* Navigation */}
@@ -29,6 +34,7 @@ export default function Sidebar() {
             <Link
               key={item.name}
               href={item.path}
+              onClick={onClose}
               className={`flex items-center gap-3 px-4 py-3 rounded-[12px] font-semibold text-sm transition-colors ${
                 isActive 
                   ? 'bg-white text-primary' 

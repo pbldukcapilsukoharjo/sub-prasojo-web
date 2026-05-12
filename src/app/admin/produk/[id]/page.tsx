@@ -72,56 +72,56 @@ export default function DetailProduk() {
       </Button>
 
       {/* Main Card */}
-      <div className="card shadow-sm border border-gray-100 p-8 flex flex-col gap-8">
+      <div className="card shadow-sm border border-gray-100 p-4 md:p-8 flex flex-col gap-6 md:gap-8">
         
         {/* Top Section: Header & Buttons */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between pb-8 border-b border-gray-100 gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-[20px] bg-[#F3F4F6] flex items-center justify-center">
-              <i className="ri-user-line text-2xl text-gray-500"></i>
+        <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 md:pb-8 border-b border-gray-100 gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="w-12 h-12 md:w-16 md:h-16 rounded-[20px] bg-[#F3F4F6] flex items-center justify-center flex-shrink-0">
+              <i className="ri-user-line text-xl md:text-2xl text-gray-500"></i>
             </div>
-            <div>
-              <p className="text-xs font-bold text-gray-600 tracking-wider mb-1">{ajuan.ajuan_no_reg}</p>
-              <h3 className="text-2xl font-bold text-gray-900">
+            <div className="min-w-0">
+              <p className="text-[10px] md:text-xs font-bold text-gray-600 tracking-wider mb-1 truncate">{ajuan.ajuan_no_reg}</p>
+              <h3 className="text-lg md:text-2xl font-bold text-gray-900 truncate">
                 Detail Pemohon : {ajuan.ajuan_no_reg}
               </h3>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <Button variant="primary" className="px-8 rounded-[20px] font-bold">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full md:w-auto">
+            <Button variant="primary" className="px-6 md:px-8 rounded-[20px] font-bold w-full sm:w-auto text-xs md:text-sm">
               DIPROSES
             </Button>
           </div>
         </div>
 
         {/* Content Section: Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           
           {/* Left Column: Data & Timeline */}
-          <div className="lg:col-span-2 flex flex-col gap-8">
+          <div className="lg:col-span-2 flex flex-col gap-6 md:gap-8">
             
             {/* User Data Grid */}
-            <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 md:gap-y-6 gap-x-4">
               <div>
                 <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1 uppercase">Nama Lengkap</p>
-                <p className="text-lg font-bold text-gray-900">{namaIdentitas}</p>
+                <p className="text-base md:text-lg font-bold text-gray-900">{namaIdentitas}</p>
               </div>
               <div>
                 <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1 uppercase">NIK</p>
-                <p className="text-lg font-bold text-gray-900">{ajuan.ajuan_pelapor_kk || produk.prod_nomor || '-'}</p>
+                <p className="text-base md:text-lg font-bold text-gray-900">{ajuan.ajuan_pelapor_kk || produk.prod_nomor || '-'}</p>
               </div>
               <div>
                 <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1 uppercase">Jenis Layanan</p>
-                <p className="text-lg font-bold text-gray-900">{jenisAjuan?.ja_judul || 'Umum'}</p>
+                <p className="text-base md:text-lg font-bold text-gray-900">{jenisAjuan?.ja_judul || 'Umum'}</p>
               </div>
               <div>
                 <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1 uppercase">Kecamatan</p>
-                <p className="text-lg font-bold text-gray-900">{ajuan.ajuan_kecamatan_name || '-'}</p>
+                <p className="text-base md:text-lg font-bold text-gray-900">{ajuan.ajuan_kecamatan_name || '-'}</p>
               </div>
             </div>
 
             {/* Timeline Area */}
-            <div className="bg-[#F3F4F6] rounded-[20px] p-6 mt-4">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 mt-0 md:mt-4 overflow-hidden">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-1 h-4 bg-gray-900 rounded-full"></div>
                 <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
@@ -175,7 +175,7 @@ export default function DetailProduk() {
           </div>
 
           {/* Right Column: DOKUMEN PENDUKUNG */}
-          <div className="bg-[#F3F4F6] rounded-[20px] p-6 flex flex-col h-full">
+          <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 flex flex-col h-full">
             <h4 className="text-xs font-bold text-gray-900 text-center tracking-wider mb-6">DOKUMEN PENDUKUNG</h4>
             
             <div className="flex flex-col gap-4 flex-1">
@@ -233,34 +233,34 @@ export default function DetailProduk() {
         </div>
 
         {/* FILE PRODUK SECTION */}
-        <div className="mt-8 pt-8 border-t border-gray-100 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
+        <div className="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-gray-100 flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <div className="w-1 h-4 bg-gray-900 rounded-full"></div>
               <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
                 FILE PRODUK
               </h4>
             </div>
-            <Button variant="outline" className="rounded-[20px] px-6 text-xs font-bold">
+            <Button variant="outline" className="rounded-[20px] px-6 text-xs font-bold w-full sm:w-auto">
               TAMBAH PRODUK
             </Button>
           </div>
 
-          <div className="bg-[#F3F4F6] rounded-[20px] p-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-[16px] bg-white border border-gray-200 flex items-center justify-center">
+          <div className="bg-[#F3F4F6] rounded-[20px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-4 w-full">
+              <div className="w-12 h-12 rounded-[16px] bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
                 <i className="ri-file-text-line text-2xl text-gray-500"></i>
               </div>
-              <div className="flex flex-col justify-center">
-                <h4 className="text-sm font-bold text-gray-900 mb-0.5">{produk.prod_layanan_kode}-NEW-{ajuan.ajuan_pelapor_kk || produk.prod_nomor || '-'}</h4>
-                <p className="text-xs font-bold text-gray-900 mb-1">{namaIdentitas}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-purple-600 uppercase">{produk.prod_status}</span>
-                  <span className="text-[10px] text-gray-500 font-bold">{formattedDate} - {formattedTime}</span>
+              <div className="flex flex-col justify-center flex-1 min-w-0">
+                <h4 className="text-sm font-bold text-gray-900 mb-0.5 truncate">{produk.prod_layanan_kode}-NEW-{ajuan.ajuan_pelapor_kk || produk.prod_nomor || '-'}</h4>
+                <p className="text-xs font-bold text-gray-900 mb-1 truncate">{namaIdentitas}</p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] font-bold text-purple-600 uppercase whitespace-nowrap">{produk.prod_status}</span>
+                  <span className="text-[10px] text-gray-500 font-bold whitespace-nowrap">{formattedDate} - {formattedTime}</span>
                 </div>
               </div>
             </div>
-            <Button variant="primary" className="rounded-[20px] px-8 text-xs font-bold h-[40px]">
+            <Button variant="primary" className="rounded-[20px] px-8 text-xs font-bold h-[40px] w-full sm:w-auto flex-shrink-0">
               UPDATE SIAK
             </Button>
           </div>
