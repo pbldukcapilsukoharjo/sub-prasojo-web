@@ -99,7 +99,7 @@ export default function DetailLembarKerja() {
             </div>
 
             {/* Timeline Area */}
-            <div className="bg-[#F9FAFB] rounded-[20px] p-6 mt-4">
+            <div className="bg-[#F3F4F6] rounded-[20px] p-6 mt-4">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-1 h-4 bg-gray-900 rounded-full"></div>
                 <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
