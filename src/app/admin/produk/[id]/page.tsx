@@ -172,13 +172,52 @@ export default function DetailProduk() {
               </div>
             </div>
 
+            {/* FILE PRODUK SECTION */}
+            <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 mt-0 md:mt-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-4 bg-gray-900 rounded-full"></div>
+                  <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                    FILE PRODUK
+                  </h4>
+                </div>
+                <Button variant="primary" className="text-xs px-4 py-2">
+                  TAMBAH PRODUK
+                </Button>
+              </div>
+
+              <div className="bg-white rounded-[16px] p-4 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm gap-4">
+                <div className="flex items-start sm:items-center gap-4 w-full">
+                  <div className="w-10 h-10 rounded-[12px] bg-green-50 flex items-center justify-center flex-shrink-0">
+                    <i className="ri-file-check-line text-xl text-green-600"></i>
+                  </div>
+                  <div className="flex flex-col justify-center flex-1 min-w-0">
+                    <h4 className="text-sm font-bold text-gray-900 mb-0.5 truncate">{produk.prod_nama}</h4>
+                    <p className="text-xs text-gray-500 mb-1 truncate">Nomor: {produk.prod_nomor || '-'}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-[10px] font-bold text-purple-600 uppercase whitespace-nowrap">{produk.prod_status}</span>
+                      <span className="text-[10px] text-gray-500 font-bold whitespace-nowrap">{formattedDate} - {formattedTime}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <a href={produk.prod_url} target="_blank" rel="noreferrer" className="text-gray-500 hover:text-blue-600 transition-colors bg-gray-50 p-2 rounded-lg" title="Lihat/Unduh File">
+                    <i className="ri-download-2-line text-lg"></i>
+                  </a>
+                  <Button variant="primary" className="text-xs px-4 py-2 whitespace-nowrap">
+                    UPDATE SIAK
+                  </Button>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           {/* Right Column: DOKUMEN PENDUKUNG */}
-          <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 flex flex-col h-full">
+          <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 flex flex-col h-fit">
             <h4 className="text-xs font-bold text-gray-900 text-center tracking-wider mb-6">DOKUMEN PENDUKUNG</h4>
             
-            <div className="flex flex-col gap-4 flex-1">
+            <div className="flex flex-col gap-4">
               <div className="bg-white rounded-[16px] p-4 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-[12px] bg-gray-100 flex items-center justify-center">
@@ -230,40 +269,6 @@ export default function DetailProduk() {
             </Button>
           </div>
 
-        </div>
-
-        {/* FILE PRODUK SECTION */}
-        <div className="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-gray-100 flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-4 bg-gray-900 rounded-full"></div>
-              <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
-                FILE PRODUK
-              </h4>
-            </div>
-            <Button variant="outline" className="rounded-[20px] px-6 text-xs font-bold w-full sm:w-auto">
-              TAMBAH PRODUK
-            </Button>
-          </div>
-
-          <div className="bg-[#F3F4F6] rounded-[20px] p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start sm:items-center gap-4 w-full">
-              <div className="w-12 h-12 rounded-[16px] bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
-                <i className="ri-file-text-line text-2xl text-gray-500"></i>
-              </div>
-              <div className="flex flex-col justify-center flex-1 min-w-0">
-                <h4 className="text-sm font-bold text-gray-900 mb-0.5 truncate">{produk.prod_layanan_kode}-NEW-{ajuan.ajuan_pelapor_kk || produk.prod_nomor || '-'}</h4>
-                <p className="text-xs font-bold text-gray-900 mb-1 truncate">{namaIdentitas}</p>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] font-bold text-purple-600 uppercase whitespace-nowrap">{produk.prod_status}</span>
-                  <span className="text-[10px] text-gray-500 font-bold whitespace-nowrap">{formattedDate} - {formattedTime}</span>
-                </div>
-              </div>
-            </div>
-            <Button variant="primary" className="rounded-[20px] px-8 text-xs font-bold h-[40px] w-full sm:w-auto flex-shrink-0">
-              UPDATE SIAK
-            </Button>
-          </div>
         </div>
 
       </div>
