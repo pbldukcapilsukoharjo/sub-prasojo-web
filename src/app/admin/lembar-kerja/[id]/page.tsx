@@ -81,12 +81,33 @@ export default function DetailLembarKerja() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full md:w-auto">
-            <Button variant="primary" className="px-6 md:px-8 w-full sm:w-auto text-xs md:text-sm">
-              VERIFIKASI
-            </Button>
-            <Button variant="secondary" className="px-6 md:px-8 text-gray-600 rounded-[20px] font-bold w-full sm:w-auto text-xs md:text-sm">
-              TOLAK AJUAN
-            </Button>
+            {(ajuan.ajuan_status === 'BELUM DIVERIFIKASI' || ajuan.ajuan_status === 'PENGAJUAN') && (
+              <>
+                <Button variant="primary" className="px-6 md:px-8 w-full sm:w-auto text-xs md:text-sm">
+                  VERIFIKASI
+                </Button>
+                <Button variant="secondary" className="px-6 md:px-8 text-gray-600 rounded-[20px] font-bold w-full sm:w-auto text-xs md:text-sm">
+                  TOLAK AJUAN
+                </Button>
+              </>
+            )}
+
+            {ajuan.ajuan_status === 'DIVERIFIKASI' && (
+              <Button variant="primary" className="px-6 md:px-8 w-full sm:w-auto text-xs md:text-sm">
+                DIPROSES
+              </Button>
+            )}
+
+            {ajuan.ajuan_status === 'DIPROSES' && (
+              <>
+                <Button variant="primary" className="px-6 md:px-8 w-full sm:w-auto text-xs md:text-sm">
+                  DISETUJUI
+                </Button>
+                <Button variant="secondary" className="px-6 md:px-8 text-gray-600 rounded-[20px] font-bold w-full sm:w-auto text-xs md:text-sm">
+                  DITOLAK
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
