@@ -17,6 +17,8 @@ export default function DetailAjuan() {
   const pelapor = dummyDB.user.find((u) => u.id === ajuan?.ajuan_pelapor_id);
   // Ambil jenis ajuan
   const jenisAjuan = dummyDB.jenis_ajuan.find((j) => j.ja_id === ajuan?.ajuan_jenis_ajuan_id);
+  // Ambil produk
+  const products = dummyDB.produk.filter((p) => p.prod_ajuan_id === ajuan?.ajuan_id);
 
   if (!ajuan) {
     return (
@@ -169,13 +171,64 @@ export default function DetailAjuan() {
 
             </div>
 
+            {/* Produk Area */}
+            {(ajuan.ajuan_status === 'DISETUJUI' || ajuan.ajuan_status === 'SELESAI') && (
+              <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 mt-0 md:mt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-4 bg-gray-900 rounded-full"></div>
+                    <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                      PRODUK AJUAN
+                    </h4>
+                  </div>
+                  <Button variant="primary" className="text-xs px-4 py-2">
+                    TAMBAH PRODUK
+                  </Button>
+                </div>
+                
+                {products.length > 0 ? (
+                  <div className="flex flex-col gap-3">
+                    {products.map((prod) => (
+                      <div key={prod.prod_id} className="bg-white rounded-[16px] p-4 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-[12px] bg-green-50 flex items-center justify-center flex-shrink-0">
+                            <i className="ri-file-check-line text-xl text-green-600"></i>
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">{prod.prod_nama}</p>
+                            <p className="text-xs text-gray-500">Nomor: {prod.prod_nomor}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <a href={prod.prod_url} target="_blank" rel="noreferrer" className="text-gray-500 hover:text-blue-600 transition-colors bg-gray-50 p-2 rounded-lg" title="Lihat/Unduh File">
+                            <i className="ri-download-2-line text-lg"></i>
+                          </a>
+                          <button className="text-gray-500 hover:text-red-600 transition-colors bg-gray-50 p-2 rounded-lg" title="Hapus Produk">
+                            <i className="ri-delete-bin-line text-lg"></i>
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-[16px] p-8 flex flex-col items-center justify-center text-center shadow-sm">
+                    <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center mb-3">
+                      <i className="ri-inbox-2-line text-2xl text-gray-400"></i>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900">Belum ada produk</p>
+                    <p className="text-xs text-gray-500 mt-1">Tambahkan file produk untuk ajuan ini</p>
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
 
           {/* Right Column: DOKUMEN PENDUKUNG */}
-          <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 flex flex-col h-full">
+          <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 flex flex-col h-fit">
             <h4 className="text-xs font-bold text-gray-900 text-center tracking-wider mb-6">DOKUMEN PENDUKUNG</h4>
             
-            <div className="flex flex-col gap-4 flex-1">
+            <div className="flex flex-col gap-4">
               <div className="bg-white rounded-[16px] p-4 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-[12px] bg-gray-100 flex items-center justify-center">
