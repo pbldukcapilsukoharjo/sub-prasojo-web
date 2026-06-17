@@ -19,6 +19,9 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
   } else if (pathname.includes('/produk')) {
     title = 'Produk Layanan';
     subtitle = 'Produk hasil dari pengajuan';
+  } else if (pathname.includes('/dashboard') || pathname === '/admin') {
+    title = 'Dashboard';
+    subtitle = 'Ringkasan data ajuan dan kinerja layanan';
   }
 
   return (
@@ -37,7 +40,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
             )}
           </div>
           {subtitle && (
-            <p className="text-xs lg:text-sm text-gray-500 mt-0.5 lg:mt-1 hidden lg:block">{subtitle}</p>
+            <p className="text-xs lg:text-sm text-gray-500 mt-0.5 lg:mt-1">{subtitle}</p>
           )}
         </div>
       </div>
