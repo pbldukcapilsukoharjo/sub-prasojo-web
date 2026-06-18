@@ -1,15 +1,20 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
   const pathname = usePathname();
+  const isProfileActive = pathname.includes('/profile');
 
   let title = 'Dashboard';
   let subtitle = '';
   let badgeCount = 0;
 
-  if (pathname.includes('/lembar-kerja')) {
+  if (pathname.includes('/profile')) {
+    title = 'Profil';
+    subtitle = 'Informasi pengguna dan pegaturan akun';
+  } else if (pathname.includes('/lembar-kerja')) {
     title = 'Lembar Kerja';
     subtitle = 'Daftar ajuan yang belum diproses dan membutuhkan verifikasi';
     badgeCount = 123;
@@ -51,16 +56,27 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
           <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
         </button>
 
-        <div className="flex items-center gap-3 border-l border-gray-200 pl-4 lg:pl-6">
+        <Link
+          href="/admin/profile"
+          className={`flex items-center gap-3 border-l border-gray-200 pl-4 lg:pl-6 rounded-xl px-4 py-2 transition-all duration-200 cursor-pointer ${
+            isProfileActive
+              ? 'bg-gray-100 ring-1 ring-gray-200'
+              : 'hover:bg-gray-50'
+          }`}
+        >
           <div className="text-right hidden sm:block">
             <p className="text-sm font-bold text-gray-900">Admin Prasojo system</p>
             <p className="text-[10px] font-bold text-gray-500 tracking-wider">ADMINISTRATOR</p>
           </div>
-          <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden border border-gray-200 flex-shrink-0">
+          <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden flex-shrink-0 transition-all duration-200 ${
+            isProfileActive
+              ? 'ring-2 ring-[#8B0000] ring-offset-2 border-0'
+              : 'border border-gray-200'
+          }`}>
             {/* Avatar placeholder */}
             <img src="https://ui-avatars.com/api/?name=Admin+Prasojo&background=0D8ABC&color=fff" alt="User Avatar" className="w-full h-full object-cover" />
           </div>
-        </div>
+        </Link>
       </div>
     </header>
   );

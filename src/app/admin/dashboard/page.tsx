@@ -143,7 +143,13 @@ export default function Dashboard() {
 
         {/* Operator Leaderboard */}
         <div className="card shadow-sm border border-gray-100 lg:col-span-3 p-6 flex flex-col gap-4">
-          <h3 className="text-sm font-bold text-gray-900 mb-2">Peringkat Operator</h3>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-sm font-bold text-gray-900">Peringkat Operator</h3>
+            <button className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+              <span>Selengkapnya</span>
+              <i className="ri-arrow-right-s-line text-xs"></i>
+            </button>
+          </div>
           <div className="flex flex-col gap-4">
             {operatorLeaderboard.map((op, i) => (
               <div key={i} className="flex items-center gap-3 border-b border-gray-100 pb-3 last:border-0 last:pb-0">
@@ -159,7 +165,13 @@ export default function Dashboard() {
 
         {/* Region Distribution */}
         <div className="card shadow-sm border border-gray-100 lg:col-span-3 p-6 flex flex-col gap-4">
-          <h3 className="text-sm font-bold text-gray-900 mb-2">Distribusi Wilayah</h3>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-sm font-bold text-gray-900">Distribusi Wilayah</h3>
+            <button className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+              <span>Selengkapnya</span>
+              <i className="ri-arrow-right-s-line text-xs"></i>
+            </button>
+          </div>
           <div className="flex flex-col gap-4">
             {distribution.map((dist, i) => (
               <div key={i} className="flex flex-col gap-1.5">
@@ -180,7 +192,13 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Reviews */}
         <div className="card shadow-sm border border-gray-100 lg:col-span-9 p-6">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Ulasan Pengguna</h3>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-sm font-bold text-gray-900">Ulasan Pengguna</h3>
+            <button className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+              <span>Selengkapnya</span>
+              <i className="ri-arrow-right-s-line text-xs"></i>
+            </button>
+          </div>
           <div className="flex flex-col md:flex-row gap-6">
             <div className="bg-gray-50 rounded-[20px] p-6 flex flex-col items-center justify-center min-w-[200px]">
               <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">TOTAL RATA-RATA</span>
@@ -225,7 +243,13 @@ export default function Dashboard() {
 
         {/* SLA */}
         <div className="card shadow-sm border border-gray-100 lg:col-span-3 p-6 flex flex-col items-center">
-          <h3 className="text-sm font-bold text-gray-900 mb-6 w-full text-left">Kepatuhan SLA</h3>
+          <div className="flex justify-between items-center mb-6 w-full">
+            <h3 className="text-sm font-bold text-gray-900">Kepatuhan SLA</h3>
+            <button className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
+              <span>Selengkapnya</span>
+              <i className="ri-arrow-right-s-line text-xs"></i>
+            </button>
+          </div>
           <div className="relative w-40 h-40 flex items-center justify-center rounded-full border-[12px] border-blue-600 mb-6">
             <span className="text-3xl font-bold font-manrope text-gray-900">92%</span>
           </div>
