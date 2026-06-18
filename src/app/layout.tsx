@@ -3,8 +3,6 @@ import "./globals.css";
 import "remixicon/fonts/remixicon.css";
 import { ThemeLangProvider } from "@/providers/theme-lang-provider";
 
-import Script from "next/script";
-
 export const metadata: Metadata = {
   title: "Sub Prasojo Web",
   description: "Web application for Sub Prasojo",
@@ -35,7 +33,7 @@ export default function RootLayout({
       className="h-full antialiased"
     >
       <head>
-        <Script id="theme-lang-script" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: themeLangScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeLangScript }} />
       </head>
       <body className="min-h-full flex flex-col">
         <ThemeLangProvider>{children}</ThemeLangProvider>

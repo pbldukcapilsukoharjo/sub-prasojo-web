@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import Input from '@/components/Forms/Input';
 import Select from '@/components/Forms/Select';
@@ -11,6 +11,11 @@ const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 export default function Dashboard() {
   const [filterStatus, setFilterStatus] = useState('all');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Chart Options
   const chartOptions: any = {
@@ -135,7 +140,7 @@ export default function Dashboard() {
         <div className="card shadow-sm border border-gray-100 lg:col-span-6 h-[400px] flex flex-col">
           <h3 className="text-sm font-bold text-gray-900 mb-2">Total per Status Ajuan</h3>
           <div className="flex-1 min-h-0">
-            {typeof window !== 'undefined' && (
+            {mounted && (
                <Chart options={chartOptions} series={chartSeries} type="line" height="100%" width="100%" />
             )}
           </div>
