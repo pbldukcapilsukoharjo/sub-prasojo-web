@@ -1,10 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Select from '@/components/Forms/Select';
 import Button from '@/components/Common/Button';
+import LogoutModal from '@/components/Common/LogoutModal';
 
 export default function ProfilePage() {
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
   return (
     <div className="flex flex-col gap-6">
       {/* Profile Header Card */}
@@ -39,51 +42,19 @@ export default function ProfilePage() {
               Prasetyo Jatmiko, S.Kom.
             </h1>
             <p className="text-sm text-gray-500 font-semibold mb-4">
-              NIP. 19850422 201001 1 004
+              prasetyo_admin_04
             </p>
 
             <div className="flex flex-wrap gap-x-10 gap-y-2">
               <div>
-                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">JABATAN</span>
-                <span className="text-sm font-bold text-gray-900">Kepala Bidang Monitoring & Evaluasi</span>
+                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">STATUS AKUN</span>
+                <span className="text-sm font-bold text-gray-900">Terverifikasi</span>
               </div>
               <div>
-                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">INSTANSI / DINAS</span>
-                <span className="text-sm font-bold text-gray-900">Dinas Kependudukan dan Catatan Sipil</span>
+                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">TERAKHIR LOGIN</span>
+                <span className="text-sm font-bold text-gray-900">Hari ini, 08:45 WIB</span>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Jumlah Ajuan Diproses */}
-        <div className="bg-[#8B0000] rounded-[20px] shadow-sm p-6 flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold text-white/70 tracking-wider uppercase block mb-2">
-              JUMLAH AJUAN DIPROSES
-            </span>
-            <span className="text-4xl font-bold font-manrope text-white">234</span>
-          </div>
-          <div className="w-12 h-12 bg-white/15 rounded-full flex items-center justify-center">
-            <i className="ri-line-chart-line text-white text-2xl"></i>
-          </div>
-        </div>
-
-        {/* Rata-rata Penyelesaian */}
-        <div className="card shadow-sm border border-gray-100 p-6 flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-2">
-              RATA-RATA PENYELESAIAN
-            </span>
-            <div className="flex items-end gap-2">
-              <span className="text-4xl font-bold font-manrope text-gray-900">14.5</span>
-              <span className="text-sm font-semibold text-gray-500 mb-1">Menit</span>
-            </div>
-          </div>
-          <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-            <i className="ri-timer-line text-gray-600 text-2xl"></i>
           </div>
         </div>
       </div>
@@ -121,36 +92,6 @@ export default function ProfilePage() {
                   </span>
                   <span className="text-sm font-bold text-gray-900">+62 812-3456-7890</span>
                 </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Detail Akun */}
-          <div className="card shadow-sm border border-gray-100 p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-1 h-5 bg-[#8B0000] rounded-full"></div>
-              <h3 className="text-base font-bold text-gray-900">Detail Akun</h3>
-            </div>
-
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
-              <div>
-                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-1">USERNAME</span>
-                <span className="text-sm font-bold text-gray-900">prasetyo_admin_04</span>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-1">ROLE AKSES</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                  <span className="text-sm font-bold text-gray-900">Super Administrator</span>
-                </div>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-1">STATUS AKUN</span>
-                <span className="text-sm font-bold text-green-600">Terverifikasi</span>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-1">TERAKHIR LOGIN</span>
-                <span className="text-sm font-bold text-gray-900">Hari ini, 08:45 WIB</span>
               </div>
             </div>
           </div>
@@ -199,7 +140,10 @@ export default function ProfilePage() {
                 <i className="ri-lock-line text-base"></i>
                 UBAH KATA SANDI
               </button>
-              <button className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border-2 border-[#8B0000] bg-[#8B0000] text-white font-bold text-sm hover:bg-[#6b0000] transition-colors">
+              <button 
+                onClick={() => setIsLogoutModalOpen(true)}
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border-2 border-[#8B0000] bg-[#8B0000] text-white font-bold text-sm hover:bg-[#6b0000] transition-colors"
+              >
                 <i className="ri-logout-box-r-line text-base"></i>
                 KELUAR
               </button>
@@ -207,6 +151,15 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <LogoutModal 
+        isOpen={isLogoutModalOpen} 
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={() => {
+          setIsLogoutModalOpen(false);
+          window.location.href = '/login';
+        }}
+      />
     </div>
   );
 }

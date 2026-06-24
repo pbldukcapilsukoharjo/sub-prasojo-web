@@ -1,15 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import LogoutModal from '@/components/Common/LogoutModal';
 
 export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
+
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const menuItems = [
     { name: 'DASHBOARD', path: '/admin/dashboard', icon: 'ri-dashboard-line' },
     { name: 'LEMBAR KERJA', path: '/admin/lembar-kerja', icon: 'ri-file-list-3-line' },
     { name: 'AJUAN', path: '/admin/ajuan', icon: 'ri-error-warning-line' },
+    { name: 'PERINGKAT OPERATOR', path: '/admin/peringkat-operator', icon: 'ri-user-star-line' },
+    { name: 'DISTRIBUSI WILAYAH', path: '/admin/distribusi-wilayah', icon: 'ri-map-pin-line' },
+    { name: 'SLA MONITORING', path: '/admin/sla-monitoring', icon: 'ri-time-line' },
+    { name: 'ULASAN', path: '/admin/ulasan', icon: 'ri-star-line' },
     { name: 'PRODUK', path: '/admin/produk', icon: 'ri-folder-open-line' },
   ];
 
@@ -27,7 +35,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-2">
+      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = pathname.startsWith(item.path);
           return (
@@ -35,13 +43,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
               key={item.name}
               href={item.path}
               onClick={onClose}
-              className={`flex items-center gap-3 px-4 py-3 rounded-[12px] font-semibold text-sm transition-colors ${
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] font-semibold text-xs transition-colors ${
                 isActive 
                   ? 'bg-white text-primary' 
                   : 'text-white hover:bg-white/10'
               }`}
             >
-              <i className={`${item.icon} text-lg font-normal`}></i>
+              <i className={`${item.icon} text-base font-normal`}></i>
               {item.name}
             </Link>
           );
@@ -49,21 +57,33 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-4 border-t border-white/20">
-        <button className="flex items-center gap-3 px-4 py-3 w-full text-left font-semibold text-sm hover:bg-white/10 rounded-[12px] transition-colors">
-          <i className="ri-paint-brush-line text-lg font-normal"></i>
+      <div className="p-3 border-t border-white/20">
+        <button className="flex items-center gap-2.5 px-3 py-2.5 w-full text-left font-semibold text-xs hover:bg-white/10 rounded-[12px] transition-colors">
+          <i className="ri-paint-brush-line text-base font-normal"></i>
           SETTING TEMA
         </button>
       </div>
-      <div className="px-4 pb-6 pt-2 bg-[#700000]">
-         <div className="px-4 py-2">
-            <p className="text-[11px] font-bold tracking-wider text-white">ADMIN PRASOJO SYSTEM</p>
+      <div className="px-4 pb-4 pt-3 bg-[#700000]">
+         <div className="px-3 py-1 mb-1">
+            <p className="text-[10px] font-bold tracking-wider text-white">ADMIN PRASOJO SYSTEM</p>
          </div>
-         <button className="flex items-center gap-3 px-4 py-2 w-full text-left font-medium text-sm hover:bg-white/10 rounded-[12px] transition-colors">
-          <i className="ri-logout-box-r-line text-lg font-normal"></i>
+         <button 
+          onClick={() => setIsLogoutModalOpen(true)}
+          className="flex items-center gap-2.5 px-3 py-2 w-full text-left font-medium text-xs hover:bg-white/10 rounded-[12px] transition-colors"
+         >
+          <i className="ri-logout-box-r-line text-base font-normal"></i>
           Logout
         </button>
       </div>
+
+      <LogoutModal 
+        isOpen={isLogoutModalOpen} 
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={() => {
+          setIsLogoutModalOpen(false);
+          window.location.href = '/login';
+        }}
+      />
     </aside>
   );
 }

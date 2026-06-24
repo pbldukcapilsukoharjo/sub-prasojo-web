@@ -51,10 +51,6 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
       </div>
 
       <div className="flex items-center gap-4 lg:gap-6">
-        <button className="text-gray-500 hover:text-gray-700 transition-colors relative">
-          <i className="ri-notification-3-line text-xl lg:text-2xl"></i>
-          <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
 
         <Link
           href="/admin/profile"

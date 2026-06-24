@@ -56,7 +56,7 @@ export default function Dashboard() {
     { title: 'TOTAL PENGAJUAN', value: '12,900', badge: '+12%' },
     { title: 'TOTAL SELESAI', value: '12,900', badge: '+12%' },
     { title: 'TOTAL DITOLAK', value: '12,900', badge: '+12%' },
-    { title: 'LABEL TAMAT', value: '12,900', badge: '+12%' },
+    { title: 'RATA RATA KEPUASAN', value: '90%', icon: 'ri-star-fill', iconColor: 'text-yellow-500' },
   ];
 
   const operatorLeaderboard = [
@@ -129,7 +129,12 @@ export default function Dashboard() {
             <h3 className="text-[10px] font-bold text-gray-700 tracking-wider uppercase mb-2">{stat.title}</h3>
             <div className="flex items-center justify-between">
               <span className="text-3xl font-bold font-manrope">{stat.value}</span>
-              <span className="bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded-full">{stat.badge}</span>
+              {stat.badge && (
+                <span className="bg-gray-100 text-gray-700 text-xs font-bold px-2 py-1 rounded-full">{stat.badge}</span>
+              )}
+              {stat.icon && (
+                <i className={`${stat.icon} ${stat.iconColor} text-xl`}></i>
+              )}
             </div>
           </div>
         ))}
@@ -138,8 +143,7 @@ export default function Dashboard() {
       {/* Main Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Line Chart */}
-        <div className="card shadow-sm border border-gray-100 lg:col-span-6 h-[400px] flex flex-col">
-          <h3 className="text-sm font-bold text-gray-900 mb-2">Total per Status Ajuan</h3>
+        <div className="card shadow-sm border border-gray-100 lg:col-span-8 h-[400px] flex flex-col">
           <div className="flex-1 min-h-0">
             {mounted && (
                <Chart options={chartOptions} series={chartSeries} type="line" height="100%" width="100%" />
@@ -147,8 +151,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Operator Leaderboard */}
-        <div className="card shadow-sm border border-gray-100 lg:col-span-3 p-6 flex flex-col gap-4">
+        {/* Region Distribution */}
+        <div className="card shadow-sm border border-gray-100 lg:col-span-4 p-6 flex flex-col gap-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-sm font-bold text-gray-900">Peringkat Operator</h3>
             <Link href="/admin/dashboard/peringkat-operator" className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
@@ -169,182 +173,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Region Distribution */}
-        <div className="card shadow-sm border border-gray-100 lg:col-span-3 p-6 flex flex-col gap-4">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-sm font-bold text-gray-900">Distribusi Wilayah</h3>
-            <Link href="/admin/dashboard/distribusi-wilayah" className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
-              <span>Selengkapnya</span>
-              <i className="ri-arrow-right-s-line text-xs"></i>
-            </Link>
-          </div>
-          <div className="flex flex-col gap-4">
-            {distribution.map((dist, i) => (
-              <div key={i} className="flex flex-col gap-1.5">
-                <div className="flex justify-between items-center text-xs font-bold text-gray-900">
-                  <span>{dist.name}</span>
-                  <span>{dist.percentage}</span>
-                </div>
-                <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className={`h-full ${dist.color}`} style={{ width: dist.percentage }}></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Reviews and SLA Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Reviews */}
-        <div className="card shadow-sm border border-gray-100 lg:col-span-9 p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-bold text-gray-900">Ulasan Pengguna</h3>
-            <Link href="/admin/dashboard/ulasan" className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
-              <span>Selengkapnya</span>
-              <i className="ri-arrow-right-s-line text-xs"></i>
-            </Link>
-          </div>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="bg-gray-50 rounded-[20px] p-6 flex flex-col items-center justify-center min-w-[200px]">
-              <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">TOTAL RATA-RATA</span>
-              <span className="text-6xl font-bold font-manrope text-gray-900 mb-2">4.8</span>
-              <div className="flex gap-1 text-[#F59E0B] text-xl mb-3">
-                <i className="ri-star-fill"></i>
-                <i className="ri-star-fill"></i>
-                <i className="ri-star-fill"></i>
-                <i className="ri-star-fill"></i>
-                <i className="ri-star-half-fill"></i>
-              </div>
-              <span className="text-xs font-semibold text-gray-500">Berdasarkan 1,240 Ulasan</span>
-            </div>
-            <div className="flex flex-col gap-4 flex-1">
-              {/* Review 1 */}
-              <div className="border-b border-gray-100 pb-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <span className="font-bold text-gray-900 mr-2">4.8/5.0</span>
-                    <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Jenis: TAMAT</span>
-                  </div>
-                  <span className="text-[10px] font-semibold text-gray-500 text-right">12 Okt 2023, 09:45<br/>WIB</span>
-                </div>
-                <p className="text-sm font-bold text-gray-900 mb-1">Pelayanan sangat cepat dan membantu.</p>
-                <p className="text-xs text-gray-500 font-semibold">Oleh: Anonim</p>
-              </div>
-              {/* Review 2 */}
-              <div className="pb-2">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <span className="font-bold text-gray-900 mr-2">5.0/5.0</span>
-                    <span className="bg-gray-100 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Jenis: AKTA</span>
-                  </div>
-                  <span className="text-[10px] font-semibold text-gray-500 text-right">12 Okt 2023, 08:20<br/>WIB</span>
-                </div>
-                <p className="text-sm font-bold text-gray-900 mb-1">Sistem mudah digunakan bagi pemula.</p>
-                <p className="text-xs text-gray-500 font-semibold">Oleh: Anonim</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* SLA */}
-        <div className="card shadow-sm border border-gray-100 lg:col-span-3 p-6 flex flex-col items-center">
-          <div className="flex justify-between items-center mb-6 w-full">
-            <h3 className="text-sm font-bold text-gray-900">Kepatuhan SLA</h3>
-            <Link href="/admin/dashboard/sla" className="flex items-center gap-1 text-[10px] font-semibold text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
-              <span>Selengkapnya</span>
-              <i className="ri-arrow-right-s-line text-xs"></i>
-            </Link>
-          </div>
-          <div className="relative w-40 h-40 flex items-center justify-center rounded-full border-[12px] border-blue-600 mb-6">
-            <span className="text-3xl font-bold font-manrope text-gray-900">92%</span>
-          </div>
-          <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase">TARGET TERPENUHI</span>
-        </div>
-      </div>
-
-      {/* Product Totals */}
-      <div className="card shadow-sm border border-gray-100 p-6">
-        <h3 className="text-sm font-bold text-gray-900 mb-8">Total Produk per 20 Apr, 2026</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-          {productTotals.map((prod, i) => (
-            <div key={i} className="flex flex-col items-center gap-4">
-              <div className={`w-[120px] h-[120px] rounded-full border-[10px] flex items-center justify-center ${prod.color}`}>
-                <span className={`text-2xl font-bold font-manrope ${prod.textColor}`}>{prod.value}</span>
-              </div>
-              <span className="text-[10px] font-bold text-gray-700 tracking-wider uppercase text-center">{prod.label}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Bottom Summary Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Rata-rata Proses Selesai */}
-        <div className="card shadow-sm border border-gray-100 p-6">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Rata rata Proses Selesai</h3>
-          <div className="flex flex-col gap-3">
-            <div className="flex justify-between items-center py-2 border-b border-gray-50">
-              <span className="text-sm text-gray-600 font-semibold">Kartu Keluarga</span>
-              <span className="text-sm font-bold text-gray-900">4.5 Jam</span>
-            </div>
-            <div className="flex justify-between items-center py-2 border-b border-gray-50">
-              <span className="text-sm text-gray-600 font-semibold">KTP-EL</span>
-              <span className="text-sm font-bold text-gray-900">8.5 Jam</span>
-            </div>
-            <div className="flex justify-between items-center py-2">
-              <span className="text-sm text-gray-600 font-semibold">Akta Kelahiran</span>
-              <span className="text-sm font-bold text-gray-900">12.0 Jam</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Ringkasan Hari Ini */}
-        <div className="card shadow-sm border border-gray-100 p-6 flex flex-col">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Ringkasan Hari Ini</h3>
-          <div className="grid grid-cols-2 gap-4 flex-1">
-            <div className="bg-gray-50 rounded-xl p-4 flex flex-col justify-center">
-              <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-1">AJUAN MASUK</span>
-              <span className="text-2xl font-bold font-manrope text-gray-900">128</span>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-4 flex flex-col justify-center">
-              <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-1">SLA</span>
-              <span className="text-2xl font-bold font-manrope text-gray-900">92%</span>
-            </div>
-            <div className="bg-gray-50 rounded-xl p-4 flex flex-col justify-center col-span-2">
-              <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-1">RATA-RATA MENIT</span>
-              <span className="text-2xl font-bold font-manrope text-gray-900">15.3</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Pemantauan Status Proses */}
-        <div className="card shadow-sm border border-gray-100 p-6">
-          <h3 className="text-sm font-bold text-gray-900 mb-4">Pemantauan Status Proses</h3>
-          <div className="flex flex-col gap-3">
-            <div className="flex justify-between items-center p-3 border border-gray-100 rounded-xl">
-              <div className="flex items-center gap-2">
-                <i className="ri-checkbox-circle-line text-gray-500 text-lg"></i>
-                <span className="text-sm text-gray-600 font-semibold">Diproses</span>
-              </div>
-              <span className="text-sm font-bold text-gray-900">30</span>
-            </div>
-            <div className="flex justify-between items-center p-3 border border-gray-100 rounded-xl">
-              <div className="flex items-center gap-2">
-                <i className="ri-checkbox-blank-circle-line text-gray-500 text-lg"></i>
-                <span className="text-sm text-gray-600 font-semibold">Belum Diverifikasi</span>
-              </div>
-              <span className="text-sm font-bold text-gray-900">30</span>
-            </div>
-            <div className="flex justify-between items-center p-3 border border-gray-100 rounded-xl">
-              <div className="flex items-center gap-2">
-                <i className="ri-hourglass-line text-gray-500 text-lg"></i>
-                <span className="text-sm text-gray-600 font-semibold">Menunggu Konfirmasi</span>
-              </div>
-              <span className="text-sm font-bold text-gray-900">12</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
