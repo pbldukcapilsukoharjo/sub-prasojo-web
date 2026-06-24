@@ -4,8 +4,13 @@ import "remixicon/fonts/remixicon.css";
 import { ThemeLangProvider } from "@/providers/theme-lang-provider";
 
 export const metadata: Metadata = {
-  title: "Sub Prasojo Web",
-  description: "Web application for Sub Prasojo",
+  title: "PRASOJO - Sistem Monitoring Disdukcapil Sukoharjo",
+  description: "Sistem Monitoring Layanan Disdukcapil Sukoharjo Berbasis PRASOJO",
+  icons: {
+    icon: "/dukcapil-skh.png",
+    shortcut: "/dukcapil-skh.png",
+    apple: "/dukcapil-skh.png",
+  },
 };
 
 export default function RootLayout({
