@@ -41,33 +41,6 @@ export default function WaktuRataRataPage() {
     { rank: '09', service: 'REKAM JEMPUT BOLA', count: 124, avgTime: '4,5 jam', status: 'ON TIME' },
   ];
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'ON TIME':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border border-blue-500 text-blue-600 bg-blue-50">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-            ON TIME
-          </span>
-        );
-      case 'WARNING':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border border-yellow-500 text-yellow-600 bg-yellow-50">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-500"></span>
-            WARNING
-          </span>
-        );
-      case 'OVER SLA':
-        return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold border border-red-500 text-red-600 bg-red-50">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-            OVER SLA
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -156,7 +129,6 @@ export default function WaktuRataRataPage() {
                 <th className="px-6 py-4 text-center">Jenis Layanan</th>
                 <th className="px-6 py-4 text-center">Jumlah Ajuan</th>
                 <th className="px-6 py-4 text-center">Rata Rata Waktu</th>
-                <th className="px-6 py-4 text-center">Status SLA</th>
               </tr>
             </thead>
             <tbody>
@@ -166,9 +138,6 @@ export default function WaktuRataRataPage() {
                   <td className="px-6 py-4 text-center font-bold text-gray-900 text-xs">{row.service}</td>
                   <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.count}</td>
                   <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.avgTime}</td>
-                  <td className="px-6 py-4 flex justify-center">
-                    {getStatusBadge(row.status)}
-                  </td>
                 </tr>
               ))}
             </tbody>
