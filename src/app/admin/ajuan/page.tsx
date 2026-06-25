@@ -3,12 +3,16 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/Forms/Input';
-import Select from '@/components/Forms/Select';
+import CustomSelect from '@/components/Forms/CustomSelect';
+import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import Button from '@/components/Common/Button';
+import FilterCard from '@/components/Common/FilterCard';
 import Tabs from '@/components/Common/Tabs';
 import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
+import DetailModal from '@/components/Common/DetailModal';
+import AjuanCharts from '@/components/Dashboard/AjuanCharts';
 import dummyDB from '../../../../dummy-data/database-dummy.json';
 import ajuanData from '../../../../dummy-data/ajuan.json';
 
@@ -17,6 +21,34 @@ export default function Ajuan() {
   const [activeTab, setActiveTab] = useState('semua');
   const [currentPage, setCurrentPage] = useState(1);
   const [filterStatus, setFilterStatus] = useState('all');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState<any>(null);
+
+  const [search, setSearch] = useState('');
+  const [pelapor, setPelapor] = useState('all');
+  const [kecamatan, setKecamatan] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [periode, setPeriode] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+
+  const isRentangTanggalDisabled = !!periode;
+  const isPeriodeDisabled = !!startDate || !!endDate;
+
+  const handleReset = () => {
+    setSearch('');
+    setPelapor('all');
+    setKecamatan('all');
+    setStartDate('');
+    setEndDate('');
+    setPeriode('');
+    setSortBy('newest');
+    setFilterStatus('all');
+  };
+
+  const handleFilter = () => {
+    console.log({ search, pelapor, kecamatan, startDate, endDate, periode, sortBy, filterStatus });
+  };
 
   const tabs = [
     { id: 'semua', label: 'SEMUA' },
@@ -108,55 +140,106 @@ export default function Ajuan() {
     };
   });
 
+  const handleRowClick = (row: any) => {
+    const timeline = [
+      { label: 'Ajuan Dibuat', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'gray' },
+    ];
+    if (row.status !== 'BELUM DIVERIFIKASI') {
+      timeline.push({ label: 'Diverifikasi', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'blue' });
+    }
+    if (row.status === 'DISETUJUI' || row.status === 'SELESAI') {
+      timeline.push({ label: 'Disetujui', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'green' });
+    }
+    if (row.status === 'DIPROSES' || row.status === 'DISETUJUI' || row.status === 'SELESAI') {
+      timeline.push({ label: 'Diproses', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'gray' });
+    }
+
+    setSelectedData({
+      noRegis: row.noRegis,
+      namaLengkap: row.pelapor,
+      nik: '33140202020202',
+      jenisLayanan: row.kodeAjuan.replace('-NEW', ''),
+      kecamatan: row.kecamatan,
+      timeline,
+    });
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       {/* Filter Card */}
-      <div className="card shadow-sm border border-gray-100 flex flex-col gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-          <Input 
-            label="Pencarian Cepat" 
-            placeholder="No. Regis" 
-            icon="ri-search-line" 
-          />
-          <Select 
-            label="Pelapor" 
-            options={[{ label: 'PADUKA', value: 'paduka' }]} 
-          />
-          <Select 
-            label="Kecamatan" 
-            options={[{ label: 'Seluruh Kecamatan', value: 'all' }]} 
-          />
-          <Input 
-            type="date"
-            label="Rentang Tanggal" 
-          />
-          <Select 
-            label="Periode" 
-            options={[{ label: 'Bulan Ini', value: 'this_month' }]} 
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-          <Select 
-            label="Urutkan Dari" 
-            options={[{ label: 'Terbaru', value: 'newest' }]} 
-          />
-          <Select 
-            label="Status Ajuan" 
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            options={[
-              { label: 'Semua Status', value: 'all' },
-              { label: 'Diverifikasi', value: 'DIVERIFIKASI' },
-              { label: 'Diproses', value: 'DIPROSES' },
-              { label: 'Disetujui', value: 'DISETUJUI' },
-              { label: 'Ditolak', value: 'DITOLAK' },
-            ]} 
-          />
-          <Button variant="primary" className="h-[44px] w-[180px]">
-            TERAPKAN FILTER
-          </Button>
-        </div>
-      </div>
+      <FilterCard onReset={handleReset} onApply={handleFilter}>
+        <Input
+          label="Pencarian Cepat"
+          placeholder="No. Regis"
+          icon="ri-search-line"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <CustomSelect
+          label="Pelapor"
+          value={pelapor}
+          onChange={(val) => setPelapor(String(val))}
+          options={[
+            { label: 'Semua Pelapor', value: 'all' },
+            { label: 'PADUKA', value: 'paduka' },
+          ]}
+        />
+        <CustomSelect
+          label="Kecamatan"
+          value={kecamatan}
+          onChange={(val) => setKecamatan(String(val))}
+          options={[
+            { label: 'Seluruh Kecamatan', value: 'all' },
+            { label: 'Laweyan', value: 'laweyan' },
+            { label: 'Banjarsari', value: 'banjarsari' },
+            { label: 'Serengan', value: 'serengan' },
+          ]}
+        />
+        <CustomDateRangePicker
+          label="Rentang Tanggal"
+          startDate={startDate}
+          endDate={endDate}
+          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+          disabled={isRentangTanggalDisabled}
+          placeholder="Pilih Rentang Tanggal"
+        />
+        <CustomSelect
+          label="Periode"
+          value={periode}
+          onChange={(val) => setPeriode(String(val))}
+          disabled={isPeriodeDisabled}
+          placeholder="Pilih Periode"
+          options={[
+            { label: 'Bulan Ini', value: 'this_month' },
+            { label: 'Bulan Lalu', value: 'last_month' },
+            { label: 'Tahun Ini', value: 'this_year' },
+          ]}
+        />
+        <CustomSelect
+          label="Urutkan Dari"
+          value={sortBy}
+          onChange={(val) => setSortBy(String(val))}
+          options={[
+            { label: 'Terbaru', value: 'newest' },
+            { label: 'Terlama', value: 'oldest' },
+          ]}
+        />
+        <CustomSelect
+          label="Status Ajuan"
+          value={filterStatus}
+          onChange={(val) => setFilterStatus(String(val))}
+          options={[
+            { label: 'Semua Status', value: 'all' },
+            { label: 'Diverifikasi', value: 'DIVERIFIKASI' },
+            { label: 'Diproses', value: 'DIPROSES' },
+            { label: 'Disetujui', value: 'DISETUJUI' },
+            { label: 'Ditolak', value: 'DITOLAK' },
+          ]}
+        />
+      </FilterCard>
+
+      <AjuanCharts />
 
       {/* Table Card */}
       <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden">
@@ -175,7 +258,7 @@ export default function Ajuan() {
           <Table 
             columns={tableColumns} 
             data={mappedData} 
-            onRowClick={(row) => router.push(`/admin/ajuan/${row.id}`)}
+            onRowClick={handleRowClick}
           />
         </div>
 
@@ -189,6 +272,12 @@ export default function Ajuan() {
           />
         </div>
       </div>
+
+      <DetailModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={selectedData}
+      />
     </div>
   );
 }

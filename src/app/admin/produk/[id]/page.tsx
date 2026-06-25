@@ -88,7 +88,7 @@ export default function DetailProduk() {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 md:gap-4 w-full md:w-auto">
-            <Button variant="primary" className="px-6 md:px-8 rounded-[20px] font-bold w-full sm:w-auto text-xs md:text-sm">
+            <Button variant="primary" className="px-6 md:px-8 rounded-[30px] font-bold w-full sm:w-auto text-xs md:text-sm">
               DIPROSES
             </Button>
           </div>
@@ -264,7 +264,7 @@ export default function DetailProduk() {
               </div>
             </div>
 
-            <Button variant="primary" icon="ri-printer-line" className="w-full mt-6 rounded-[20px] font-bold">
+            <Button variant="primary" icon="ri-printer-line" className="w-full mt-6 rounded-[30px] font-bold">
               CETAK BERKAS AJUAN
             </Button>
           </div>

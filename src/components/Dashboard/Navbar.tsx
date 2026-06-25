@@ -24,6 +24,18 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
   } else if (pathname.includes('/produk')) {
     title = 'Produk Layanan';
     subtitle = 'Produk hasil dari pengajuan';
+  } else if (pathname.includes('/peringkat-operator')) {
+    title = 'Peringkat Operator';
+    subtitle = 'Peringkat kinerja operator berdasarkan jumlah penyelesaian dokumen';
+  } else if (pathname.includes('/distribusi-wilayah')) {
+    title = 'Distribusi Wilayah';
+    subtitle = 'Distribusi jumlah pengajuan berdasarkan kecamatan';
+  } else if (pathname.includes('/sla-monitoring')) {
+    title = 'SLA Monitoring';
+    subtitle = 'Monitoring kepatuhan waktu pelayanan (SLA) per jenis layanan';
+  } else if (pathname.includes('/ulasan')) {
+    title = 'Ulasan Layanan';
+    subtitle = 'Daftar ulasan dan kepuasan masyarakat terhadap layanan';
   } else if (pathname.includes('/dashboard') || pathname === '/admin') {
     title = 'Dashboard';
     subtitle = 'Ringkasan data ajuan dan kinerja layanan';

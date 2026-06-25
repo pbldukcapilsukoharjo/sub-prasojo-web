@@ -87,7 +87,9 @@ body {
     justify-content: center;
     transition: all 0.2s ease;
     cursor: pointer;
-    border-radius: var(--radius-standard); /* 20px */
+    border-radius: 30px; /* Semua button rounded-[30px] */
+    border: 2px solid transparent; /* Base border agar inline dengan button lainnya */
+    box-sizing: border-box;
   }
 
   /* Primary Button */
@@ -96,7 +98,6 @@ body {
     background-color: var(--color-primary);
     color: #ffffff;
     padding: 12px 24px;
-    border: none;
   }
   .btn-primary:hover { background-color: var(--color-primary-hover); }
   .btn-primary:active { background-color: var(--color-primary-active); }
@@ -107,8 +108,7 @@ body {
     background-color: var(--surface-secondary);
     color: var(--text-secondary);
     padding: 12px 24px;
-    border: 2px solid var(--outline-stroke);
-    box-sizing: border-box; /* Memastikan border tetap di dalam (inside) */
+    border-color: var(--outline-stroke);
   }
   .btn-secondary:hover { background-color: var(--button-outline-hover); }
   .btn-secondary:active { background-color: var(--button-outline-active); }

@@ -3,12 +3,15 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/Forms/Input';
-import Select from '@/components/Forms/Select';
+import CustomSelect from '@/components/Forms/CustomSelect';
+import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import Button from '@/components/Common/Button';
+import FilterCard from '@/components/Common/FilterCard';
 import Tabs from '@/components/Common/Tabs';
 import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
+import DetailModal from '@/components/Common/DetailModal';
 import dummyDB from '../../../../dummy-data/database-dummy.json';
 import ajuanData from '../../../../dummy-data/ajuan.json';
 import produkData from '../../../../dummy-data/produk.json';
@@ -17,6 +20,33 @@ export default function Produk() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('semua');
   const [currentPage, setCurrentPage] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState<any>(null);
+
+  const [search, setSearch] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [kecamatan, setKecamatan] = useState('all');
+  const [periode, setPeriode] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+  const [namaIdentitas, setNamaIdentitas] = useState('all');
+
+  const isRentangTanggalDisabled = !!periode;
+  const isPeriodeDisabled = !!startDate || !!endDate;
+
+  const handleReset = () => {
+    setSearch('');
+    setStartDate('');
+    setEndDate('');
+    setKecamatan('all');
+    setPeriode('');
+    setSortBy('newest');
+    setNamaIdentitas('all');
+  };
+
+  const handleFilter = () => {
+    console.log({ search, startDate, endDate, kecamatan, periode, sortBy, namaIdentitas });
+  };
 
   const tabs = [
     { id: 'semua', label: 'SEMUA' },
@@ -103,43 +133,86 @@ export default function Produk() {
     };
   });
 
+  const handleRowClick = (row: any) => {
+    const timeline = [
+      { label: 'Ajuan Dibuat', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'gray' },
+      { label: 'Produk Dicetak', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'blue' },
+      { label: 'Selesai', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'green' },
+    ];
+
+    setSelectedData({
+      noRegis: row.noRegis,
+      namaLengkap: row.namaIdentitas,
+      nik: '33140202020202',
+      jenisLayanan: row.kodeAjuan.replace('-NEW', ''),
+      kecamatan: row.kecamatan,
+      timeline,
+    });
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="flex flex-col gap-6">
       {/* Filter Card */}
-      <div className="card shadow-sm border border-gray-100 flex flex-col gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-          <Input 
-            label="Pencarian Cepat" 
-            placeholder="No. Reg/No KK/Nama" 
-            icon="ri-search-line" 
-          />
-          <Input 
-            type="date"
-            label="Rentang Tanggal" 
-          />
-          <Select 
-            label="Kecamatan" 
-            options={[{ label: 'Seluruh Kecamatan', value: 'all' }]} 
-          />
-          <Select 
-            label="Periode" 
-            options={[{ label: 'Bulan Ini', value: 'this_month' }]} 
-          />
-          <Select 
-            label="Urutkan Dari" 
-            options={[{ label: 'Terbaru', value: 'newest' }]} 
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-          <Select 
-            label="Nama Identitas Produk" 
-            options={[{ label: 'Semua Nama', value: 'all' }]} 
-          />
-          <Button variant="primary" className="h-[44px] w-[180px]">
-            TERAPKAN FILTER
-          </Button>
-        </div>
-      </div>
+      <FilterCard onReset={handleReset} onApply={handleFilter}>
+        <Input
+          label="Pencarian Cepat"
+          placeholder="No. Reg/No KK/Nama"
+          icon="ri-search-line"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <CustomDateRangePicker
+          label="Rentang Tanggal"
+          startDate={startDate}
+          endDate={endDate}
+          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+          disabled={isRentangTanggalDisabled}
+          placeholder="Pilih Rentang Tanggal"
+        />
+        <CustomSelect
+          label="Kecamatan"
+          value={kecamatan}
+          onChange={(val) => setKecamatan(String(val))}
+          options={[
+            { label: 'Seluruh Kecamatan', value: 'all' },
+            { label: 'Laweyan', value: 'laweyan' },
+            { label: 'Banjarsari', value: 'banjarsari' },
+            { label: 'Serengan', value: 'serengan' },
+          ]}
+        />
+        <CustomSelect
+          label="Periode"
+          value={periode}
+          onChange={(val) => setPeriode(String(val))}
+          disabled={isPeriodeDisabled}
+          placeholder="Pilih Periode"
+          options={[
+            { label: 'Bulan Ini', value: 'this_month' },
+            { label: 'Bulan Lalu', value: 'last_month' },
+            { label: 'Tahun Ini', value: 'this_year' },
+          ]}
+        />
+        <CustomSelect
+          label="Urutkan Dari"
+          value={sortBy}
+          onChange={(val) => setSortBy(String(val))}
+          options={[
+            { label: 'Terbaru', value: 'newest' },
+            { label: 'Terlama', value: 'oldest' },
+          ]}
+        />
+        <CustomSelect
+          label="Nama Identitas Produk"
+          value={namaIdentitas}
+          onChange={(val) => setNamaIdentitas(String(val))}
+          options={[
+            { label: 'Semua Nama', value: 'all' },
+            { label: 'Bayi A', value: 'bayi_a' },
+            { label: 'Jenazah B', value: 'jenazah_b' },
+          ]}
+        />
+      </FilterCard>
 
       {/* Table Card */}
       <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden">
@@ -158,7 +231,7 @@ export default function Produk() {
           <Table 
             columns={tableColumns} 
             data={mappedData} 
-            onRowClick={(row) => router.push(`/admin/produk/${row.id}`)}
+            onRowClick={handleRowClick}
           />
         </div>
 
@@ -172,6 +245,12 @@ export default function Produk() {
           />
         </div>
       </div>
+
+      <DetailModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={selectedData}
+      />
     </div>
   );
 }

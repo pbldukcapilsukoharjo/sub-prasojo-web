@@ -2,16 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import Input from '@/components/Forms/Input';
-import Select from '@/components/Forms/Select';
-import Button from '@/components/Common/Button';
+import DashboardFilter from '@/components/Dashboard/DashboardFilter';
 import Link from 'next/link';
 
 // Dynamically import ApexCharts to avoid SSR issues
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 export default function Dashboard() {
-  const [filterStatus, setFilterStatus] = useState('all');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -83,44 +80,7 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col gap-6">
       {/* Filter Card */}
-      <div className="card shadow-sm border border-gray-100 flex flex-col gap-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-          <Select 
-            label="Jenis Layanan" 
-            options={[
-              { label: 'Semua Jenis Layanan', value: 'all' },
-              { label: 'Kartu Keluarga', value: 'kk' },
-              { label: 'KTP-el', value: 'ktp' },
-              { label: 'KIA', value: 'kia' },
-              { label: 'Akta Kelahiran', value: 'akta_kelahiran' },
-              { label: 'Akta Kematian', value: 'akta_kematian' },
-              { label: 'Perpindahan', value: 'perpindahan' },
-              { label: 'Surket KTP', value: 'surket' },
-            ]} 
-          />
-          <Select 
-            label="Kecamatan" 
-            options={[{ label: 'Seluruh Kecamatan', value: 'all' }]} 
-          />
-          <Select 
-            label="Periode" 
-            options={[{ label: 'Bulan Ini', value: 'this_month' }]} 
-          />
-          <Select 
-            label="Urutkan Dari" 
-            options={[{ label: 'Terbaru', value: 'newest' }]} 
-          />
-          <Button variant="primary" className="h-[44px] w-[180px] lg:w-full">
-            TERAPKAN FILTER
-          </Button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-          <Input 
-            type="date"
-            label="Rentang Tanggal" 
-          />
-        </div>
-      </div>
+      <DashboardFilter />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

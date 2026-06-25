@@ -86,7 +86,7 @@ export default function DetailAjuan() {
                 <Button variant="primary" className="px-6 md:px-8 w-full sm:w-auto text-xs md:text-sm">
                   VERIFIKASI
                 </Button>
-                <Button variant="secondary" className="px-6 md:px-8 text-gray-600 rounded-[20px] font-bold w-full sm:w-auto text-xs md:text-sm">
+                <Button variant="secondary" className="px-6 md:px-8 text-gray-600 rounded-[30px] font-bold w-full sm:w-auto text-xs md:text-sm">
                   TOLAK AJUAN
                 </Button>
               </>
@@ -103,7 +103,7 @@ export default function DetailAjuan() {
                 <Button variant="primary" className="px-6 md:px-8 w-full sm:w-auto text-xs md:text-sm">
                   DISETUJUI
                 </Button>
-                <Button variant="secondary" className="px-6 md:px-8 text-gray-600 rounded-[20px] font-bold w-full sm:w-auto text-xs md:text-sm">
+                <Button variant="secondary" className="px-6 md:px-8 text-gray-600 rounded-[30px] font-bold w-full sm:w-auto text-xs md:text-sm">
                   DITOLAK
                 </Button>
               </>
