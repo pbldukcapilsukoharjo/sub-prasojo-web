@@ -57,7 +57,7 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="p-3 border-t border-white/20">
+      <div className="p-3 border-t border-white/20 flex flex-col justify-start">
         <button className="flex items-center gap-2.5 px-3 py-2.5 w-full text-left font-semibold text-xs hover:bg-white/10 rounded-[12px] transition-colors">
           <i className="ri-paint-brush-line text-base font-normal"></i>
           SETTING TEMA

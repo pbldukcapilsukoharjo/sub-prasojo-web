@@ -5,6 +5,7 @@ import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import Button from '@/components/Common/Button';
+import FilterCard from '@/components/Common/FilterCard';
 
 export default function WaktuRataRataPage() {
   const [search, setSearch] = useState('');
@@ -71,78 +72,43 @@ export default function WaktuRataRataPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* 1. Filters (Top) */}
-      <div className="card shadow-sm border border-gray-100 p-6">
-        <div className="flex flex-col lg:flex-row gap-6 items-stretch">
-          
-          {/* Left Side: Inputs */}
-          <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
-            <Input 
-              label="Pencarian Cepat" 
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            
-            <CustomSelect 
-              label="Periode" 
-              value={periode}
-              onChange={(val) => setPeriode(String(val))}
-              disabled={isPeriodeDisabled}
-              placeholder="Pilih Periode"
-              options={[
-                { label: 'Bulan Ini', value: 'this_month' },
-                { label: 'Bulan Lalu', value: 'last_month' },
-                { label: 'Tahun Ini', value: 'this_year' },
-              ]} 
-            />
-
-            <CustomDateRangePicker
-              label="Rentang Tanggal"
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(start, end) => {
-                setStartDate(start);
-                setEndDate(end);
-              }}
-              disabled={isRentangTanggalDisabled}
-              placeholder="Pilih Rentang Tanggal"
-            />
-
-            <CustomSelect 
-              label="Urutkan Dari" 
-              value={sortBy}
-              onChange={(val) => setSortBy(String(val))}
-              options={[
-                { label: 'Terbaru', value: 'newest' },
-                { label: 'Terlama', value: 'oldest' },
-              ]} 
-            />
-          </div>
-
-          {/* Divider line */}
-          <div className="hidden lg:block w-[1px] bg-gray-200 self-stretch my-1"></div>
-          <div className="block lg:hidden h-[1px] bg-gray-200 w-full my-2"></div>
-
-          {/* Right Side: Buttons */}
-          <div className="flex flex-col justify-end gap-2.5 min-w-[180px] lg:pl-2">
-            <Button 
-              variant="secondary" 
-              onClick={handleReset} 
-              className="w-full h-[44px] uppercase tracking-wider font-bold text-xs"
-            >
-              RESET FILTER
-            </Button>
-            <Button 
-              variant="primary" 
-              onClick={handleFilter} 
-              className="w-full h-[44px] uppercase tracking-wider font-bold text-xs"
-            >
-              TERAPKAN FILTER
-            </Button>
-          </div>
-
-        </div>
-      </div>
+      <FilterCard onReset={handleReset} onApply={handleFilter}>
+        <Input
+          label="Pencarian Cepat"
+          placeholder="Search..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <CustomSelect
+          label="Periode"
+          value={periode}
+          onChange={(val) => setPeriode(String(val))}
+          disabled={isPeriodeDisabled}
+          placeholder="Pilih Periode"
+          options={[
+            { label: 'Bulan Ini', value: 'this_month' },
+            { label: 'Bulan Lalu', value: 'last_month' },
+            { label: 'Tahun Ini', value: 'this_year' },
+          ]}
+        />
+        <CustomDateRangePicker
+          label="Rentang Tanggal"
+          startDate={startDate}
+          endDate={endDate}
+          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+          disabled={isRentangTanggalDisabled}
+          placeholder="Pilih Rentang Tanggal"
+        />
+        <CustomSelect
+          label="Urutkan Dari"
+          value={sortBy}
+          onChange={(val) => setSortBy(String(val))}
+          options={[
+            { label: 'Terbaru', value: 'newest' },
+            { label: 'Terlama', value: 'oldest' },
+          ]}
+        />
+      </FilterCard>
 
       {/* 2. Metric Cards (Middle) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

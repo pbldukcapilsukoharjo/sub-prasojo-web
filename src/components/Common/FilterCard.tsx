@@ -20,7 +20,7 @@ export default function FilterCard({ children, onReset, onApply }: FilterCardPro
       <div className="flex flex-col lg:flex-row gap-6 items-stretch">
 
         {/* Left Side: Inputs (grid layout handled by the parent via children) */}
-        <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
+        <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-start">
           {children}
         </div>
 
