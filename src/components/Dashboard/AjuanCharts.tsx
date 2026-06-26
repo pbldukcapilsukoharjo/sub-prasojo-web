@@ -170,9 +170,9 @@ export default function AjuanCharts() {
       },
     },
     grid: {
-      borderColor: '#F3F4F6',
+      borderColor: '#E5E7EB',
       strokeDashArray: 4,
-      padding: { left: 16, right: 16, top: 0, bottom: 0 },
+      padding: { left: 16, right: 16, top: 0, bottom: 28 },
     },
     colors: ['#800000'],
     fill: {
