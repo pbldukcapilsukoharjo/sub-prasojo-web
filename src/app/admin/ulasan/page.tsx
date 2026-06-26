@@ -162,7 +162,7 @@ export default function DetailUlasanPage() {
 
         {/* Right: Reviews List */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          <div className="flex justify-end">
+          <div className="flex justify-end hidden">
              <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9">
               <i className="ri-upload-2-line"></i>
               EKSPOR EXCEL

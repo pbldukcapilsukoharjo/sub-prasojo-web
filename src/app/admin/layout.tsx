@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Sidebar from '@/components/Dashboard/Sidebar';
 import Navbar from '@/components/Dashboard/Navbar';
 import MainScroll from '@/components/Dashboard/MainScroll';
+import LogoutModal from '@/components/Common/LogoutModal';
 
 export default function AdminLayout({
   children,
@@ -11,6 +12,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background relative">
@@ -23,16 +25,27 @@ export default function AdminLayout({
       )}
       
       {/* Sidebar container */}
-      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <Sidebar onClose={() => setIsSidebarOpen(false)} />
+      <div className={`fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0 lg:z-10 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <Sidebar onClose={() => setIsSidebarOpen(false)} onLogout={() => setIsLogoutModalOpen(true)} />
       </div>
 
-      <div className="flex flex-1 flex-col min-w-0 w-full h-screen overflow-hidden">
+      {/* Main content wrapper */}
+      <div className="flex flex-1 flex-col min-w-0 w-full h-screen overflow-hidden lg:relative lg:z-20">
         <Navbar onMenuClick={() => setIsSidebarOpen(true)} />
         <MainScroll>
           {children}
         </MainScroll>
       </div>
+
+      {/* Global Floating Logout Modal */}
+      <LogoutModal 
+        isOpen={isLogoutModalOpen} 
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={() => {
+          setIsLogoutModalOpen(false);
+          window.location.href = '/login';
+        }}
+      />
     </div>
   );
 }

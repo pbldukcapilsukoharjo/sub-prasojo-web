@@ -3,12 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import LogoutModal from '@/components/Common/LogoutModal';
 
-export default function Sidebar({ onClose }: { onClose?: () => void }) {
+export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; onLogout?: () => void }) {
   const pathname = usePathname();
-
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const menuItems = [
     { name: 'DASHBOARD', path: '/admin/dashboard', icon: 'ri-dashboard-line' },
@@ -68,22 +65,13 @@ export default function Sidebar({ onClose }: { onClose?: () => void }) {
             <p className="text-[10px] font-bold tracking-wider text-white">ADMIN PRASOJO SYSTEM</p>
          </div>
          <button 
-          onClick={() => setIsLogoutModalOpen(true)}
+          onClick={onLogout}
           className="flex items-center gap-2.5 px-3 py-2 w-full text-left font-medium text-xs hover:bg-white/10 rounded-[12px] transition-colors"
          >
           <i className="ri-logout-box-r-line text-base font-normal"></i>
           Logout
         </button>
       </div>
-
-      <LogoutModal 
-        isOpen={isLogoutModalOpen} 
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={() => {
-          setIsLogoutModalOpen(false);
-          window.location.href = '/login';
-        }}
-      />
     </aside>
   );
 }

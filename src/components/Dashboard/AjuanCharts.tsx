@@ -68,7 +68,19 @@ export default function AjuanCharts() {
       },
     },
     dataLabels: {
-      enabled: false,
+      enabled: true,
+      style: {
+        fontSize: '11px',
+        fontFamily: 'Inter, sans-serif',
+        fontWeight: 'bold',
+        colors: ['#ffffff'],
+      },
+      dropShadow: {
+        enabled: false,
+      },
+      formatter: function (val: number) {
+        return Math.round(val) + "%";
+      },
     },
     legend: {
       show: true,
@@ -132,8 +144,11 @@ export default function AjuanCharts() {
         'Surket KTP',
       ],
       labels: {
+        rotate: -35,
+        rotateAlways: true,
+        hideOverlappingLabels: false,
         style: {
-          fontSize: '10px',
+          fontSize: '9px',
           fontFamily: 'Inter, sans-serif',
           fontWeight: 500,
           colors: '#9CA3AF',
@@ -226,10 +241,10 @@ export default function AjuanCharts() {
         {/* Chart Area */}
         <div className="p-6 flex-1 flex flex-col justify-between min-h-[300px]">
           <div className="w-full">
-            <Chart options={barOptions} series={barSeries} type="bar" width="100%" height={260} />
+            <Chart options={barOptions} series={barSeries} type="bar" width="100%" height={300} />
           </div>
           {/* Custom Indicator */}
-          <div className="flex items-center justify-center gap-4 border-t border-gray-50 pt-4 mt-auto">
+          <div className="flex items-center justify-center gap-4 border-t border-gray-50 mt-auto">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-primary flex-shrink-0"></span>
               <span className="text-[11px] font-semibold text-gray-500">Volume Pengajuan (Juni)</span>
