@@ -196,7 +196,7 @@ export default function AjuanCharts() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Pie Chart Card */}
       <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden bg-white">
         {/* Header */}
