@@ -3,10 +3,53 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { useAuth } from "@/providers/auth-provider";
+import { authService, LoginPayload } from "@/services/auth.service";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const { login } = useAuth();
+  
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
+
+  const onSubmit = async (data: LoginPayload) => {
+    setIsSubmitting(true);
+    try {
+      const response = await authService.login(data);
+
+      // Berhasil: status true dan access_token ada
+      if (response.status === true && response.data?.access_token) {
+        console.log("Login Success:", response);
+        login(response.data.access_token);
+        toast.success(response.message || "Login berhasil");
+        router.push("/admin");
+      } else {
+        // Backend merespons 200 tapi status false
+        console.log("Login Soft-Fail:", response);
+        toast.error(response.message || "Email atau password salah");
+      }
+    } catch (error: any) {
+      // HTTP error (4xx, 5xx)
+      const errData = error.response?.data;
+      console.error("Login HTTP Error:", errData || error.message);
+
+      if (errData?.message) {
+        toast.error(errData.message);
+      } else if (error.message === "Network Error") {
+        toast.error("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+      } else {
+        toast.error("Terjadi kesalahan saat login. Coba lagi.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <main className="min-h-screen flex flex-col lg:flex-row">
@@ -91,23 +134,24 @@ export default function LoginPage() {
               Masuk ke Akun Anda
             </h2>
             <p className="mt-1.5 text-[13px] text-gray-500 font-medium">
-              Gunakan NIK dan kata sandi yang terdaftar
+              Gunakan Email dan kata sandi yang terdaftar
             </p>
           </div>
 
-          <form className="flex flex-col gap-5">
-            {/* NIK */}
+          <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+            {/* Email */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-bold text-gray-500 tracking-[0.12em] uppercase">
-                NIK (Nomor Induk Kependudukan)
+                Email
               </label>
               <input
-                id="login-nik"
-                type="text"
-                placeholder="Masukkan 16 digit NIK"
-                maxLength={16}
+                id="login-email"
+                type="email"
+                {...register("email", { required: "Email wajib diisi" })}
+                placeholder="Masukkan alamat email"
                 className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 px-4 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-gray-400"
               />
+              {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
             </div>
 
             {/* Kata Sandi */}
@@ -119,6 +163,7 @@ export default function LoginPage() {
                 <input
                   id="login-password"
                   type={showPassword ? "text" : "password"}
+                  {...register("password", { required: "Kata sandi wajib diisi" })}
                   placeholder="Masukkan kata sandi"
                   className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 pl-4 pr-11 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-gray-400"
                 />
@@ -131,6 +176,7 @@ export default function LoginPage() {
                   <i className={showPassword ? "ri-eye-off-line text-[17px]" : "ri-eye-line text-[17px]"} />
                 </button>
               </div>
+              {errors.password && <span className="text-red-500 text-xs mt-1">{errors.password.message}</span>}
             </div>
 
             {/* Remember Me + Lupa Kata Sandi */}
@@ -157,9 +203,10 @@ export default function LoginPage() {
             <button
               id="login-submit"
               type="submit"
-              className="w-full h-11 rounded-xl font-bold text-[13px] tracking-[0.08em] text-white bg-[#8B0000] hover:bg-[#700000] active:bg-[#5a0000] active:scale-[0.99] transition-all duration-200 shadow-sm mt-1 cursor-pointer"
+              disabled={isSubmitting}
+              className="w-full h-11 rounded-xl font-bold text-[13px] tracking-[0.08em] text-white bg-[#8B0000] hover:bg-[#700000] active:bg-[#5a0000] active:scale-[0.99] transition-all duration-200 shadow-sm mt-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              MASUK KE SISTEM
+              {isSubmitting ? "MEMPROSES..." : "MASUK KE SISTEM"}
             </button>
 
             {/* Divider */}

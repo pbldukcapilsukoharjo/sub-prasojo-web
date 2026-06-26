@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "remixicon/fonts/remixicon.css";
 import { ThemeLangProvider } from "@/providers/theme-lang-provider";
+import { AuthProvider } from "@/providers/auth-provider";
+import { QueryProvider } from "@/providers/query-provider";
 
 export const metadata: Metadata = {
   title: "PRASOJO - Sistem Monitoring Disdukcapil Sukoharjo",
@@ -12,6 +14,8 @@ export const metadata: Metadata = {
     apple: "/dukcapil-skh.png",
   },
 };
+
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({
   children,
@@ -41,7 +45,12 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeLangScript }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <ThemeLangProvider>{children}</ThemeLangProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <ThemeLangProvider>{children}</ThemeLangProvider>
+          </AuthProvider>
+        </QueryProvider>
+        <Toaster position="top-right" />
       </body>
     </html>
   );
