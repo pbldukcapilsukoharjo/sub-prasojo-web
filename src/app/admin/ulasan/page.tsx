@@ -6,6 +6,7 @@ import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import Button from '@/components/Common/Button';
 import FilterCard from '@/components/Common/FilterCard';
+import DetailUlasanModal from '@/components/Common/DetailUlasanModal';
 
 export default function DetailUlasanPage() {
   const [search, setSearch] = useState('');
@@ -15,6 +16,8 @@ export default function DetailUlasanPage() {
   const [periode, setPeriode] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [selectedReview, setSelectedReview] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
@@ -37,18 +40,22 @@ export default function DetailUlasanPage() {
     {
       id: 1,
       name: 'Anonim',
-      date: '12 Okt 2023, 09:45 WIB',
+      date: '12 Okt 2023, 09.45 WIB',
       content: 'Pelayanan sangat cepat dan membantu. Petugas ramah dalam menjelaskan alur permohonan. Sangat puas dengan kecepatan prosesnya.',
       rating: 5,
       type: 'TAMAT',
+      jenisLayanan: 'Umum',
+      kecamatan: '-',
     },
     {
       id: 2,
       name: 'Anonim',
-      date: '11 Okt 2023, 14:20 WIB',
+      date: '11 Okt 2023, 14.20 WIB',
       content: 'Proses akta kelahiran cukup mudah diakses lewat web. Hanya saja notifikasi email agak terlambat masuk.',
       rating: 4,
       type: 'AKTA',
+      jenisLayanan: 'Akta Kelahiran',
+      kecamatan: 'Sukoharjo',
     },
     {
       id: 3,
@@ -57,6 +64,8 @@ export default function DetailUlasanPage() {
       content: 'Puas sekali. KTP langsung jadi dalam sehari setelah verifikasi. Mantap PRASOJO!',
       rating: 5,
       type: 'KTP-EL',
+      jenisLayanan: 'KTP-el',
+      kecamatan: 'Kartasura',
     },
   ];
 
@@ -198,7 +207,15 @@ export default function DetailUlasanPage() {
                   {review.content}
                 </p>
                 <div className="flex justify-end items-center gap-4 border-t border-gray-50 pt-4 mt-2">
-                  <button className="text-xs font-bold text-primary hover:underline cursor-pointer">Lihat Detail</button>
+                  <button 
+                    onClick={() => {
+                      setSelectedReview(review);
+                      setIsModalOpen(true);
+                    }}
+                    className="text-xs font-bold text-primary hover:underline cursor-pointer"
+                  >
+                    Lihat Detail
+                  </button>
                   <button className="text-xs font-semibold text-gray-500 hover:text-gray-700 cursor-pointer">Laporkan</button>
                 </div>
               </div>
@@ -223,6 +240,12 @@ export default function DetailUlasanPage() {
 
         </div>
       </div>
+      
+      <DetailUlasanModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        review={selectedReview}
+      />
     </div>
   );
 }

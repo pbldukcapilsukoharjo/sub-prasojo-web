@@ -141,26 +141,15 @@ export default function Ajuan() {
   });
 
   const handleRowClick = (row: any) => {
-    const timeline = [
-      { label: 'Ajuan Dibuat', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'gray' },
-    ];
-    if (row.status !== 'BELUM DIVERIFIKASI') {
-      timeline.push({ label: 'Diverifikasi', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'blue' });
-    }
-    if (row.status === 'DISETUJUI' || row.status === 'SELESAI') {
-      timeline.push({ label: 'Disetujui', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'green' });
-    }
-    if (row.status === 'DIPROSES' || row.status === 'DISETUJUI' || row.status === 'SELESAI') {
-      timeline.push({ label: 'Diproses', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'gray' });
-    }
-
     setSelectedData({
       noRegis: row.noRegis,
       namaLengkap: row.pelapor,
       nik: '33140202020202',
       jenisLayanan: row.kodeAjuan.replace('-NEW', ''),
       kecamatan: row.kecamatan,
-      timeline,
+      status: row.status,
+      tanggal: row.tanggal,
+      waktu: row.waktu,
     });
     setIsModalOpen(true);
   };

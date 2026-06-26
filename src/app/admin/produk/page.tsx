@@ -134,19 +134,15 @@ export default function Produk() {
   });
 
   const handleRowClick = (row: any) => {
-    const timeline = [
-      { label: 'Ajuan Dibuat', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'gray' },
-      { label: 'Produk Dicetak', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'blue' },
-      { label: 'Selesai', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'green' },
-    ];
-
     setSelectedData({
       noRegis: row.noRegis,
       namaLengkap: row.namaIdentitas,
       nik: '33140202020202',
       jenisLayanan: row.kodeAjuan.replace('-NEW', ''),
       kecamatan: row.kecamatan,
-      timeline,
+      status: 'SIAP DIDOWNLOAD',
+      tanggal: row.tanggal,
+      waktu: row.waktu,
     });
     setIsModalOpen(true);
   };

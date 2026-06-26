@@ -13,6 +13,7 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
 import dummyDB from '../../../../dummy-data/database-dummy.json';
+import ajuanData from '../../../../dummy-data/ajuan.json';
 
 export default function LembarKerja() {
   const router = useRouter();
@@ -86,14 +87,13 @@ export default function LembarKerja() {
     },
   ];
 
-  const mappedData = dummyDB.ajuan
-    .filter((ajuan) => ajuan.ajuan_status === 'PENGAJUAN' || ajuan.ajuan_status === 'DIPROSES')
+  const mappedData = ajuanData.ajuan
+    .filter((ajuan) => ajuan.ajuan_status === 'BELUM DIVERIFIKASI')
     .map((ajuan, index) => {
     const pelapor = dummyDB.user.find((u) => u.id === ajuan.ajuan_pelapor_id);
     const dateObj = new Date(ajuan.ajuan_create_datetime);
-    const tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    const tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
     const waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-    const status = ajuan.ajuan_status === 'PENGAJUAN' || ajuan.ajuan_status === 'DIPROSES' ? 'BELUM DIVERIFIKASI' : ajuan.ajuan_status;
 
     return {
       id: ajuan.ajuan_id,
@@ -106,22 +106,20 @@ export default function LembarKerja() {
       kecamatan: ajuan.ajuan_kecamatan_name,
       tanggal,
       waktu,
-      status
+      status: 'BELUM DIVERIFIKASI'
     };
   });
 
   const handleRowClick = (row: any) => {
-    const timeline = [
-      { label: 'Ajuan Dibuat', date: row.tanggal, time: row.waktu.replace(' WIB', ''), status: 'completed', colorClass: 'gray' },
-    ];
-
     setSelectedData({
       noRegis: row.noRegis,
       namaLengkap: row.pelapor,
       nik: '33140202020202',
       jenisLayanan: row.kodeAjuan.replace('-NEW', ''),
       kecamatan: row.kecamatan,
-      timeline,
+      status: row.status,
+      tanggal: row.tanggal,
+      waktu: row.waktu,
     });
     setIsModalOpen(true);
   };
