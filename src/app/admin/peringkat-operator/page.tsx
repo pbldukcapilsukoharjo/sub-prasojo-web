@@ -210,6 +210,14 @@ export default function PeringkatOperatorPage() {
                 { label: 'Tahun Ini', value: 'this_year' },
               ]}
             />
+            <CustomDateRangePicker
+              label="Rentang Tanggal"
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+              disabled={isRentangTanggalDisabled}
+              placeholder="Pilih Rentang Tanggal"
+            />
             <CustomSelect
               label="Urutkan Dari"
               value={sortBy}
@@ -218,14 +226,6 @@ export default function PeringkatOperatorPage() {
                 { label: 'Terbaru', value: 'newest' },
                 { label: 'Terlama', value: 'oldest' },
               ]}
-            />
-            <CustomDateRangePicker
-              label="Rentang Tanggal"
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
-              disabled={isRentangTanggalDisabled}
-              placeholder="Pilih Rentang Tanggal"
             />
             <CustomSelect
               label="Operator"

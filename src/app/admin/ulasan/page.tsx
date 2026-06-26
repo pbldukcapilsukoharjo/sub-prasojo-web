@@ -80,6 +80,26 @@ export default function DetailUlasanPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <CustomSelect
+          label="Periode"
+          value={periode}
+          onChange={(val) => setPeriode(String(val))}
+          disabled={isPeriodeDisabled}
+          placeholder="Pilih Periode"
+          options={[
+            { label: 'Bulan Ini', value: 'this_month' },
+            { label: 'Bulan Lalu', value: 'last_month' },
+            { label: 'Tahun Ini', value: 'this_year' },
+          ]}
+        />
+        <CustomDateRangePicker
+          label="Rentang Tanggal"
+          startDate={startDate}
+          endDate={endDate}
+          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+          disabled={isRentangTanggalDisabled}
+          placeholder="Pilih Rentang Tanggal"
+        />
+        <CustomSelect
           label="Rating"
           value={rating}
           onChange={(val) => setRating(String(val))}
@@ -104,26 +124,6 @@ export default function DetailUlasanPage() {
             { label: 'Akta Kelahiran', value: 'akta_kelahiran' },
             { label: 'Akta Kematian', value: 'akta_kematian' },
           ]}
-        />
-        <CustomSelect
-          label="Periode"
-          value={periode}
-          onChange={(val) => setPeriode(String(val))}
-          disabled={isPeriodeDisabled}
-          placeholder="Pilih Periode"
-          options={[
-            { label: 'Bulan Ini', value: 'this_month' },
-            { label: 'Bulan Lalu', value: 'last_month' },
-            { label: 'Tahun Ini', value: 'this_year' },
-          ]}
-        />
-        <CustomDateRangePicker
-          label="Rentang Tanggal"
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
-          disabled={isRentangTanggalDisabled}
-          placeholder="Pilih Rentang Tanggal"
         />
         <CustomSelect
           label="Urutkan Dari"

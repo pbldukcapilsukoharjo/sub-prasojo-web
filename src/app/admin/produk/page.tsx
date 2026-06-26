@@ -158,14 +158,6 @@ export default function Produk() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <CustomDateRangePicker
-          label="Rentang Tanggal"
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
-          disabled={isRentangTanggalDisabled}
-          placeholder="Pilih Rentang Tanggal"
-        />
         <CustomSelect
           label="Kecamatan"
           value={kecamatan}
@@ -189,6 +181,14 @@ export default function Produk() {
             { label: 'Tahun Ini', value: 'this_year' },
           ]}
         />
+        <CustomDateRangePicker
+          label="Rentang Tanggal"
+          startDate={startDate}
+          endDate={endDate}
+          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+          disabled={isRentangTanggalDisabled}
+          placeholder="Pilih Rentang Tanggal"
+        />
         <CustomSelect
           label="Urutkan Dari"
           value={sortBy}
@@ -196,16 +196,6 @@ export default function Produk() {
           options={[
             { label: 'Terbaru', value: 'newest' },
             { label: 'Terlama', value: 'oldest' },
-          ]}
-        />
-        <CustomSelect
-          label="Nama Identitas Produk"
-          value={namaIdentitas}
-          onChange={(val) => setNamaIdentitas(String(val))}
-          options={[
-            { label: 'Semua Nama', value: 'all' },
-            { label: 'Bayi A', value: 'bayi_a' },
-            { label: 'Jenazah B', value: 'jenazah_b' },
           ]}
         />
       </FilterCard>
