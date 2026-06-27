@@ -66,7 +66,7 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Modal overlay with glassmorphism backdrop */}
       <div 
-        className="absolute inset-0 bg-slate-900/45 backdrop-blur-xs transition-opacity"
+        className="absolute inset-0 bg-slate-900/50 transition-opacity"
         onClick={onClose}
       />
       
@@ -84,7 +84,7 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
           </div>
           <button 
             onClick={onClose}
-            className="text-slate-900 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-full p-2 transition-colors self-start cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center text-slate-900 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-full transition-colors self-start cursor-pointer"
           >
             <i className="ri-close-line text-xl font-bold"></i>
           </button>

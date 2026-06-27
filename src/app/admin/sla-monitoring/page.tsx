@@ -6,6 +6,8 @@ import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import Button from '@/components/Common/Button';
 import FilterCard from '@/components/Common/FilterCard';
+import Table from '@/components/Common/Table';
+import StatCard from '@/components/Common/StatCard';
 
 export default function WaktuRataRataPage() {
   const [search, setSearch] = useState('');
@@ -39,6 +41,13 @@ export default function WaktuRataRataPage() {
     { rank: '07', service: 'KEDATANGAN', count: 124, avgTime: '4,5 jam', status: 'ON TIME' },
     { rank: '08', service: 'UPDATE DATA', count: 124, avgTime: '4,5 jam', status: 'ON TIME' },
     { rank: '09', service: 'REKAM JEMPUT BOLA', count: 124, avgTime: '4,5 jam', status: 'ON TIME' },
+  ];
+
+  const columns = [
+    { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-medium text-gray-900">{row.rank}</span> },
+    { key: 'service', header: 'Jenis Layanan', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.service}</span> },
+    { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.count}</span> },
+    { key: 'avgTime', header: 'Rata Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.avgTime}</span> }
   ];
 
 
@@ -85,35 +94,43 @@ export default function WaktuRataRataPage() {
 
       {/* 2. Metric Cards (Middle) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">RATA - RATA WAKTU PROSES</span>
-          <div className="flex items-end gap-2">
-            <span className="text-4xl font-bold font-manrope text-gray-900">8,5</span>
-            <span className="text-sm font-semibold text-gray-500 mb-1">Jam</span>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">PENCAPAIAN SLA</span>
-          <div className="flex items-end gap-2">
-            <span className="text-4xl font-bold font-manrope text-gray-900">92%</span>
-            <span className="text-sm font-semibold text-gray-500 mb-1">(Persen)</span>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">TARGET SLA</span>
-          <div className="flex items-end gap-2 mb-2">
-            <span className="text-4xl font-bold font-manrope text-gray-900">&lt; 6</span>
-            <span className="text-sm font-semibold text-gray-500 mb-1">jam</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold">
-            <i className="ri-time-line"></i>
-            <span>Standar Layanan Nasional</span>
-          </div>
-        </div>
+        <StatCard 
+          title="RATA - RATA WAKTU PROSES"
+          value={
+            <>
+              <span className="text-4xl font-bold font-manrope text-gray-900">8,5</span>
+              <span className="text-sm font-semibold text-gray-500 mb-1">Jam</span>
+            </>
+          }
+        />
+        <StatCard 
+          title="PENCAPAIAN SLA"
+          value={
+            <>
+              <span className="text-4xl font-bold font-manrope text-gray-900">92%</span>
+              <span className="text-sm font-semibold text-gray-500 mb-1">(Persen)</span>
+            </>
+          }
+        />
+        <StatCard 
+          title="TARGET SLA"
+          value={
+            <>
+              <span className="text-4xl font-bold font-manrope text-gray-900">&lt; 6</span>
+              <span className="text-sm font-semibold text-gray-500 mb-1">jam</span>
+            </>
+          }
+          subtitle={
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 font-semibold mt-1">
+              <i className="ri-time-line"></i>
+              <span>Standar Layanan Nasional</span>
+            </div>
+          }
+        />
       </div>
 
       {/* 3. Data Table (Bottom) */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden">
         <div className="p-6 flex justify-between items-center border-b border-gray-100">
           <h3 className="text-base font-bold text-gray-900">Daftar Rincian Per Jenis Layanan</h3>
           <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9">
@@ -121,27 +138,11 @@ export default function WaktuRataRataPage() {
             EKSPOR EXCEL
           </Button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-[10px] text-gray-500 bg-gray-200 border-b border-gray-100 font-bold uppercase">
-              <tr>
-                <th className="px-6 py-4 text-center">Peringkat</th>
-                <th className="px-6 py-4 text-center">Jenis Layanan</th>
-                <th className="px-6 py-4 text-center">Jumlah Ajuan</th>
-                <th className="px-6 py-4 text-center">Rata Rata Waktu</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((row, index) => (
-                <tr key={index} className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                  <td className="px-6 py-4 text-center font-medium text-gray-900">{row.rank}</td>
-                  <td className="px-6 py-4 text-center font-bold text-gray-900 text-xs">{row.service}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.count}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.avgTime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="w-full">
+          <Table 
+            columns={columns} 
+            data={tableData} 
+          />
         </div>
         {/* Pagination mock */}
         <div className="p-6 border-t border-gray-100 flex items-center justify-between">

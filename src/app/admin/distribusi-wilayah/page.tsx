@@ -6,6 +6,8 @@ import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import Button from '@/components/Common/Button';
 import FilterCard from '@/components/Common/FilterCard';
+import Table from '@/components/Common/Table';
+import StatCard from '@/components/Common/StatCard';
 
 export default function DistribusiWilayahPage() {
   const [search, setSearch] = useState('');
@@ -44,6 +46,25 @@ export default function DistribusiWilayahPage() {
     updateData: 44,
     rekamJemputBola: 44,
   });
+
+  const columns = [
+    { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-medium text-gray-900">{(idx + 1).toString().padStart(2, '0')}</span> },
+    { key: 'desaKec', header: 'Desa/Kecamatan', render: (row: any) => (
+      <div className="flex flex-col">
+        <span className="font-bold text-gray-900 text-xs">{row.desa}</span>
+        <span className="text-[10px] font-semibold text-gray-500">{row.kecamatan}</span>
+      </div>
+    ) },
+    { key: 'totalAjuan', header: 'Total Ajuan', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.totalAjuan}</span> },
+    { key: 'ktpel', header: 'KTP-el', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.ktpel}</span> },
+    { key: 'kia', header: 'KIA', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.kia}</span> },
+    { key: 'aktaKelahiran', header: 'Akta Kelahiran', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.aktaKelahiran}</span> },
+    { key: 'aktaKematian', header: 'Akta Kematian', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.aktaKematian}</span> },
+    { key: 'perpindahan', header: 'Perpindahan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.perpindahan}</span> },
+    { key: 'kedatangan', header: 'Kedatangan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.kedatangan}</span> },
+    { key: 'updateData', header: 'Update Data', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.updateData}</span> },
+    { key: 'rekamJemputBola', header: 'Rekam Jemput Bola', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.rekamJemputBola}</span> }
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,31 +120,37 @@ export default function DistribusiWilayahPage() {
 
       {/* 2. Metric Cards (Middle) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">TOTAL KECAMATAN</span>
-          <div className="flex items-end gap-2">
-            <span className="text-4xl font-bold font-manrope text-gray-900">14</span>
-            <span className="text-sm font-semibold text-gray-500 mb-1">Kecamatan</span>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">TOTAL AJUAN DOKUMEN</span>
-          <div className="flex items-end gap-2">
-            <span className="text-4xl font-bold font-manrope text-gray-900">267</span>
-            <span className="text-sm font-semibold text-gray-500 mb-1">Dokumen</span>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-center">
-          <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">RATA-RATA AJUAN</span>
-          <div className="flex items-end gap-2">
-            <span className="text-4xl font-bold font-manrope text-gray-900">200</span>
-            <span className="text-sm font-semibold text-gray-500 mb-1">per Wilayah</span>
-          </div>
-        </div>
+        <StatCard 
+          title="TOTAL KECAMATAN"
+          value={
+            <>
+              <span className="text-4xl font-bold font-manrope text-gray-900">14</span>
+              <span className="text-sm font-semibold text-gray-500 mb-1">Kecamatan</span>
+            </>
+          }
+        />
+        <StatCard 
+          title="TOTAL AJUAN DOKUMEN"
+          value={
+            <>
+              <span className="text-4xl font-bold font-manrope text-gray-900">267</span>
+              <span className="text-sm font-semibold text-gray-500 mb-1">Dokumen</span>
+            </>
+          }
+        />
+        <StatCard 
+          title="RATA-RATA AJUAN"
+          value={
+            <>
+              <span className="text-4xl font-bold font-manrope text-gray-900">200</span>
+              <span className="text-sm font-semibold text-gray-500 mb-1">per Wilayah</span>
+            </>
+          }
+        />
       </div>
 
       {/* 3. Data Table (Bottom) */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden">
         <div className="p-6 flex justify-between items-center border-b border-gray-100">
           <h3 className="text-base font-bold text-gray-900">Daftar Ajuan per Desa/Kecamatan</h3>
           <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9">
@@ -131,46 +158,11 @@ export default function DistribusiWilayahPage() {
             EKSPOR EXCEL
           </Button>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-[10px] text-gray-500 bg-gray-200 border-b border-gray-100 font-bold uppercase">
-              <tr>
-                <th className="px-6 py-4 text-center">No</th>
-                <th className="px-6 py-4">Desa/Kecamatan</th>
-                <th className="px-6 py-4 text-center">Total Ajuan</th>
-                <th className="px-6 py-4 text-center">KTP-el</th>
-                <th className="px-6 py-4 text-center">KIA</th>
-                <th className="px-6 py-4 text-center">Akta Kelahiran</th>
-                <th className="px-6 py-4 text-center">Akta Kematian</th>
-                <th className="px-6 py-4 text-center">Perpindahan</th>
-                <th className="px-6 py-4 text-center">Kedatangan</th>
-                <th className="px-6 py-4 text-center">Update Data</th>
-                <th className="px-6 py-4 text-center">Rekam Jemput Bola</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tableData.map((row, index) => (
-                <tr key={index} className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/30'}`}>
-                  <td className="px-6 py-4 text-center font-medium text-gray-900">{(index + 1).toString().padStart(2, '0')}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <span className="font-bold text-gray-900 text-xs">{row.desa}</span>
-                      <span className="text-[10px] font-semibold text-gray-500">{row.kecamatan}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center font-bold text-gray-900 text-xs">{row.totalAjuan}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.ktpel}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.kia}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.aktaKelahiran}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.aktaKematian}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.perpindahan}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.kedatangan}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.updateData}</td>
-                  <td className="px-6 py-4 text-center text-gray-900 font-medium text-xs">{row.rekamJemputBola}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="w-full">
+          <Table 
+            columns={columns} 
+            data={tableData} 
+          />
         </div>
       </div>
     </div>

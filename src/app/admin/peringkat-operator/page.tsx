@@ -10,6 +10,8 @@ import FilterCard from '@/components/Common/FilterCard';
 import Badge from '@/components/Common/Badge';
 import Tabs from '@/components/Common/Tabs';
 import Pagination from '@/components/Common/Pagination';
+import Table from '@/components/Common/Table';
+import StatCard from '@/components/Common/StatCard';
 
 // Dynamically import ApexCharts to avoid SSR hydration issues
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -59,6 +61,29 @@ export default function PeringkatOperatorPage() {
     { rank: '02', name: 'Eslam Samir', desa: 'Gentan', kecamatan: 'KEC : BAKI', count: 124 },
     { rank: '03', name: 'Mahendra Adi Kusuma', desa: 'Gentan', kecamatan: 'KEC : BAKI', count: 124 },
     { rank: '04', name: 'Tegar Bagus Saputra', desa: 'Gentan', kecamatan: 'KEC : BAKI', count: 124 },
+  ];
+
+  const leaderboardColumns = [
+    { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-400">{row.rank}</span> },
+    { key: 'name', header: 'Nama Operator', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.name}</span> },
+    { key: 'desaKec', header: 'Desa/Kecamatan', render: (row: any) => (
+      <div className="flex flex-col items-center">
+        <span className="font-bold text-gray-900 text-xs">{row.desa}</span>
+        <span className="text-[10px] font-semibold text-gray-500">{row.kecamatan}</span>
+      </div>
+    ) },
+    { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-semibold text-xs">{row.count}</span> },
+    { key: 'aksi', header: 'Aksi', align: 'center' as const, render: (row: any) => (
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedOperator(row);
+        }}
+        className="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors font-bold text-[10px] px-4 py-1.5 rounded-full cursor-pointer"
+      >
+        Detail
+      </button>
+    ) }
   ];
 
   // Mock monthly service data for detail chart
@@ -174,6 +199,29 @@ export default function PeringkatOperatorPage() {
     return true;
   });
 
+  const historyColumns = [
+    { key: 'no', header: 'No', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-400">{row.no}</span> },
+    { key: 'regis', header: 'No.Regis', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.regis}</span> },
+    { key: 'pemohon', header: 'Pemohon', align: 'center' as const, render: (row: any) => <span className="text-gray-800 text-xs font-semibold">{row.pemohon}</span> },
+    { key: 'kode', header: 'Kode Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-500 font-bold text-xs">{row.kode}</span> },
+    { key: 'desaKec', header: 'Desa/Kec', align: 'center' as const, render: (row: any) => <span className="text-gray-600 font-semibold text-xs">{row.desaKec}</span> },
+    { key: 'tanggalWaktu', header: 'Tanggal & Waktu', align: 'center' as const, render: (row: any) => (
+      <div className="flex flex-col items-center">
+        <span className="font-semibold text-gray-800 text-xs">{row.tanggal}</span>
+        <span className="text-[9px] font-bold text-gray-400">{row.waktu}</span>
+      </div>
+    ) },
+    { key: 'status', header: 'Status', align: 'center' as const, render: (row: any) => {
+      let badgeVariant: 'primary' | 'default' | 'success' | 'danger' = 'default';
+      if (row.status === 'DIVERIFIKASI') badgeVariant = 'primary';
+      else if (row.status === 'DIPROSES') badgeVariant = 'default';
+      else if (row.status === 'DISETUJUI') badgeVariant = 'success';
+      else if (row.status === 'DITOLAK') badgeVariant = 'danger';
+
+      return <Badge variant={badgeVariant}>{row.status}</Badge>;
+    } }
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       {!selectedOperator ? (
@@ -243,67 +291,48 @@ export default function PeringkatOperatorPage() {
 
           {/* Metric Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="card shadow-sm border border-gray-100 p-6 flex flex-col justify-center bg-white rounded-xl">
-              <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">TOTAL LAYANAN</span>
-              <div className="flex items-end gap-2">
-                <span className="text-4xl font-bold font-manrope text-gray-900 leading-none">1.234</span>
-              </div>
-            </div>
-            <div className="card shadow-sm border border-gray-100 p-6 flex flex-col justify-center bg-white rounded-xl">
-              <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">RATA-RATA DURASI</span>
-              <div className="flex items-end gap-1.5">
-                <span className="text-4xl font-bold font-manrope text-gray-900 leading-none">14,5</span>
-                <span className="text-xs font-semibold text-gray-500 pb-0.5">menit</span>
-              </div>
-            </div>
-            <div className="card shadow-sm border border-gray-100 p-6 flex flex-col justify-center bg-white rounded-xl">
-              <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase mb-2">TOTAL LAYANAN</span>
-              <div className="flex items-end gap-2">
-                <span className="text-4xl font-bold font-manrope text-gray-900 leading-none">98,2%</span>
-              </div>
-            </div>
+            <StatCard 
+              title="TOTAL LAYANAN"
+              value="1.234"
+              icon="ri-file-list-3-line"
+              iconBg="#fdf2f2"
+              iconColor="text-primary"
+            />
+            <StatCard 
+              title="RATA-RATA DURASI"
+              value={
+                <>
+                  <span className="text-4xl font-bold font-manrope text-gray-900 leading-none">14,5</span>
+                  <span className="text-xs font-semibold text-gray-500 pb-0.5">menit</span>
+                </>
+              }
+              icon="ri-time-line"
+              iconBg="#eff6ff"
+              iconColor="text-blue-500"
+            />
+            <StatCard 
+              title="TINGKAT SELESAI"
+              value="98,2%"
+              icon="ri-checkbox-circle-line"
+              iconBg="#ecfdf5"
+              iconColor="text-emerald-500"
+            />
           </div>
 
           {/* Leaderboard Table Card */}
-          <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden bg-white rounded-xl">
+          <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden">
             <div className="p-6 flex justify-between items-center border-b border-gray-100">
               <h3 className="text-base font-bold text-gray-900">Peringkat Operator Berdasarkan Jumlah Ajuan</h3>
               <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm" className="h-9 px-4 rounded-[30px]">
                 EKSPOR EXCEL
               </Button>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="text-[10px] text-gray-500 bg-gray-100 border-b border-gray-100 font-bold uppercase">
-                  <tr>
-                    <th className="px-6 py-4 text-center w-24">Peringkat</th>
-                    <th className="px-6 py-4 text-center">Nama Operator</th>
-                    <th className="px-6 py-4 text-center">Desa/Kecamatan</th>
-                    <th className="px-6 py-4 text-center">Jumlah Ajuan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rankingsData.map((row, index) => (
-                    <tr
-                      key={index}
-                      onClick={() => setSelectedOperator(row)}
-                      className={`border-b border-gray-50 hover:bg-gray-50/60 transition-colors cursor-pointer ${
-                        index % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'
-                      }`}
-                    >
-                      <td className="px-6 py-4.5 text-center font-bold text-gray-400">{row.rank}</td>
-                      <td className="px-6 py-4.5 text-center font-bold text-gray-900 text-xs">{row.name}</td>
-                      <td className="px-6 py-4.5">
-                        <div className="flex flex-col items-center">
-                          <span className="font-bold text-gray-900 text-xs">{row.desa}</span>
-                          <span className="text-[10px] font-semibold text-gray-500">{row.kecamatan}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4.5 text-center text-gray-900 font-semibold text-xs">{row.count}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="w-full">
+              <Table 
+                columns={leaderboardColumns} 
+                data={rankingsData} 
+                onRowClick={(row) => setSelectedOperator(row)}
+              />
             </div>
             <div className="p-6 border-t border-gray-100">
               <Pagination
@@ -331,7 +360,7 @@ export default function PeringkatOperatorPage() {
           </div>
 
           {/* Main Detail Panel */}
-          <div className="card shadow-sm border border-gray-100 flex flex-col p-6 gap-6 bg-white rounded-xl">
+          <div className="card shadow-sm border border-gray-100 flex flex-col p-6 gap-6">
             {/* Header: Profile Card */}
             <div className="flex items-center justify-between border-b border-gray-100 pb-5">
               <div className="flex items-center gap-4">
@@ -360,18 +389,18 @@ export default function PeringkatOperatorPage() {
 
             {/* Middle: operator metrics cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="border border-gray-100 rounded-xl p-5 flex flex-col justify-center bg-white">
-                <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase mb-1.5">TOTAL AJUAN</span>
-                <span className="text-3xl font-bold font-manrope text-gray-900 leading-none">124</span>
-              </div>
-              <div className="border border-gray-100 rounded-xl p-5 flex flex-col justify-center bg-white">
-                <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase mb-1.5">TOTAL SELESAI</span>
-                <span className="text-3xl font-bold font-manrope text-gray-900 leading-none">98</span>
-              </div>
-              <div className="border border-gray-100 rounded-xl p-5 flex flex-col justify-center bg-white">
-                <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase mb-1.5">TINGKAT SELESAI</span>
-                <span className="text-3xl font-bold font-manrope text-gray-900 leading-none">79%</span>
-              </div>
+              <StatCard 
+                title="TOTAL AJUAN"
+                value="124"
+              />
+              <StatCard 
+                title="TOTAL SELESAI"
+                value="98"
+              />
+              <StatCard 
+                title="TINGKAT SELESAI"
+                value="79%"
+              />
             </div>
 
             {/* Monthly Service Bar Chart */}
@@ -397,61 +426,11 @@ export default function PeringkatOperatorPage() {
               
               <Tabs tabs={detailTabs} activeTab={activeTab} onChange={setActiveTab} className="mb-2" />
 
-              <div className="overflow-x-auto border border-gray-100 rounded-xl">
-                <table className="w-full text-sm text-left">
-                  <thead className="text-[10px] text-gray-500 bg-gray-100 border-b border-gray-100 font-bold uppercase">
-                    <tr>
-                      <th className="px-6 py-4 text-center w-16">No</th>
-                      <th className="px-6 py-4 text-center">No.Regis</th>
-                      <th className="px-6 py-4 text-center">Pemohon</th>
-                      <th className="px-6 py-4 text-center">Kode Ajuan</th>
-                      <th className="px-6 py-4 text-center">Desa/Kec</th>
-                      <th className="px-6 py-4 text-center">Tanggal & Waktu</th>
-                      <th className="px-6 py-4 text-center">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredHistory.length > 0 ? (
-                      filteredHistory.map((row, idx) => {
-                        let badgeVariant: 'primary' | 'default' | 'success' | 'danger' = 'default';
-                        if (row.status === 'DIVERIFIKASI') badgeVariant = 'primary';
-                        else if (row.status === 'DIPROSES') badgeVariant = 'default';
-                        else if (row.status === 'DISETUJUI') badgeVariant = 'success';
-                        else if (row.status === 'DITOLAK') badgeVariant = 'danger';
-
-                        return (
-                          <tr
-                            key={idx}
-                            className={`border-b border-gray-50 hover:bg-gray-50/50 transition-colors ${
-                              idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/20'
-                            }`}
-                          >
-                            <td className="px-6 py-4 text-center font-bold text-gray-400">{row.no}</td>
-                            <td className="px-6 py-4 text-center font-bold text-gray-900 text-xs">{row.regis}</td>
-                            <td className="px-6 py-4 text-center text-gray-800 text-xs font-semibold">{row.pemohon}</td>
-                            <td className="px-6 py-4 text-center text-gray-500 font-bold text-xs">{row.kode}</td>
-                            <td className="px-6 py-4 text-center text-gray-600 font-semibold text-xs">{row.desaKec}</td>
-                            <td className="px-6 py-4">
-                              <div className="flex flex-col items-center">
-                                <span className="font-semibold text-gray-800 text-xs">{row.tanggal}</span>
-                                <span className="text-[9px] font-bold text-gray-400">{row.waktu}</span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 text-center">
-                              <Badge variant={badgeVariant}>{row.status}</Badge>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan={7} className="px-6 py-10 text-center text-gray-400 font-semibold text-xs">
-                          Tidak ada data riwayat untuk jenis layanan ini.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+              <div className="w-full border border-gray-100 rounded-xl overflow-hidden">
+                <Table 
+                  columns={historyColumns} 
+                  data={filteredHistory} 
+                />
               </div>
 
               <div className="mt-2">

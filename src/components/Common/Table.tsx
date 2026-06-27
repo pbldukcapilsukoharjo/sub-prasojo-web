@@ -4,6 +4,7 @@ interface Column {
   key: string;
   header: string;
   render?: (row: any) => React.ReactNode;
+  align?: 'left' | 'center' | 'right';
 }
 
 interface TableProps {
@@ -22,7 +23,9 @@ export default function Table({ columns, data, className = '', onRowClick }: Tab
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="py-4 px-6 text-left text-[10px] font-bold text-gray-600 tracking-wider uppercase whitespace-nowrap"
+                className={`py-4 px-6 text-[10px] font-bold text-gray-600 tracking-wider uppercase whitespace-nowrap ${
+                  col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'
+                }`}
               >
                 {col.header}
               </th>
@@ -39,7 +42,9 @@ export default function Table({ columns, data, className = '', onRowClick }: Tab
               {columns.map((col) => (
                 <td
                   key={col.key}
-                  className="py-5 px-6 text-xs font-semibold text-gray-900 whitespace-nowrap"
+                  className={`py-5 px-6 text-xs font-semibold text-gray-900 whitespace-nowrap ${
+                    col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'
+                  }`}
                 >
                   {col.render ? col.render(row) : row[col.key]}
                 </td>

@@ -15,7 +15,7 @@ export function proxy(request: NextRequest) {
   // Redirect /login or root / to /admin if already logged in
   if (pathname === "/login" || pathname === "/") {
     if (token) {
-      return NextResponse.redirect(new URL("/admin", request.url));
+      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     } else if (pathname === "/") {
       // Redirect root to /login if not logged in
       return NextResponse.redirect(new URL("/login", request.url));

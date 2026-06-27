@@ -28,7 +28,7 @@ export default function DetailUlasanModal({ isOpen, onClose, review }: DetailUla
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Backdrop overlay */}
       <div 
-        className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity duration-300"
+        className="absolute inset-0 bg-slate-900/50 transition-opacity duration-300"
         onClick={onClose}
       />
       
@@ -50,7 +50,7 @@ export default function DetailUlasanModal({ isOpen, onClose, review }: DetailUla
           {/* Close Button */}
           <button 
             onClick={onClose}
-            className="text-slate-950 hover:bg-slate-50 rounded-full p-2 transition-all flex items-center justify-center cursor-pointer border border-transparent hover:border-slate-100"
+            className="w-8 h-8 flex items-center justify-center text-slate-950 hover:bg-slate-50 rounded-full transition-all cursor-pointer border border-transparent hover:border-slate-100"
           >
             <i className="ri-close-line text-xl font-bold"></i>
           </button>

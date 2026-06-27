@@ -139,7 +139,7 @@ export default function DetailUlasanPage() {
       {/* 2. Below Filters Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left: Rating Breakdown (Summary Card) */}
-        <div className="lg:col-span-4 bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col items-center">
+        <div className="card shadow-sm border border-gray-100 lg:col-span-4 p-6 flex flex-col items-center bg-white">
           <span className="text-6xl font-bold font-manrope text-gray-900 mb-2">4.8</span>
           <div className="flex gap-1 text-[#F59E0B] text-2xl mb-4">
             <i className="ri-star-fill"></i>
@@ -181,7 +181,7 @@ export default function DetailUlasanPage() {
           {/* Reviews List */}
           <div className="flex flex-col gap-4">
             {reviews.map((review) => (
-              <div key={review.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <div key={review.id} className="card shadow-sm border border-gray-100 p-6">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
@@ -212,9 +212,9 @@ export default function DetailUlasanPage() {
                       setSelectedReview(review);
                       setIsModalOpen(true);
                     }}
-                    className="text-xs font-bold text-primary hover:underline cursor-pointer"
+                    className="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors font-bold text-[10px] px-4 py-1.5 rounded-full cursor-pointer"
                   >
-                    Lihat Detail
+                    Detail
                   </button>
                   <button className="text-xs font-semibold text-gray-500 hover:text-gray-700 cursor-pointer">Laporkan</button>
                 </div>
@@ -223,7 +223,7 @@ export default function DetailUlasanPage() {
           </div>
 
           {/* Pagination mock */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-between">
+          <div className="card shadow-sm border border-gray-100 p-6 flex items-center justify-between">
             <span className="text-xs font-semibold text-gray-500">Menampilkan 1 - 10 dari 1,240 Ulasan</span>
             <div className="flex items-center gap-1">
               <button className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50 disabled:opacity-50 cursor-pointer">

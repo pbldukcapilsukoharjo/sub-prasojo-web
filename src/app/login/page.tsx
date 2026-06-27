@@ -28,7 +28,7 @@ export default function LoginPage() {
         console.log("Login Success:", response);
         login(response.data.access_token);
         toast.success(response.message || "Login berhasil");
-        router.push("/admin");
+        router.push("/admin/dashboard");
       } else {
         // Backend merespons 200 tapi status false
         console.log("Login Soft-Fail:", response);
