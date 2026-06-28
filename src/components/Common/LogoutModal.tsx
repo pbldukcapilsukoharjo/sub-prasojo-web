@@ -42,12 +42,6 @@ export default function LogoutModal({ isOpen, onClose, onConfirm }: LogoutModalP
             KELUAR
           </button>
         </div>
-
-        <div className="w-full border-t border-gray-100 pt-5 text-center">
-          <span className="text-[9px] font-bold text-gray-400 tracking-widest uppercase">
-            OTENTIKASI KEAMANAN PRASOJO
-          </span>
-        </div>
       </div>
     </div>
   );

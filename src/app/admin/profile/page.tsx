@@ -1,108 +1,153 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import Select from '@/components/Forms/Select';
 import LogoutModal from '@/components/Common/LogoutModal';
 import { useAuth } from '@/providers/auth-provider';
+import { authService } from '@/services/auth.service';
+import { handleApiError } from '@/lib/api-error';
+
+interface UpdateProfileForm {
+  email: string;
+  password?: string;
+}
 
 export default function ProfilePage() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { user, logout } = useAuth();
 
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<UpdateProfileForm>({
+    defaultValues: {
+      email: user?.email || '',
+    },
+  });
+
+  const onSubmit = async (data: UpdateProfileForm) => {
+    setIsSubmitting(true);
+    try {
+      const payload: { email?: string; password?: string } = {};
+      if (data.email && data.email !== user?.email) payload.email = data.email;
+      if (data.password) payload.password = data.password;
+
+      if (Object.keys(payload).length === 0) {
+        toast.error("Tidak ada perubahan data.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const response = await authService.updateProfile(payload);
+      if (response.status === true || response.code === 200) {
+        toast.success(response.message || "Profil berhasil diperbarui");
+        // Optionally reload page or re-fetch user profile data in context
+        // to reflect the new email.
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        toast.error(response.message || "Gagal memperbarui profil");
+      }
+    } catch (error: any) {
+      handleApiError(error, setError);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full">
       {/* Profile Header Card */}
-      <div className="card shadow-sm border border-gray-100 p-6 lg:p-8">
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
-          {/* Avatar */}
-          <div className="relative flex-shrink-0 self-center lg:self-start">
-            <div className="w-[140px] h-[160px] rounded-[20px] overflow-hidden bg-gray-200">
-              <img
-                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullname || "Operator PRASOJO")}&background=114856&color=fff&size=200&font-size=0.33`}
-                alt="Profile Photo"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <button className="absolute bottom-[-6px] right-[-6px] w-9 h-9 bg-[#8B0000] hover:bg-[#6b0000] text-white rounded-full flex items-center justify-center shadow-lg transition-colors">
-              <i className="ri-pencil-line text-sm"></i>
-            </button>
-          </div>
-
-          {/* User Info */}
-          <div className="flex-1 flex flex-col justify-center">
-            <div className="flex flex-wrap items-center gap-3 mb-2">
-              <span className="bg-[#8B0000] text-white text-[9px] font-bold px-3 py-1 rounded-full tracking-wider uppercase">
-                ACTIVE MEMBER
-              </span>
-              <span className="text-xs text-gray-500 font-semibold">
-                Bergabung sejak {user?.created_at ? new Date(user.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '12 Januari 2024'}
-              </span>
-            </div>
-
-            <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
-              {user?.fullname || "Operator PRASOJO"}
-            </h1>
-            <p className="text-sm text-gray-500 font-semibold mb-4">
-              {user?.email || "operator@dukcapil.sukoharjo.go.id"}
-            </p>
-
-            <div className="flex flex-wrap gap-x-10 gap-y-2">
-              <div>
-                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">STATUS AKUN</span>
-                <span className="text-sm font-bold text-gray-900">Terverifikasi</span>
-              </div>
-              <div>
-                <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">TERAKHIR LOGIN</span>
-                <span className="text-sm font-bold text-gray-900">Hari ini</span>
-              </div>
-            </div>
+      <div className="card shadow-sm border border-gray-100 p-6 lg:p-8 flex flex-col items-center justify-center text-center">
+        {/* Avatar */}
+        <div className="relative mb-5">
+          <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden bg-gray-200 border-4 border-white shadow-md">
+            <img
+              src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullname || "Operator")}&background=8B0000&color=fff&size=200&bold=true`}
+              alt="Profile Avatar"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
+
+        {/* User Info */}
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+          {user?.fullname || "Nama Lengkap"}
+        </h1>
+        <p className="text-sm text-gray-500 font-semibold mb-3">
+          {user?.email || "email@domain.com"}
+        </p>
+        <span className="bg-[#8B0000]/10 text-[#8B0000] text-[10px] font-bold px-3 py-1 rounded-full tracking-wider uppercase">
+          Operator Sistem
+        </span>
       </div>
 
-      {/* Info Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column */}
-        <div className="flex flex-col gap-6">
-          {/* Informasi Kontak */}
-          <div className="card shadow-sm border border-gray-100 p-6">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="w-1 h-5 bg-[#8B0000] rounded-full"></div>
-              <h3 className="text-base font-bold text-gray-900">Informasi Kontak</h3>
+        {/* Update Profile Form */}
+        <div className="card shadow-sm border border-gray-100 p-6 hidden">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-1 h-5 bg-[#8B0000] rounded-full"></div>
+            <h3 className="text-base font-bold text-gray-900">Perbarui Profil</h3>
+          </div>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+            {/* Email Field */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-gray-500 tracking-[0.12em] uppercase">
+                Alamat Email
+              </label>
+              <input
+                type="email"
+                {...register("email", {
+                  required: "Email wajib diisi",
+                  pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Format email tidak valid" }
+                })}
+                placeholder="nama@email.com"
+                className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 px-4 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all"
+              />
+              {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
             </div>
 
-            <div className="flex flex-col gap-5">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-red-50 rounded-[12px] flex items-center justify-center flex-shrink-0">
-                  <i className="ri-mail-line text-[#8B0000] text-lg"></i>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">
-                    ALAMAT EMAIL RESMI
-                  </span>
-                  <span className="text-sm font-bold text-gray-900">{user?.email || "operator@dukcapil.sukoharjo.go.id"}</span>
-                </div>
+            {/* Password Field */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-gray-500 tracking-[0.12em] uppercase">
+                Kata Sandi Baru (Opsional)
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  {...register("password", {
+                    minLength: { value: 8, message: "Minimal 8 karakter" }
+                  })}
+                  placeholder="Kosongkan jika tidak ingin mengubah"
+                  className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 pl-4 pr-11 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-gray-400"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                >
+                  <i className={showPassword ? "ri-eye-off-line text-[17px]" : "ri-eye-line text-[17px]"} />
+                </button>
               </div>
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 bg-red-50 rounded-[12px] flex items-center justify-center flex-shrink-0">
-                  <i className="ri-smartphone-line text-[#8B0000] text-lg"></i>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">
-                    NOMOR WHATSAPP / HP
-                  </span>
-                  <span className="text-sm font-bold text-gray-900">+62 812-3456-7890</span>
-                </div>
-              </div>
+              {errors.password && <span className="text-red-500 text-xs mt-1">{errors.password.message}</span>}
             </div>
-          </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-11 rounded-xl font-bold text-[13px] tracking-[0.08em] text-white bg-[#8B0000] hover:bg-[#700000] active:bg-[#5a0000] transition-all mt-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? "MENYIMPAN..." : "SIMPAN PERUBAHAN"}
+            </button>
+          </form>
         </div>
 
         {/* Right Column - Konfigurasi & Keamanan */}
         <div className="card shadow-sm border border-gray-100 p-6 flex flex-col">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-1 h-5 bg-[#8B0000] rounded-full"></div>
-            <h3 className="text-base font-bold text-gray-900">Konfigurasi & Keamanan</h3>
+            <h3 className="text-base font-bold text-gray-900">Pengaturan Sistem</h3>
           </div>
 
           <div className="flex flex-col gap-6 flex-1">
@@ -132,21 +177,16 @@ export default function ProfilePage() {
               />
             </div>
 
-            {/* Spacer */}
             <div className="flex-1"></div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col gap-3 mt-4">
-              <button className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border border-gray-200 bg-white text-gray-700 font-bold text-sm hover:bg-gray-50 transition-colors">
-                <i className="ri-lock-line text-base"></i>
-                UBAH KATA SANDI
-              </button>
+            <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-gray-100">
               <button 
                 onClick={() => setIsLogoutModalOpen(true)}
                 className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border-2 border-[#8B0000] bg-[#8B0000] text-white font-bold text-sm hover:bg-[#6b0000] transition-colors cursor-pointer"
               >
                 <i className="ri-logout-box-r-line text-base"></i>
-                KELUAR
+                KELUAR DARI SISTEM
               </button>
             </div>
           </div>

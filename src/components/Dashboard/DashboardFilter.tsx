@@ -1,12 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FilterCard from '@/components/Common/FilterCard';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
+import { DashboardFilterParams } from '@/services/dashboard.service';
 
-export default function DashboardFilter() {
+interface DashboardFilterProps {
+  onFilterChange?: (filters: DashboardFilterParams) => void;
+}
+
+export default function DashboardFilter({ onFilterChange }: DashboardFilterProps) {
   const [jenisLayanan, setJenisLayanan] = useState<string | number>('all');
   const [kecamatan, setKecamatan] = useState<string | number>('all');
   const [periode, setPeriode] = useState<string | number>('');
@@ -16,16 +21,34 @@ export default function DashboardFilter() {
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
 
+  // Trigger default filter on initial mount
+  useEffect(() => {
+    handleFilter();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleReset = () => {
     setJenisLayanan('all');
     setKecamatan('all');
     setPeriode('');
     setStartDate('');
     setEndDate('');
+    
+    if (onFilterChange) {
+      onFilterChange({});
+    }
   };
 
   const handleFilter = () => {
-    console.log({ jenisLayanan, kecamatan, periode, startDate, endDate });
+    if (onFilterChange) {
+      onFilterChange({
+        serviceType: jenisLayanan !== 'all' ? String(jenisLayanan) : undefined,
+        district: kecamatan !== 'all' ? String(kecamatan) : undefined,
+        period: periode ? String(periode) : undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+      });
+    }
   };
 
   return (

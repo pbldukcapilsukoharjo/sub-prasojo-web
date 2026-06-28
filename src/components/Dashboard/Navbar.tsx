@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/providers/auth-provider';
 
 export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
   const pathname = usePathname();
+  const { user } = useAuth();
   const isProfileActive = pathname.includes('/profile');
 
   let title = 'Dashboard';
@@ -41,48 +43,59 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
     subtitle = 'Ringkasan data ajuan dan kinerja layanan';
   }
 
+  const displayName = user?.fullname || "Operator";
+  const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=8B0000&color=fff&size=100&bold=true`;
+
   return (
-    <header className="h-[70px] lg:h-[90px] flex items-center justify-between px-4 lg:px-8 bg-white border-b border-gray-100 flex-shrink-0 w-full">
-      <div className="flex items-center gap-3">
-        <button onClick={onMenuClick} className="lg:hidden text-gray-500 hover:text-gray-900 transition-colors p-1">
-          <i className="ri-menu-line text-2xl"></i>
+    <header className="h-[64px] lg:h-[76px] flex items-center justify-between px-4 lg:px-8 bg-white border-b border-gray-100 flex-shrink-0 w-full shadow-sm relative z-20">
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={onMenuClick} 
+          className="lg:hidden w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+          aria-label="Toggle Menu"
+        >
+          <i className="ri-menu-line text-xl"></i>
         </button>
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-3">
-            <h2 className="text-lg lg:text-xl font-bold text-gray-900">{title}</h2>
+            <h2 className="text-lg lg:text-xl font-black text-gray-900 tracking-tight">{title}</h2>
             {badgeCount > 0 && (
-              <span className="hidden lg:inline-flex bg-gray-100 text-gray-500 text-xs font-semibold px-2 py-0.5 rounded-full border border-gray-200">
-                {badgeCount} pending
+              <span className="hidden lg:inline-flex items-center justify-center bg-amber-100 text-amber-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-200 uppercase tracking-widest">
+                {badgeCount} PENDING
               </span>
             )}
           </div>
           {subtitle && (
-            <p className="text-xs lg:text-sm text-gray-500 mt-0.5 lg:mt-1">{subtitle}</p>
+            <p className="text-[11px] lg:text-xs font-medium text-gray-500 mt-0.5">{subtitle}</p>
           )}
         </div>
       </div>
 
-      <div className="flex items-center gap-4 lg:gap-6">
-
+      <div className="flex items-center gap-4 lg:gap-6 h-full py-2">
+        {/* User Profile Trigger */}
         <Link
           href="/admin/profile"
-          className={`flex items-center gap-3 border-l border-gray-200 pl-4 lg:pl-6 rounded-xl px-4 py-2 transition-all duration-200 cursor-pointer ${
+          className={`group flex items-center gap-3 h-full pl-4 lg:pl-6 rounded-2xl px-2 lg:px-4 transition-all duration-200 cursor-pointer ${
             isProfileActive
-              ? 'bg-gray-100 ring-1 ring-gray-200'
+              ? 'bg-[#8B0000]/5 ring-1 ring-[#8B0000]/20'
               : 'hover:bg-gray-50'
           }`}
         >
-          <div className="text-right hidden sm:block">
-            <p className="text-sm font-bold text-gray-900">Admin Prasojo system</p>
-            <p className="text-[10px] font-bold text-gray-500 tracking-wider">ADMINISTRATOR</p>
+          <div className="text-right hidden sm:flex flex-col justify-center">
+            <p className="text-sm font-bold text-gray-900 group-hover:text-[#8B0000] transition-colors line-clamp-1 max-w-[150px]">
+              {displayName}
+            </p>
+            <p className="text-[10px] font-bold text-gray-500 tracking-wider">
+              ADMINISTRATOR
+            </p>
           </div>
-          <div className={`w-8 h-8 lg:w-10 lg:h-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden flex-shrink-0 transition-all duration-200 ${
+          
+          <div className={`w-8 h-8 lg:w-9 lg:h-9 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0 transition-all duration-200 shadow-sm ${
             isProfileActive
               ? 'ring-2 ring-[#8B0000] ring-offset-2 border-0'
-              : 'border border-gray-200'
+              : 'border border-gray-200 group-hover:border-[#8B0000]/50 group-hover:shadow-md'
           }`}>
-            {/* Avatar placeholder */}
-            <img src="https://ui-avatars.com/api/?name=Admin+Prasojo&background=0D8ABC&color=fff" alt="User Avatar" className="w-full h-full object-cover" />
+            <img src={avatarUrl} alt="User Avatar" className="w-full h-full object-cover" />
           </div>
         </Link>
       </div>
