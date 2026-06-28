@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { authService, RegisterPayload } from "@/services/auth.service";
+import { handleApiError } from "@/lib/api-error";
 
 interface RegisterForm extends RegisterPayload {
   confirm_password?: string;
@@ -18,7 +19,7 @@ export default function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>();
+  const { register, handleSubmit, watch, setError, formState: { errors } } = useForm<RegisterForm>();
   const password = watch("password");
 
   const onSubmit = async (data: RegisterForm) => {
@@ -28,33 +29,19 @@ export default function RegisterPage() {
         fullname: data.fullname,
         email: data.email,
         password: data.password,
+        password_confirmation: data.confirm_password,
       };
 
       const response = await authService.register(payload);
 
-      // Berhasil: code 201 atau 200
-      if (response.code === 201 || response.code === 200) {
-        console.log("Register Success:", response);
-        toast.success(response.message || "Registrasi berhasil! Silakan login.");
-        // Delay sedikit agar toast sempat terbaca sebelum redirect
-        setTimeout(() => router.push("/login"), 1500);
+      if (response.code === 201 || response.code === 200 || response.status === true) {
+        toast.success(response.message || "Registrasi berhasil! Silakan verifikasi email Anda.");
+        setTimeout(() => router.push("/email/verify"), 1200);
       } else {
-        console.log("Register Soft-Fail:", response);
         toast.error(response.message || "Registrasi gagal");
       }
     } catch (error: any) {
-      const errData = error.response?.data;
-      console.error("Register HTTP Error:", errData || error.message);
-
-      if (errData?.message) {
-        toast.error(errData.message);
-      } else if (errData?.error) {
-        toast.error(errData.error);
-      } else if (error.message === "Network Error") {
-        toast.error("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
-      } else {
-        toast.error("Terjadi kesalahan saat registrasi. Coba lagi.");
-      }
+      handleApiError(error, setError);
     } finally {
       setIsSubmitting(false);
     }
@@ -162,8 +149,6 @@ export default function RegisterPage() {
               />
               {errors.fullname && <span className="text-red-500 text-xs mt-1">{errors.fullname.message}</span>}
             </div>
-
-
 
             {/* Email */}
             <div className="flex flex-col gap-1.5">

@@ -214,9 +214,8 @@ export default function DetailUlasanPage() {
                     }}
                     className="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors font-bold text-[10px] px-4 py-1.5 rounded-full cursor-pointer"
                   >
-                    Detail
+                    Lihat Detail
                   </button>
-                  <button className="text-xs font-semibold text-gray-500 hover:text-gray-700 cursor-pointer">Laporkan</button>
                 </div>
               </div>
             ))}

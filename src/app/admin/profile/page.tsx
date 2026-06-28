@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import Select from '@/components/Forms/Select';
-import Button from '@/components/Common/Button';
 import LogoutModal from '@/components/Common/LogoutModal';
+import { useAuth } from '@/providers/auth-provider';
 
 export default function ProfilePage() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   return (
     <div className="flex flex-col gap-6">
@@ -17,7 +18,7 @@ export default function ProfilePage() {
           <div className="relative flex-shrink-0 self-center lg:self-start">
             <div className="w-[140px] h-[160px] rounded-[20px] overflow-hidden bg-gray-200">
               <img
-                src="https://ui-avatars.com/api/?name=Prasetyo+Jatmiko&background=114856&color=fff&size=200&font-size=0.33"
+                src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user?.fullname || "Operator PRASOJO")}&background=114856&color=fff&size=200&font-size=0.33`}
                 alt="Profile Photo"
                 className="w-full h-full object-cover"
               />
@@ -34,15 +35,15 @@ export default function ProfilePage() {
                 ACTIVE MEMBER
               </span>
               <span className="text-xs text-gray-500 font-semibold">
-                Bergabung sejak 12 Januari 2024
+                Bergabung sejak {user?.created_at ? new Date(user.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '12 Januari 2024'}
               </span>
             </div>
 
             <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
-              Prasetyo Jatmiko, S.Kom.
+              {user?.fullname || "Operator PRASOJO"}
             </h1>
             <p className="text-sm text-gray-500 font-semibold mb-4">
-              prasetyo_admin_04
+              {user?.email || "operator@dukcapil.sukoharjo.go.id"}
             </p>
 
             <div className="flex flex-wrap gap-x-10 gap-y-2">
@@ -52,7 +53,7 @@ export default function ProfilePage() {
               </div>
               <div>
                 <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">TERAKHIR LOGIN</span>
-                <span className="text-sm font-bold text-gray-900">Hari ini, 08:45 WIB</span>
+                <span className="text-sm font-bold text-gray-900">Hari ini</span>
               </div>
             </div>
           </div>
@@ -79,7 +80,7 @@ export default function ProfilePage() {
                   <span className="text-[10px] font-bold text-gray-500 tracking-wider uppercase block mb-0.5">
                     ALAMAT EMAIL RESMI
                   </span>
-                  <span className="text-sm font-bold text-gray-900">p.jatmiko@gmail.com</span>
+                  <span className="text-sm font-bold text-gray-900">{user?.email || "operator@dukcapil.sukoharjo.go.id"}</span>
                 </div>
               </div>
               <div className="flex items-start gap-4">
@@ -142,7 +143,7 @@ export default function ProfilePage() {
               </button>
               <button 
                 onClick={() => setIsLogoutModalOpen(true)}
-                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border-2 border-[#8B0000] bg-[#8B0000] text-white font-bold text-sm hover:bg-[#6b0000] transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full border-2 border-[#8B0000] bg-[#8B0000] text-white font-bold text-sm hover:bg-[#6b0000] transition-colors cursor-pointer"
               >
                 <i className="ri-logout-box-r-line text-base"></i>
                 KELUAR
@@ -155,9 +156,9 @@ export default function ProfilePage() {
       <LogoutModal 
         isOpen={isLogoutModalOpen} 
         onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={() => {
+        onConfirm={async () => {
           setIsLogoutModalOpen(false);
-          window.location.href = '/login';
+          await logout();
         }}
       />
     </div>

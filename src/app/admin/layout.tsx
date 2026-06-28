@@ -5,6 +5,7 @@ import Sidebar from '@/components/Dashboard/Sidebar';
 import Navbar from '@/components/Dashboard/Navbar';
 import MainScroll from '@/components/Dashboard/MainScroll';
 import LogoutModal from '@/components/Common/LogoutModal';
+import { useAuth } from '@/providers/auth-provider';
 
 export default function AdminLayout({
   children,
@@ -13,6 +14,7 @@ export default function AdminLayout({
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const { logout } = useAuth();
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background relative">
@@ -41,9 +43,9 @@ export default function AdminLayout({
       <LogoutModal 
         isOpen={isLogoutModalOpen} 
         onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={() => {
+        onConfirm={async () => {
           setIsLogoutModalOpen(false);
-          window.location.href = '/login';
+          await logout();
         }}
       />
     </div>

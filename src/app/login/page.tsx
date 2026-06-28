@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useAuth } from "@/providers/auth-provider";
 import { authService, LoginPayload } from "@/services/auth.service";
+import { handleApiError } from "@/lib/api-error";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,35 +17,26 @@ export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
   
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginPayload>();
+  const { register, handleSubmit, setError, formState: { errors } } = useForm<LoginPayload>();
 
   const onSubmit = async (data: LoginPayload) => {
     setIsSubmitting(true);
     try {
       const response = await authService.login(data);
 
-      // Berhasil: status true dan access_token ada
       if (response.status === true && response.data?.access_token) {
-        console.log("Login Success:", response);
         login(response.data.access_token);
         toast.success(response.message || "Login berhasil");
         router.push("/admin/dashboard");
       } else {
-        // Backend merespons 200 tapi status false
-        console.log("Login Soft-Fail:", response);
         toast.error(response.message || "Email atau password salah");
       }
     } catch (error: any) {
-      // HTTP error (4xx, 5xx)
-      const errData = error.response?.data;
-      console.error("Login HTTP Error:", errData || error.message);
-
-      if (errData?.message) {
-        toast.error(errData.message);
-      } else if (error.message === "Network Error") {
-        toast.error("Tidak dapat terhubung ke server. Periksa koneksi Anda.");
+      if (error.response?.status === 403) {
+        toast.error(error.response.data?.message || "Email belum diverifikasi. Silakan periksa email Anda.");
+        router.push("/email/verify");
       } else {
-        toast.error("Terjadi kesalahan saat login. Coba lagi.");
+        handleApiError(error, setError);
       }
     } finally {
       setIsSubmitting(false);

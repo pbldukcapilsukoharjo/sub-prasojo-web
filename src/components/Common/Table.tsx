@@ -1,9 +1,9 @@
 import React from 'react';
 
-interface Column {
+export interface Column {
   key: string;
   header: string;
-  render?: (row: any) => React.ReactNode;
+  render?: (row: any, index?: any) => React.ReactNode;
   align?: 'left' | 'center' | 'right';
 }
 
@@ -46,7 +46,7 @@ export default function Table({ columns, data, className = '', onRowClick }: Tab
                     col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'
                   }`}
                 >
-                  {col.render ? col.render(row) : row[col.key]}
+                  {col.render ? col.render(row, rowIndex) : row[col.key]}
                 </td>
               ))}
             </tr>
