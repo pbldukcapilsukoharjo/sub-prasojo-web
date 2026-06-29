@@ -12,13 +12,15 @@ import Tabs from '@/components/Common/Tabs';
 import Pagination from '@/components/Common/Pagination';
 import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
+import { operatorService, KpiGlobalData, OperatorItem, OperatorKpiData, RiwayatItem } from '@/services/operator.service';
+import { handleApiError } from '@/lib/api-error';
 
 // Dynamically import ApexCharts to avoid SSR hydration issues
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 export default function PeringkatOperatorPage() {
   const [mounted, setMounted] = useState(false);
-  const [selectedOperator, setSelectedOperator] = useState<any>(null);
+  const [selectedOperator, setSelectedOperator] = useState<OperatorItem | null>(null);
 
   // Listing page filter states
   const [search, setSearch] = useState('');
@@ -29,17 +31,148 @@ export default function PeringkatOperatorPage() {
   const [endDate, setEndDate] = useState('');
   const [operatorFilter, setOperatorFilter] = useState('all');
 
+  // List View Data States
+  const [kpiGlobal, setKpiGlobal] = useState<KpiGlobalData | null>(null);
+  const [rankingsData, setRankingsData] = useState<OperatorItem[]>([]);
+  const [listCurrentPage, setListCurrentPage] = useState(1);
+  const [listTotalPages, setListTotalPages] = useState(1);
+  const [listTotalItems, setListTotalItems] = useState(0);
+  const [isListLoading, setIsListLoading] = useState(false);
+  const listPerPage = 10;
+
   // Detail page states
   const [activeTab, setActiveTab] = useState('semua');
   const [detailCurrentPage, setDetailCurrentPage] = useState(1);
-  const [listCurrentPage, setListCurrentPage] = useState(1);
+  const [operatorKpi, setOperatorKpi] = useState<OperatorKpiData | null>(null);
+  const [historyData, setHistoryData] = useState<RiwayatItem[]>([]);
+  const [detailTotalPages, setDetailTotalPages] = useState(1);
+  const [detailTotalItems, setDetailTotalItems] = useState(0);
+  const [isDetailLoading, setIsDetailLoading] = useState(false);
+  const detailPerPage = 5;
+  const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Effect for List View
+  useEffect(() => {
+    if (!selectedOperator) {
+      fetchListView();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOperator, listCurrentPage]);
+
+  // Effect for Detail View
+  useEffect(() => {
+    if (selectedOperator) {
+      fetchDetailView();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOperator, activeTab, detailCurrentPage]);
+
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
+
+  const formatToDDMMYYYY = (dateStr: string) => {
+    if (!dateStr) return undefined;
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const parts = dateStr.split('-');
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return dateStr;
+  };
+
+  const fetchListView = async () => {
+    setIsListLoading(true);
+    try {
+      const params = {
+        search: search || undefined,
+        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+        periode_bulan: periode ? Number(periode) : undefined,
+        sort: sortBy,
+        start_date: formatToDDMMYYYY(startDate),
+        end_date: formatToDDMMYYYY(endDate),
+        id_operator: operatorFilter !== 'all' ? Number(operatorFilter) : undefined,
+      };
+
+      // Fetch KPI Global
+      const kpiRes = await operatorService.getKpiGlobal({
+        id_kecamatan: params.id_kecamatan,
+        periode_bulan: params.periode_bulan,
+        start_date: params.start_date,
+        end_date: params.end_date,
+        id_operator: params.id_operator
+      });
+      if (kpiRes.status && kpiRes.data) {
+        setKpiGlobal(kpiRes.data);
+      }
+
+      // Fetch Peringkat List
+      const listRes = await operatorService.getPeringkatOperator({
+        ...params,
+        page: listCurrentPage,
+        limit: listPerPage
+      });
+      if (listRes.status && listRes.data) {
+        setRankingsData(listRes.data.list || []);
+        if (listRes.data.meta) {
+          setListTotalItems(listRes.data.meta.total);
+          setListTotalPages(listRes.data.meta.total_page);
+        }
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsListLoading(false);
+    }
+  };
+
+  const fetchDetailView = async () => {
+    if (!selectedOperator) return;
+    setIsDetailLoading(true);
+    try {
+      const id = selectedOperator.id;
+      
+      // We map activeTab to an integer if we know it, otherwise just send the string.
+      // Usually, 'kk' might be 1, 'ktp' is 2, etc. If backend accepts string, we pass string.
+      let id_layanan: string | undefined = undefined;
+      if (activeTab !== 'semua') {
+        id_layanan = activeTab;
+      }
+
+      // Fetch Operator KPI Detail
+      const kpiRes = await operatorService.getOperatorKpi(id, {
+        tahun: currentYear,
+        periode_bulan: periode ? Number(periode) : undefined,
+        id_layanan: id_layanan
+      });
+      if (kpiRes.status && kpiRes.data) {
+        setOperatorKpi(kpiRes.data);
+      }
+
+      // Fetch Operator Riwayat
+      const riwayatRes = await operatorService.getOperatorRiwayat(id, {
+        tahun: currentYear,
+        periode_bulan: periode ? Number(periode) : undefined,
+        id_layanan: id_layanan,
+        page: detailCurrentPage,
+        limit: detailPerPage,
+      });
+      if (riwayatRes.status && riwayatRes.data) {
+        setHistoryData(riwayatRes.data.list || []);
+        if (riwayatRes.data.meta) {
+          setDetailTotalItems(riwayatRes.data.meta.total);
+          setDetailTotalPages(riwayatRes.data.meta.total_page);
+        }
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsDetailLoading(false);
+    }
+  };
 
   const handleReset = () => {
     setSearch('');
@@ -49,35 +182,38 @@ export default function PeringkatOperatorPage() {
     setStartDate('');
     setEndDate('');
     setOperatorFilter('all');
+    setListCurrentPage(1);
+
+    setTimeout(() => {
+      fetchListView();
+    }, 0);
   };
 
   const handleFilter = () => {
-    console.log({ search, kecamatan, periode, sortBy, startDate, endDate, operatorFilter });
+    if (listCurrentPage === 1) {
+      fetchListView();
+    } else {
+      setListCurrentPage(1);
+    }
   };
 
-  // Mock table data for rankings list
-  const rankingsData = [
-    { rank: '01', name: 'Muhammad Reza', desa: 'Gentan', kecamatan: 'KEC : BAKI', count: 124 },
-    { rank: '02', name: 'Eslam Samir', desa: 'Gentan', kecamatan: 'KEC : BAKI', count: 124 },
-    { rank: '03', name: 'Mahendra Adi Kusuma', desa: 'Gentan', kecamatan: 'KEC : BAKI', count: 124 },
-    { rank: '04', name: 'Tegar Bagus Saputra', desa: 'Gentan', kecamatan: 'KEC : BAKI', count: 124 },
-  ];
-
   const leaderboardColumns = [
-    { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-400">{row.rank}</span> },
-    { key: 'name', header: 'Nama Operator', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.name}</span> },
+    { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-400">{String(row.peringkat).padStart(2, '0')}</span> },
+    { key: 'name', header: 'Nama Operator', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.operator}</span> },
     { key: 'desaKec', header: 'Desa/Kecamatan', render: (row: any) => (
       <div className="flex flex-col items-center">
         <span className="font-bold text-gray-900 text-xs">{row.desa}</span>
         <span className="text-[10px] font-semibold text-gray-500">{row.kecamatan}</span>
       </div>
     ) },
-    { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-semibold text-xs">{row.count}</span> },
+    { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-semibold text-xs">{row.jumlah_ajuan}</span> },
     { key: 'aksi', header: 'Aksi', align: 'center' as const, render: (row: any) => (
       <button 
         onClick={(e) => {
           e.stopPropagation();
           setSelectedOperator(row);
+          setDetailCurrentPage(1);
+          setActiveTab('semua');
         }}
         className="bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors font-bold text-[10px] px-4 py-1.5 rounded-full cursor-pointer"
       >
@@ -86,7 +222,13 @@ export default function PeringkatOperatorPage() {
     ) }
   ];
 
-  // Mock monthly service data for detail chart
+  // Map detail chart data
+  const monthKeys = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  let chartDataValues = new Array(12).fill(0);
+  if (operatorKpi?.layanan_perbulan) {
+    chartDataValues = monthKeys.map(m => operatorKpi.layanan_perbulan[m] || 0);
+  }
+
   const barOptions: any = {
     chart: {
       type: 'bar',
@@ -104,7 +246,7 @@ export default function PeringkatOperatorPage() {
     dataLabels: { enabled: false },
     stroke: { show: false },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+      categories: monthKeys,
       labels: {
         style: {
           fontSize: '10px',
@@ -118,7 +260,6 @@ export default function PeringkatOperatorPage() {
     },
     yaxis: {
       min: 0,
-      max: 100,
       tickAmount: 5,
       labels: {
         style: {
@@ -126,6 +267,7 @@ export default function PeringkatOperatorPage() {
           fontFamily: 'Inter, sans-serif',
           colors: '#9CA3AF',
         },
+        formatter: (val: number) => Math.round(val)
       },
     },
     grid: {
@@ -162,17 +304,8 @@ export default function PeringkatOperatorPage() {
   const barSeries = [
     {
       name: 'Jumlah Layanan',
-      data: [60, 20, 30, 22, 45, 10, 0, 0, 0, 0, 0, 0],
+      data: chartDataValues,
     },
-  ];
-
-  // Mock historical data for selected operator detail
-  const historyData = [
-    { no: '01', regis: 'REG-2023-0891', pemohon: 'Muhammad Reza', kode: 'KK-NEW', desaKec: 'Baki', tanggal: '12 Okt 2025', waktu: '09:15 WIB', status: 'DIVERIFIKASI' },
-    { no: '02', regis: 'REG-2023-0892', pemohon: 'Eslam Samir', kode: 'KK-NEW', desaKec: 'Baki', tanggal: '12 Okt 2025', waktu: '09:15 WIB', status: 'DIPROSES' },
-    { no: '03', regis: 'REG-2023-0893', pemohon: 'Mahendra Adi Kusuma', kode: 'KK-NEW', desaKec: 'Baki', tanggal: '12 Okt 2025', waktu: '09:15 WIB', status: 'DISETUJUI' },
-    { no: '04', regis: 'REG-2023-0894', pemohon: 'Tegar Bagus Saputra', kode: 'KK-NEW', desaKec: 'Baki', tanggal: '12 Okt 2025', waktu: '09:15 WIB', status: 'DITOLAK' },
-    { no: '05', regis: 'REG-2023-0895', pemohon: 'Tegar Bagus Saputra', kode: 'KK-NEW', desaKec: 'Baki', tanggal: '12 Okt 2025', waktu: '09:15 WIB', status: 'DITOLAK' },
   ];
 
   const detailTabs = [
@@ -186,25 +319,12 @@ export default function PeringkatOperatorPage() {
     { id: 'surket', label: 'SURKET KTP' },
   ];
 
-  // Simple tab filtering
-  const filteredHistory = historyData.filter((item) => {
-    if (activeTab === 'semua') return true;
-    if (activeTab === 'kk') return item.kode.includes('KK');
-    if (activeTab === 'ktp') return item.kode.includes('KTP');
-    if (activeTab === 'kia') return item.kode.includes('KIA');
-    if (activeTab === 'akta-kel') return item.kode.includes('AKTA-KEL') || item.kode.includes('AK-NEW');
-    if (activeTab === 'akta-kem') return item.kode.includes('AKTA-KEM') || item.kode.includes('KM-NEW');
-    if (activeTab === 'perpindahan') return item.kode.includes('PERPINDAHAN') || item.kode.includes('PD-NEW');
-    if (activeTab === 'surket') return item.kode.includes('SURKET') || item.kode.includes('SK-NEW');
-    return true;
-  });
-
   const historyColumns = [
-    { key: 'no', header: 'No', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-400">{row.no}</span> },
-    { key: 'regis', header: 'No.Regis', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.regis}</span> },
+    { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-bold text-gray-400">{String((detailCurrentPage - 1) * detailPerPage + idx + 1).padStart(2, '0')}</span> },
+    { key: 'regis', header: 'No.Regis', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.no_regis}</span> },
     { key: 'pemohon', header: 'Pemohon', align: 'center' as const, render: (row: any) => <span className="text-gray-800 text-xs font-semibold">{row.pemohon}</span> },
-    { key: 'kode', header: 'Kode Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-500 font-bold text-xs">{row.kode}</span> },
-    { key: 'desaKec', header: 'Desa/Kec', align: 'center' as const, render: (row: any) => <span className="text-gray-600 font-semibold text-xs">{row.desaKec}</span> },
+    { key: 'kode', header: 'Kode Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-500 font-bold text-xs">{row.kode_ajuan}</span> },
+    { key: 'desaKec', header: 'Desa', align: 'center' as const, render: (row: any) => <span className="text-gray-600 font-semibold text-xs">{row.desa}</span> },
     { key: 'tanggalWaktu', header: 'Tanggal & Waktu', align: 'center' as const, render: (row: any) => (
       <div className="flex flex-col items-center">
         <span className="font-semibold text-gray-800 text-xs">{row.tanggal}</span>
@@ -213,10 +333,11 @@ export default function PeringkatOperatorPage() {
     ) },
     { key: 'status', header: 'Status', align: 'center' as const, render: (row: any) => {
       let badgeVariant: 'primary' | 'default' | 'success' | 'danger' = 'default';
-      if (row.status === 'DIVERIFIKASI') badgeVariant = 'primary';
-      else if (row.status === 'DIPROSES') badgeVariant = 'default';
-      else if (row.status === 'DISETUJUI') badgeVariant = 'success';
-      else if (row.status === 'DITOLAK') badgeVariant = 'danger';
+      const statusUpper = row.status?.toUpperCase() || '';
+      if (statusUpper === 'DIVERIFIKASI') badgeVariant = 'primary';
+      else if (statusUpper === 'DIPROSES') badgeVariant = 'default';
+      else if (statusUpper === 'DISETUJUI' || statusUpper === 'SELESAI') badgeVariant = 'success';
+      else if (statusUpper === 'DITOLAK') badgeVariant = 'danger';
 
       return <Badge variant={badgeVariant}>{row.status}</Badge>;
     } }
@@ -231,7 +352,7 @@ export default function PeringkatOperatorPage() {
           <FilterCard onReset={handleReset} onApply={handleFilter}>
             <Input
               label="Pencarian Cepat"
-              placeholder="Search..."
+              placeholder="Cari Operator/NIK..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -241,9 +362,9 @@ export default function PeringkatOperatorPage() {
               onChange={(val) => setKecamatan(String(val))}
               options={[
                 { label: 'Seluruh Kecamatan', value: 'all' },
-                { label: 'Baki', value: 'baki' },
-                { label: 'Grogol', value: 'grogol' },
-                { label: 'Kartasura', value: 'kartasura' },
+                { label: 'Baki', value: '1' },
+                { label: 'Grogol', value: '2' },
+                { label: 'Kartasura', value: '3' },
               ]}
             />
             <CustomSelect
@@ -253,9 +374,18 @@ export default function PeringkatOperatorPage() {
               disabled={isPeriodeDisabled}
               placeholder="Pilih Periode"
               options={[
-                { label: 'Bulan Ini', value: 'this_month' },
-                { label: 'Bulan Lalu', value: 'last_month' },
-                { label: 'Tahun Ini', value: 'this_year' },
+                { label: 'Januari', value: 1 },
+                { label: 'Februari', value: 2 },
+                { label: 'Maret', value: 3 },
+                { label: 'April', value: 4 },
+                { label: 'Mei', value: 5 },
+                { label: 'Juni', value: 6 },
+                { label: 'Juli', value: 7 },
+                { label: 'Agustus', value: 8 },
+                { label: 'September', value: 9 },
+                { label: 'Oktober', value: 10 },
+                { label: 'November', value: 11 },
+                { label: 'Desember', value: 12 },
               ]}
             />
             <CustomDateRangePicker
@@ -281,10 +411,8 @@ export default function PeringkatOperatorPage() {
               onChange={(val) => setOperatorFilter(String(val))}
               options={[
                 { label: 'Semua Operator', value: 'all' },
-                { label: 'Muhammad Reza', value: 'reza' },
-                { label: 'Eslam Samir', value: 'eslam' },
-                { label: 'Mahendra Adi Kusuma', value: 'mahendra' },
-                { label: 'Tegar Bagus Saputra', value: 'tegar' },
+                { label: 'Operator 1', value: '1' },
+                { label: 'Operator 2', value: '2' },
               ]}
             />
           </FilterCard>
@@ -292,8 +420,8 @@ export default function PeringkatOperatorPage() {
           {/* Metric Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard 
-              title="TOTAL LAYANAN"
-              value="1.234"
+              title="TOTAL AJUAN"
+              value={kpiGlobal?.total_ajuan?.toLocaleString('id-ID') || '0'}
               icon="ri-file-list-3-line"
               iconBg="#fdf2f2"
               iconColor="text-primary"
@@ -302,7 +430,7 @@ export default function PeringkatOperatorPage() {
               title="RATA-RATA DURASI"
               value={
                 <>
-                  <span className="text-4xl font-bold font-manrope text-gray-900 leading-none">14,5</span>
+                  <span className="text-4xl font-bold font-manrope text-gray-900 leading-none">{kpiGlobal?.rata_rata_durasi || '0'}</span>
                   <span className="text-xs font-semibold text-gray-500 pb-0.5">menit</span>
                 </>
               }
@@ -312,7 +440,7 @@ export default function PeringkatOperatorPage() {
             />
             <StatCard 
               title="TINGKAT SELESAI"
-              value="98,2%"
+              value={`${kpiGlobal?.tingkat_selesai || 0}%`}
               icon="ri-checkbox-circle-line"
               iconBg="#ecfdf5"
               iconColor="text-emerald-500"
@@ -320,26 +448,28 @@ export default function PeringkatOperatorPage() {
           </div>
 
           {/* Leaderboard Table Card */}
-          <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden">
+          <div className={`card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isListLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
             <div className="p-6 flex justify-between items-center border-b border-gray-100">
               <h3 className="text-base font-bold text-gray-900">Peringkat Operator Berdasarkan Jumlah Ajuan</h3>
-              <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm" className="h-9 px-4 rounded-[30px]">
-                EKSPOR EXCEL
-              </Button>
             </div>
-            <div className="w-full">
-              <Table 
-                columns={leaderboardColumns} 
-                data={rankingsData} 
-                onRowClick={(row) => setSelectedOperator(row)}
-              />
+            <div className="w-full min-h-[300px]">
+              {rankingsData.length > 0 ? (
+                <Table 
+                  columns={leaderboardColumns} 
+                  data={rankingsData} 
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-sm text-gray-400 py-12">
+                  Tidak ada data peringkat ditemukan
+                </div>
+              )}
             </div>
             <div className="p-6 border-t border-gray-100">
               <Pagination
                 currentPage={listCurrentPage}
-                totalPages={3}
-                totalItems={24}
-                itemsPerPage={4}
+                totalPages={listTotalPages}
+                totalItems={listTotalItems}
+                itemsPerPage={listPerPage}
                 onPageChange={setListCurrentPage}
               />
             </div>
@@ -360,7 +490,7 @@ export default function PeringkatOperatorPage() {
           </div>
 
           {/* Main Detail Panel */}
-          <div className="card shadow-sm border border-gray-100 flex flex-col p-6 gap-6">
+          <div className={`card shadow-sm border border-gray-100 flex flex-col p-6 gap-6 transition-opacity duration-300 ${isDetailLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
             {/* Header: Profile Card */}
             <div className="flex items-center justify-between border-b border-gray-100 pb-5">
               <div className="flex items-center gap-4">
@@ -369,9 +499,9 @@ export default function PeringkatOperatorPage() {
                 </div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
-                    <span className="text-base font-bold text-gray-900">{selectedOperator.name}</span>
+                    <span className="text-base font-bold text-gray-900">{operatorKpi?.nama || selectedOperator.operator}</span>
                     <span className="bg-[#800000] text-white flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
-                      <i className="ri-trophy-fill text-[10px]"></i> #{selectedOperator.rank}
+                      <i className="ri-trophy-fill text-[10px]"></i> #{selectedOperator.peringkat}
                     </span>
                   </div>
                   <span className="text-xs font-semibold text-gray-400 mt-0.5">
@@ -379,27 +509,21 @@ export default function PeringkatOperatorPage() {
                   </span>
                 </div>
               </div>
-              <button
-                onClick={() => setSelectedOperator(null)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer"
-              >
-                <i className="ri-close-line text-xl"></i>
-              </button>
             </div>
 
             {/* Middle: operator metrics cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatCard 
                 title="TOTAL AJUAN"
-                value="124"
+                value={operatorKpi?.total_ajuan?.toLocaleString('id-ID') || '0'}
               />
               <StatCard 
                 title="TOTAL SELESAI"
-                value="98"
+                value={operatorKpi?.total_selesai?.toLocaleString('id-ID') || '0'}
               />
               <StatCard 
                 title="TINGKAT SELESAI"
-                value="79%"
+                value={`${operatorKpi?.tingkat_selesai || 0}%`}
               />
             </div>
 
@@ -416,7 +540,7 @@ export default function PeringkatOperatorPage() {
               {/* Custom Legend */}
               <div className="flex items-center justify-center gap-2 mt-2">
                 <span className="w-2.5 h-2.5 rounded-sm bg-primary"></span>
-                <span className="text-[10px] font-bold text-gray-500">2026</span>
+                <span className="text-[10px] font-bold text-gray-500">{currentYear}</span>
               </div>
             </div>
 
@@ -424,21 +548,30 @@ export default function PeringkatOperatorPage() {
             <div className="flex flex-col gap-4">
               <h4 className="text-sm font-bold text-gray-900">Daftar Riwayat Layanan</h4>
               
-              <Tabs tabs={detailTabs} activeTab={activeTab} onChange={setActiveTab} className="mb-2" />
+              <Tabs tabs={detailTabs} activeTab={activeTab} onChange={(val) => {
+                setActiveTab(val);
+                setDetailCurrentPage(1);
+              }} className="mb-2" />
 
-              <div className="w-full border border-gray-100 rounded-xl overflow-hidden">
-                <Table 
-                  columns={historyColumns} 
-                  data={filteredHistory} 
-                />
+              <div className="w-full border border-gray-100 rounded-xl overflow-hidden min-h-[200px]">
+                {historyData.length > 0 ? (
+                  <Table 
+                    columns={historyColumns} 
+                    data={historyData} 
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-sm text-gray-400 py-10">
+                    Tidak ada riwayat ditemukan
+                  </div>
+                )}
               </div>
 
               <div className="mt-2">
                 <Pagination
                   currentPage={detailCurrentPage}
-                  totalPages={3}
-                  totalItems={24}
-                  itemsPerPage={5}
+                  totalPages={detailTotalPages}
+                  totalItems={detailTotalItems}
+                  itemsPerPage={detailPerPage}
                   onPageChange={setDetailCurrentPage}
                 />
               </div>
