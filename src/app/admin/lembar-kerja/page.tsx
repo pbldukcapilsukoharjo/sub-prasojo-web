@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
@@ -12,8 +12,8 @@ import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
-import dummyDB from '../../../../dummy-data/database-dummy.json';
-import ajuanData from '../../../../dummy-data/ajuan.json';
+import { pengajuanService, AjuanItem, PengajuanLembarKerjaParams } from '@/services/pengajuan.service';
+import { handleApiError } from '@/lib/api-error';
 
 export default function LembarKerja() {
   const router = useRouter();
@@ -30,8 +30,60 @@ export default function LembarKerja() {
   const [periode, setPeriode] = useState('');
   const [sortBy, setSortBy] = useState('newest');
 
+  const [data, setData] = useState<AjuanItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
+  const perPage = 10;
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, activeTab]);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const formatToDDMMYYYY = (dateStr: string) => {
+        if (!dateStr) return undefined;
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          const parts = dateStr.split('-');
+          return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dateStr;
+      };
+
+      const params: PengajuanLembarKerjaParams = {
+        search: search || undefined,
+        kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
+        pelapor: pelapor !== 'all' ? pelapor : undefined,
+        start_date: formatToDDMMYYYY(startDate),
+        end_date: formatToDDMMYYYY(endDate),
+        periode: periode ? Number(periode) : undefined,
+        layanan: activeTab !== 'semua' ? activeTab : undefined,
+        sort: sortBy,
+        page: currentPage,
+        per_page: perPage,
+      };
+
+      const response = await pengajuanService.getLembarKerja(params);
+      if (response.status) {
+        setData(response.data || []);
+        if (response.meta) {
+          setTotalItems(response.meta.total);
+          setTotalPages(response.meta.total_page);
+        }
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleReset = () => {
     setSearch('');
@@ -41,10 +93,20 @@ export default function LembarKerja() {
     setEndDate('');
     setPeriode('');
     setSortBy('newest');
+    setCurrentPage(1);
+    
+    // Using a short timeout to let state update before fetching
+    setTimeout(() => {
+       fetchData();
+    }, 0);
   };
 
   const handleFilter = () => {
-    console.log({ search, pelapor, kecamatan, startDate, endDate, periode, sortBy });
+    if (currentPage === 1) {
+      fetchData();
+    } else {
+      setCurrentPage(1); // this will trigger useEffect to fetchData
+    }
   };
 
   const tabs = [
@@ -87,35 +149,42 @@ export default function LembarKerja() {
     },
   ];
 
-  const mappedData = ajuanData.ajuan
-    .filter((ajuan) => ajuan.ajuan_status === 'BELUM DIVERIFIKASI')
-    .map((ajuan, index) => {
-    const pelapor = dummyDB.user.find((u) => u.id === ajuan.ajuan_pelapor_id);
-    const dateObj = new Date(ajuan.ajuan_create_datetime);
-    const tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
-    const waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+  const mappedData = data.map((ajuan, index) => {
+    let tanggal = '-';
+    let waktu = '-';
+    if (ajuan.ajuan_create_datetime) {
+       // Support cross-browser parsing for 'YYYY-MM-DD HH:mm:ss'
+       const dateStr = ajuan.ajuan_create_datetime.includes(' ') 
+         ? ajuan.ajuan_create_datetime.replace(' ', 'T') 
+         : ajuan.ajuan_create_datetime;
+       const dateObj = new Date(dateStr);
+       tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
+       waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+    }
 
     return {
       id: ajuan.ajuan_id,
-      no: String(index + 1).padStart(2, '0'),
-      noRegis: ajuan.ajuan_no_reg,
-      kodeProduk: ajuan.ajuan_layanan_kode,
-      kodeAjuan: ajuan.ajuan_layanan_kode + '-NEW',
-      jalur: ajuan.ajuan_is_online ? 'Online' : 'Offline',
-      pelapor: pelapor?.fullname || 'PADUKA',
-      kecamatan: ajuan.ajuan_kecamatan_name,
+      no: String((currentPage - 1) * perPage + index + 1).padStart(2, '0'),
+      noRegis: ajuan.ajuan_no_reg || '-',
+      kodeProduk: ajuan.layanan?.layanan_name || '-',
+      kodeAjuan: (ajuan.layanan?.layanan_name || '') + '-NEW',
+      jalur: ajuan.ajuan_pelapor_role_name || (ajuan.ajuan_is_online ? 'Online' : 'Offline'),
+      pelapor: ajuan.pelapor?.user_nama_lengkap || 'PADUKA',
+      nik: ajuan.pelapor?.user_nik || '-',
+      kecamatan: ajuan.kecamatan?.kecamatan_name || '-',
       tanggal,
       waktu,
-      status: 'BELUM DIVERIFIKASI'
+      status: ajuan.ajuan_status || 'BELUM DIVERIFIKASI'
     };
   });
 
   const handleRowClick = (row: any) => {
     setSelectedData({
+      id: row.id,
       noRegis: row.noRegis,
       namaLengkap: row.pelapor,
-      nik: '33140202020202',
-      jenisLayanan: row.kodeAjuan.replace('-NEW', ''),
+      nik: row.nik,
+      jenisLayanan: row.kodeProduk,
       kecamatan: row.kecamatan,
       status: row.status,
       tanggal: row.tanggal,
@@ -124,13 +193,21 @@ export default function LembarKerja() {
     setIsModalOpen(true);
   };
 
+  const handleExport = async () => {
+    try {
+      await pengajuanService.exportPengajuan('lembar_kerja');
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       {/* Filter Card */}
       <FilterCard onReset={handleReset} onApply={handleFilter}>
         <Input
           label="Pencarian Cepat"
-          placeholder="No. Regis"
+          placeholder="No. Regis, NIK, dll"
           icon="ri-search-line"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -170,9 +247,18 @@ export default function LembarKerja() {
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[
-            { label: 'Bulan Ini', value: 'this_month' },
-            { label: 'Bulan Lalu', value: 'last_month' },
-            { label: 'Tahun Ini', value: 'this_year' },
+            { label: 'Januari', value: 1 },
+            { label: 'Februari', value: 2 },
+            { label: 'Maret', value: 3 },
+            { label: 'April', value: 4 },
+            { label: 'Mei', value: 5 },
+            { label: 'Juni', value: 6 },
+            { label: 'Juli', value: 7 },
+            { label: 'Agustus', value: 8 },
+            { label: 'September', value: 9 },
+            { label: 'Oktober', value: 10 },
+            { label: 'November', value: 11 },
+            { label: 'Desember', value: 12 },
           ]}
         />
         <CustomSelect
@@ -187,11 +273,11 @@ export default function LembarKerja() {
       </FilterCard>
 
       {/* Table Card */}
-      <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden">
+      <div className={`card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <div className="p-6 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900">Tabel Lembar Kerja</h3>
-          <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm">
-            EXPORT PDF
+          <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm" onClick={handleExport}>
+            EXPORT EXCEL
           </Button>
         </div>
 
@@ -199,20 +285,26 @@ export default function LembarKerja() {
           <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
         </div>
 
-        <div className="w-full mt-2">
-          <Table 
-            columns={tableColumns} 
-            data={mappedData} 
-            onRowClick={handleRowClick}
-          />
+        <div className="w-full mt-2 min-h-[300px]">
+          {mappedData.length > 0 ? (
+            <Table 
+              columns={tableColumns} 
+              data={mappedData} 
+              onRowClick={handleRowClick}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-sm text-gray-400 py-12">
+              Tidak ada data ditemukan
+            </div>
+          )}
         </div>
 
         <div className="p-6 border-t border-gray-100">
           <Pagination 
             currentPage={currentPage}
-            totalPages={1}
-            totalItems={mappedData.length}
-            itemsPerPage={10}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={perPage}
             onPageChange={setCurrentPage}
           />
         </div>

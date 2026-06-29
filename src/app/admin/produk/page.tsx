@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
@@ -12,9 +12,8 @@ import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
-import dummyDB from '../../../../dummy-data/database-dummy.json';
-import ajuanData from '../../../../dummy-data/ajuan.json';
-import produkData from '../../../../dummy-data/produk.json';
+import { pengajuanService, AjuanItem, PengajuanProdukParams } from '@/services/pengajuan.service';
+import { handleApiError } from '@/lib/api-error';
 
 export default function Produk() {
   const router = useRouter();
@@ -29,10 +28,62 @@ export default function Produk() {
   const [kecamatan, setKecamatan] = useState('all');
   const [periode, setPeriode] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [namaIdentitas, setNamaIdentitas] = useState('all');
+  const [namaIdentitas, setNamaIdentitas] = useState('');
+
+  const [data, setData] = useState<AjuanItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
+  const perPage = 10;
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, activeTab]);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const formatToDDMMYYYY = (dateStr: string) => {
+        if (!dateStr) return undefined;
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          const parts = dateStr.split('-');
+          return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dateStr;
+      };
+
+      const params: PengajuanProdukParams = {
+        search: search || undefined,
+        kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
+        nama_identitas_produk: namaIdentitas || undefined,
+        start_date: formatToDDMMYYYY(startDate),
+        end_date: formatToDDMMYYYY(endDate),
+        periode: periode ? Number(periode) : undefined,
+        layanan: activeTab !== 'semua' ? activeTab : undefined,
+        sort: sortBy,
+        page: currentPage,
+        per_page: perPage,
+      };
+
+      const response = await pengajuanService.getProduk(params);
+      if (response.status) {
+        setData(response.data || []);
+        if (response.meta) {
+          setTotalItems(response.meta.total);
+          setTotalPages(response.meta.total_page);
+        }
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleReset = () => {
     setSearch('');
@@ -41,11 +92,20 @@ export default function Produk() {
     setKecamatan('all');
     setPeriode('');
     setSortBy('newest');
-    setNamaIdentitas('all');
+    setNamaIdentitas('');
+    setCurrentPage(1);
+    
+    setTimeout(() => {
+       fetchData();
+    }, 0);
   };
 
   const handleFilter = () => {
-    console.log({ search, startDate, endDate, kecamatan, periode, sortBy, namaIdentitas });
+    if (currentPage === 1) {
+      fetchData();
+    } else {
+      setCurrentPage(1);
+    }
   };
 
   const tabs = [
@@ -63,7 +123,7 @@ export default function Produk() {
     { key: 'no', header: 'No' },
     { key: 'noRegis', header: 'NO.REGIS' },
     { key: 'kodeAjuan', header: 'KODE AJUAN' },
-    { key: 'noKk', header: 'NO. KARTU KELUARGA' },
+    { key: 'noKk', header: '-' }, // Sesuai permintaan
     { key: 'namaIdentitas', header: 'NAMA IDENTITAS PRODUK' },
     { key: 'kecamatan', header: 'KECAMATAN' },
     { 
@@ -87,64 +147,53 @@ export default function Produk() {
     },
   ];
 
-  const filteredProduk = produkData.produk.filter((prod) => {
-    // Tab filtering mapping
-    if (activeTab !== 'semua') {
-      const kode = prod.prod_layanan_kode.toLowerCase();
-      if (activeTab === 'kk' && !kode.includes('kk')) return false;
-      if (activeTab === 'ktp' && !kode.includes('kt')) return false;
-      if (activeTab === 'kia' && !kode.includes('ki')) return false;
-      if (activeTab === 'akta_kelahiran' && !kode.includes('ak')) return false;
-      if (activeTab === 'akta_kematian' && !kode.includes('ka')) return false;
-      if (activeTab === 'perpindahan' && !kode.includes('pd')) return false;
-      if (activeTab === 'surket' && !kode.includes('sk')) return false;
+  const mappedData = data.map((ajuan, index) => {
+    let tanggal = '-';
+    let waktu = '-';
+    if (ajuan.ajuan_create_datetime) {
+       const dateStr = ajuan.ajuan_create_datetime.includes(' ') 
+         ? ajuan.ajuan_create_datetime.replace(' ', 'T') 
+         : ajuan.ajuan_create_datetime;
+       const dateObj = new Date(dateStr);
+       tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
+       waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
     }
-    return true;
-  });
-
-  const mappedData = filteredProduk.map((prod, index) => {
-    const ajuan = ajuanData.ajuan.find((a) => a.ajuan_id === prod.prod_ajuan_id);
-    const pelapor = dummyDB.user.find((u) => u.id === prod.prod_pelapor_id);
-    const dateObj = new Date(prod.prod_create_datetime);
-    
-    const tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
-    const waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
-
-    let namaIdentitas = pelapor?.fullname || '-';
-    try {
-      if (ajuan?.ajuan_data_ajuan) {
-        const parsed = JSON.parse(ajuan.ajuan_data_ajuan);
-        if (parsed.nama_bayi) namaIdentitas = parsed.nama_bayi;
-        else if (parsed.nama_jenazah) namaIdentitas = parsed.nama_jenazah;
-      }
-    } catch (e) {}
 
     return {
-      id: prod.prod_id,
-      no: String(index + 1).padStart(2, '0'),
-      noRegis: prod.prod_ajuan_no_reg,
-      kodeAjuan: prod.prod_layanan_kode + '-NEW',
-      noKk: ajuan?.ajuan_pelapor_kk || prod.prod_nomor || '-',
-      namaIdentitas: namaIdentitas,
-      kecamatan: ajuan?.ajuan_kecamatan_name || '-',
+      id: ajuan.ajuan_id,
+      no: String((currentPage - 1) * perPage + index + 1).padStart(2, '0'),
+      noRegis: ajuan.ajuan_no_reg || '-',
+      kodeAjuan: (ajuan.layanan?.layanan_name || '') + '-NEW',
+      noKk: '-', // Sesuai permintaan
+      namaIdentitas: ajuan.nama_identitas_produk || '-',
+      kecamatan: ajuan.kecamatan?.kecamatan_name || '-',
       tanggal,
       waktu,
-      status: prod.prod_status
+      status: ajuan.ajuan_status || 'SELESAI'
     };
   });
 
   const handleRowClick = (row: any) => {
     setSelectedData({
+      id: row.id,
       noRegis: row.noRegis,
       namaLengkap: row.namaIdentitas,
-      nik: '33140202020202',
+      nik: '-', // Not available in produk response currently
       jenisLayanan: row.kodeAjuan.replace('-NEW', ''),
       kecamatan: row.kecamatan,
-      status: 'SIAP DIDOWNLOAD',
+      status: row.status,
       tanggal: row.tanggal,
       waktu: row.waktu,
     });
     setIsModalOpen(true);
+  };
+
+  const handleExport = async () => {
+    try {
+      await pengajuanService.exportPengajuan('produk');
+    } catch (error) {
+      handleApiError(error);
+    }
   };
 
   return (
@@ -153,10 +202,17 @@ export default function Produk() {
       <FilterCard onReset={handleReset} onApply={handleFilter}>
         <Input
           label="Pencarian Cepat"
-          placeholder="No. Reg/No KK/Nama"
+          placeholder="No. Reg/Layanan"
           icon="ri-search-line"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+        />
+        <Input
+          label="Nama Identitas Produk"
+          placeholder="Nama Terkait"
+          icon="ri-user-line"
+          value={namaIdentitas}
+          onChange={(e) => setNamaIdentitas(e.target.value)}
         />
         <CustomSelect
           label="Kecamatan"
@@ -176,9 +232,18 @@ export default function Produk() {
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[
-            { label: 'Bulan Ini', value: 'this_month' },
-            { label: 'Bulan Lalu', value: 'last_month' },
-            { label: 'Tahun Ini', value: 'this_year' },
+            { label: 'Januari', value: 1 },
+            { label: 'Februari', value: 2 },
+            { label: 'Maret', value: 3 },
+            { label: 'April', value: 4 },
+            { label: 'Mei', value: 5 },
+            { label: 'Juni', value: 6 },
+            { label: 'Juli', value: 7 },
+            { label: 'Agustus', value: 8 },
+            { label: 'September', value: 9 },
+            { label: 'Oktober', value: 10 },
+            { label: 'November', value: 11 },
+            { label: 'Desember', value: 12 },
           ]}
         />
         <CustomDateRangePicker
@@ -201,11 +266,11 @@ export default function Produk() {
       </FilterCard>
 
       {/* Table Card */}
-      <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden">
+      <div className={`card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <div className="p-6 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900">Tabel Produk</h3>
-          <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm">
-            EXPORT PDF
+          <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm" onClick={handleExport}>
+            EXPORT EXCEL
           </Button>
         </div>
 
@@ -213,20 +278,26 @@ export default function Produk() {
           <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
         </div>
 
-        <div className="w-full mt-2">
-          <Table 
-            columns={tableColumns} 
-            data={mappedData} 
-            onRowClick={handleRowClick}
-          />
+        <div className="w-full mt-2 min-h-[300px]">
+          {mappedData.length > 0 ? (
+            <Table 
+              columns={tableColumns} 
+              data={mappedData} 
+              onRowClick={handleRowClick}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-sm text-gray-400 py-12">
+              Tidak ada data ditemukan
+            </div>
+          )}
         </div>
 
         <div className="p-6 border-t border-gray-100">
           <Pagination 
             currentPage={currentPage}
-            totalPages={1}
-            totalItems={mappedData.length}
-            itemsPerPage={10}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            itemsPerPage={perPage}
             onPageChange={setCurrentPage}
           />
         </div>

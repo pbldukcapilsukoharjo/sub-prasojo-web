@@ -41,12 +41,22 @@ export default function DashboardFilter({ onFilterChange }: DashboardFilterProps
 
   const handleFilter = () => {
     if (onFilterChange) {
+      const formatToDDMMYYYY = (dateStr: string) => {
+        if (!dateStr) return undefined;
+        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+          const parts = dateStr.split('-');
+          return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+        return dateStr;
+      };
+
       onFilterChange({
-        serviceType: jenisLayanan !== 'all' ? String(jenisLayanan) : undefined,
-        district: kecamatan !== 'all' ? String(kecamatan) : undefined,
-        period: periode ? String(periode) : undefined,
-        startDate: startDate || undefined,
-        endDate: endDate || undefined,
+        id_layanan: jenisLayanan !== 'all' ? Number(jenisLayanan) : undefined,
+        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+        periode_bulan: periode ? Number(periode) : undefined,
+        start_date: formatToDDMMYYYY(startDate),
+        end_date: formatToDDMMYYYY(endDate),
       });
     }
   };
@@ -59,13 +69,13 @@ export default function DashboardFilter({ onFilterChange }: DashboardFilterProps
         onChange={setJenisLayanan}
         options={[
           { label: 'Semua Jenis Layanan', value: 'all' },
-          { label: 'Kartu Keluarga', value: 'kk' },
-          { label: 'KTP-el', value: 'ktp' },
-          { label: 'KIA', value: 'kia' },
-          { label: 'Akta Kelahiran', value: 'akta_kelahiran' },
-          { label: 'Akta Kematian', value: 'akta_kematian' },
-          { label: 'Perpindahan', value: 'perpindahan' },
-          { label: 'Surket KTP', value: 'surket' },
+          { label: 'Kartu Keluarga', value: 1 },
+          { label: 'KTP-el', value: 2 },
+          { label: 'KIA', value: 3 },
+          { label: 'Akta Kelahiran', value: 4 },
+          { label: 'Akta Kematian', value: 5 },
+          { label: 'Perpindahan', value: 6 },
+          { label: 'Surket KTP', value: 7 },
         ]}
       />
       <CustomSelect
@@ -81,9 +91,18 @@ export default function DashboardFilter({ onFilterChange }: DashboardFilterProps
         disabled={isPeriodeDisabled}
         placeholder="Pilih Periode"
         options={[
-          { label: 'Bulan Ini', value: 'this_month' },
-          { label: 'Bulan Lalu', value: 'last_month' },
-          { label: 'Tahun Ini', value: 'this_year' },
+          { label: 'Januari', value: 1 },
+          { label: 'Februari', value: 2 },
+          { label: 'Maret', value: 3 },
+          { label: 'April', value: 4 },
+          { label: 'Mei', value: 5 },
+          { label: 'Juni', value: 6 },
+          { label: 'Juli', value: 7 },
+          { label: 'Agustus', value: 8 },
+          { label: 'September', value: 9 },
+          { label: 'Oktober', value: 10 },
+          { label: 'November', value: 11 },
+          { label: 'Desember', value: 12 },
         ]}
       />
       <CustomDateRangePicker

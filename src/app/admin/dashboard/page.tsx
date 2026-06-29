@@ -6,6 +6,7 @@ import Link from 'next/link';
 import DashboardFilter from '@/components/Dashboard/DashboardFilter';
 import { dashboardService, DashboardFilterParams, KpiData, ChartTrendItem, TopWilayahItem } from '@/services/dashboard.service';
 import toast from 'react-hot-toast';
+import { handleApiError } from '@/lib/api-error';
 
 // Dynamically import ApexCharts to avoid SSR issues
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -45,7 +46,7 @@ export default function Dashboard() {
 
     } catch (error) {
       console.error("Failed to fetch dashboard data", error);
-      toast.error("Gagal mengambil data dashboard.");
+      handleApiError(error);
     } finally {
       setIsLoading(false);
     }
@@ -57,8 +58,13 @@ export default function Dashboard() {
 
   // Prepare Chart Options
   const categories = chartData.map(item => item.tanggal);
-  const totalAjuanSeries = chartData.map(item => item.total_ajuan);
-  const selesaiSeries = chartData.map(item => item.selesai);
+  const totalAjuanSeries = chartData.map(item => item.total_ajuan || 0);
+  const belumDiverifikasiSeries = chartData.map(item => item.belum_diverifikasi || 0);
+  const diverifikasiSeries = chartData.map(item => item.diverifikasi || 0);
+  const ditolakSeries = chartData.map(item => item.ditolak || 0);
+  const diprosesSeries = chartData.map(item => item.diproses || 0);
+  const selesaiSeries = chartData.map(item => item.selesai || 0);
+  const disetujuiSeries = chartData.map(item => item.disetujui || 0);
 
   const chartOptions: any = {
     chart: {
@@ -68,10 +74,10 @@ export default function Dashboard() {
       animations: { enabled: true, speed: 600 },
     },
     stroke: {
-      width: [3, 3],
+      width: [3, 2, 2, 2, 2, 2, 2],
       curve: 'smooth',
     },
-    colors: ['#F59E0B', '#10B981'], // Orange for Total, Green for Selesai
+    colors: ['#4B5563', '#F59E0B', '#3B82F6', '#EF4444', '#8B5CF6', '#10B981', '#059669'],
     xaxis: {
       categories: categories,
       labels: { style: { fontSize: '11px', fontFamily: 'Inter, sans-serif', colors: '#9CA3AF' } },
@@ -107,7 +113,12 @@ export default function Dashboard() {
 
   const chartSeries = [
     { name: 'Total Ajuan', data: totalAjuanSeries },
+    { name: 'Belum Diverifikasi', data: belumDiverifikasiSeries },
+    { name: 'Diverifikasi', data: diverifikasiSeries },
+    { name: 'Ditolak', data: ditolakSeries },
+    { name: 'Diproses', data: diprosesSeries },
     { name: 'Selesai', data: selesaiSeries },
+    { name: 'Disetujui', data: disetujuiSeries },
   ];
 
   const statCards = [

@@ -2,11 +2,11 @@ import axiosInstance from "@/lib/axios";
 import { ApiBaseResponse } from "./auth.service";
 
 export interface DashboardFilterParams {
-  serviceType?: string;
-  district?: string;
-  period?: string;
-  startDate?: string;
-  endDate?: string;
+  id_layanan?: number;
+  id_kecamatan?: number;
+  periode_bulan?: number;
+  start_date?: string;
+  end_date?: string;
 }
 
 export interface KpiData {
@@ -33,7 +33,12 @@ export interface KpiData {
 export interface ChartTrendItem {
   tanggal: string;
   total_ajuan: number;
+  belum_diverifikasi: number;
+  diverifikasi: number;
+  ditolak: number;
+  diproses: number;
   selesai: number;
+  disetujui: number;
 }
 
 export interface TopWilayahItem {
@@ -48,14 +53,14 @@ export type DashboardTopWilayahResponse = ApiBaseResponse<TopWilayahItem[]>;
 
 // Helper to clean up empty filter params
 const buildQueryParams = (params?: DashboardFilterParams) => {
-  const query: Record<string, string> = {};
+  const query: Record<string, any> = {};
   if (!params) return query;
 
-  if (params.serviceType && params.serviceType !== 'all') query.serviceType = params.serviceType;
-  if (params.district && params.district !== 'all') query.district = params.district;
-  if (params.period) query.period = params.period;
-  if (params.startDate) query.startDate = params.startDate;
-  if (params.endDate) query.endDate = params.endDate;
+  if (params.id_layanan) query.id_layanan = params.id_layanan;
+  if (params.id_kecamatan) query.id_kecamatan = params.id_kecamatan;
+  if (params.periode_bulan) query.periode_bulan = params.periode_bulan;
+  if (params.start_date) query.start_date = params.start_date;
+  if (params.end_date) query.end_date = params.end_date;
 
   return query;
 };

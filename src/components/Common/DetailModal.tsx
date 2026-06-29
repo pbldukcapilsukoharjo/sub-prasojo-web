@@ -1,23 +1,17 @@
-import React from 'react';
-
-interface TimelineStep {
-  label: string;
-  date: string;
-  time: string;
-  status: 'completed' | 'current' | 'pending';
-  colorClass: string;
-}
+import React, { useEffect, useState } from 'react';
+import { pengajuanService, TimelineDetail } from '@/services/pengajuan.service';
+import { handleApiError } from '@/lib/api-error';
 
 interface DetailModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: {
+    id?: number;
     noRegis: string;
     namaLengkap: string;
     nik: string;
     jenisLayanan: string;
     kecamatan: string;
-    timeline?: TimelineStep[];
     status?: string;
     tanggal?: string;
     waktu?: string;
@@ -25,10 +19,38 @@ interface DetailModalProps {
 }
 
 export default function DetailModal({ isOpen, onClose, data }: DetailModalProps) {
+  const [timelineData, setTimelineData] = useState<TimelineDetail[]>([]);
+  const [timelineStatus, setTimelineStatus] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && data?.id) {
+      fetchDetail(data.id);
+    } else {
+      setTimelineData([]);
+      setTimelineStatus('');
+    }
+  }, [isOpen, data?.id]);
+
+  const fetchDetail = async (id: number) => {
+    setIsLoading(true);
+    try {
+      const res = await pengajuanService.getPengajuanDetail(id);
+      if (res.status && res.data) {
+        setTimelineData(res.data.timeline || []);
+        setTimelineStatus(res.data.status_saat_ini || '');
+      }
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!isOpen || !data) return null;
 
   // Normalize status and determine active step count
-  const statusStr = data.status || '';
+  const statusStr = timelineStatus || data.status || '';
   const normalizedStatus = statusStr.toUpperCase();
   
   let activeCount = 1;
@@ -42,8 +64,8 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
     activeCount = 5;
   } else {
     // Fallback to timeline length if status is not explicitly set
-    if (data.timeline && data.timeline.length > 0) {
-      activeCount = data.timeline.length;
+    if (timelineData.length > 0) {
+      activeCount = timelineData.length;
     }
   }
 
@@ -51,16 +73,30 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
 
   // Define the 5 sequential steps
   const steps = [
-    { label: 'Ajuan Dibuat', colorClass: 'gray', textColor: 'text-gray-900 border-gray-900' },
-    { label: 'Diverifikasi', colorClass: 'blue', textColor: 'text-blue-500 border-blue-500' },
-    { label: isRejected ? 'Ditolak' : 'Disetujui', colorClass: isRejected ? 'red' : 'green', textColor: isRejected ? 'text-red-500 border-red-500' : 'text-green-500 border-green-500' },
-    { label: 'Diproses', colorClass: 'slate', textColor: 'text-slate-600 border-slate-600' },
-    { label: 'Siap Didownload', colorClass: 'purple', textColor: 'text-purple-600 border-purple-600' },
+    { label: 'Ajuan Dibuat', colorClass: 'gray', textColor: 'text-gray-900 border-gray-900', statuses: ['MENUNGGU'] },
+    { label: 'Diverifikasi', colorClass: 'blue', textColor: 'text-blue-500 border-blue-500', statuses: ['DIVERIFIKASI'] },
+    { label: isRejected ? 'Ditolak' : 'Disetujui', colorClass: isRejected ? 'red' : 'green', textColor: isRejected ? 'text-red-500 border-red-500' : 'text-green-500 border-green-500', statuses: ['DISETUJUI', 'DITOLAK'] },
+    { label: 'Diproses', colorClass: 'slate', textColor: 'text-slate-600 border-slate-600', statuses: ['DIPROSES'] },
+    { label: 'Selesai', colorClass: 'purple', textColor: 'text-purple-600 border-purple-600', statuses: ['SIAP DIDOWNLOAD', 'SELESAI'] },
   ];
 
-  // Helper to format date and time
-  const displayDate = data.tanggal || '';
-  const displayTime = data.waktu ? data.waktu.replace(' WIB', '') : '';
+  const getTimelineInfo = (statusLabels: string[], fallbackDate: string, fallbackTime: string) => {
+     const match = timelineData.find(t => statusLabels.includes(t.status.toUpperCase()));
+     if (!match) return { displayDate: fallbackDate, displayTime: fallbackTime, note: '' };
+     
+     try {
+       const dateStr = match.datetime.includes(' ') ? match.datetime.replace(' ', 'T') : match.datetime;
+       const dateObj = new Date(dateStr);
+       const displayDate = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
+       const displayTime = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+       return { displayDate, displayTime, note: match.note };
+     } catch (e) {
+       return { displayDate: fallbackDate, displayTime: fallbackTime, note: match.note };
+     }
+  };
+
+  const baseDisplayDate = data.tanggal || '';
+  const baseDisplayTime = data.waktu ? data.waktu.replace(' WIB', '') : '';
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
@@ -70,7 +106,7 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
         onClick={onClose}
       />
       
-      <div className="bg-white rounded-2xl w-full max-w-[680px] p-6 lg:p-8 relative z-10 shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200 m-4 max-h-[90vh] overflow-y-auto">
+      <div className={`bg-white rounded-2xl w-full max-w-[680px] p-6 lg:p-8 relative z-10 shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200 m-4 max-h-[90vh] overflow-y-auto transition-opacity ${isLoading ? 'opacity-70 pointer-events-none' : 'opacity-100'}`}>
         
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -125,6 +161,7 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
             {steps.map((step, idx) => {
               const isActive = idx < activeCount;
               const isLast = idx === steps.length - 1;
+              const { displayDate, displayTime, note } = getTimelineInfo(step.statuses, baseDisplayDate, baseDisplayTime);
 
               // Determine dot color
               let dotColor = 'bg-slate-200';
@@ -169,17 +206,22 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
                   
                   {/* Content Box or Empty Space */}
                   {isActive ? (
-                    <div className={`mr-2 p-3 ${bgColor} border-l-[3px] border-transparent mt-2 rounded-r-md min-h-[72px] transition-all duration-300 flex flex-col justify-center`}>
+                    <div className={`mr-2 p-3 ${bgColor} border-l-[3px] border-transparent mt-2 rounded-r-md min-h-[85px] transition-all duration-300 flex flex-col justify-center`}>
                       <p className={`text-[11px] font-extrabold ${step.textColor} mb-1 leading-tight`}>
                         {step.label}
                       </p>
-                      <p className="text-[9px] font-bold text-slate-500 leading-normal">
+                      <p className="text-[9px] font-bold text-slate-500 leading-normal mb-1">
                         {displayTime},<br/>{displayDate}
                       </p>
+                      {note && (
+                        <p className="text-[9px] text-slate-600 italic leading-snug border-t border-slate-200/60 pt-1 mt-0.5">
+                          {note}
+                        </p>
+                      )}
                     </div>
                   ) : (
                     // Space kosong for unreached steps
-                    <div className="mr-2 min-h-[72px] mt-2 transition-all duration-300"></div>
+                    <div className="mr-2 min-h-[85px] mt-2 transition-all duration-300"></div>
                   )}
                 </div>
               );
@@ -191,4 +233,3 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
     </div>
   );
 }
-
