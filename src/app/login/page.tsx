@@ -25,7 +25,7 @@ export default function LoginPage() {
       const response = await authService.login(data);
 
       if (response.status === true && response.data?.access_token) {
-        login(response.data.access_token);
+        login(response.data.access_token, response.data.refresh_token);
         toast.success(response.message || "Login berhasil");
         router.push("/admin/dashboard");
       } else {

@@ -10,7 +10,7 @@ interface AuthContextType {
   user: UserProfile | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  login: (token: string, refreshToken?: string) => void;
   logout: () => void;
 }
 
@@ -39,8 +39,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const user = profileResponse?.data || null;
   const isAuthenticated = !!user;
 
-  const login = (newToken: string) => {
+  const login = (newToken: string, refreshToken?: string) => {
     Cookies.set("token", newToken, { expires: 1 }); // expires in 1 day
+    if (refreshToken) {
+      Cookies.set("refresh_token", refreshToken, { expires: 7 }); // expires in 7 days
+    }
     setToken(newToken);
     queryClient.invalidateQueries({ queryKey: ["authProfile"] });
   };
@@ -52,6 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // ignore if token is already invalid
     } finally {
       Cookies.remove("token");
+      Cookies.remove("refresh_token");
       setToken(null);
       queryClient.clear();
       router.push("/login");
