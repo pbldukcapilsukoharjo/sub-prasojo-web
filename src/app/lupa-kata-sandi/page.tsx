@@ -47,7 +47,7 @@ export default function LupaKataSandiPage() {
       </div>
 
       {/* Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm w-full max-w-[420px] p-8 sm:p-10">
+      <div className="bg-surface rounded-2xl border border-border shadow-sm w-full max-w-[420px] p-8 sm:p-10">
 
         {/* Icon Badge */}
         <div className="flex justify-center mb-6">
@@ -61,7 +61,7 @@ export default function LupaKataSandiPage() {
           <h2 className="text-[22px] font-bold text-gray-950 leading-tight">
             Lupa Kata Sandi?
           </h2>
-          <p className="mt-2 text-[13px] text-gray-500 font-medium leading-relaxed">
+          <p className="mt-2 text-[13px] text-text-secondary font-medium leading-relaxed">
             Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi.
           </p>
         </div>
@@ -72,12 +72,12 @@ export default function LupaKataSandiPage() {
         <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
           {/* Email */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[10px] font-bold text-gray-500 tracking-[0.12em] uppercase">
+            <label className="text-[10px] font-bold text-text-secondary tracking-[0.12em] uppercase">
               Alamat Email
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <i className="ri-mail-line text-gray-400 text-[16px]" />
+                <i className="ri-mail-line text-text-secondary text-[16px]" />
               </div>
               <input
                 id="forgot-email"
@@ -87,7 +87,7 @@ export default function LupaKataSandiPage() {
                   pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Format email tidak valid" }
                 })}
                 placeholder="nama@email.com"
-                className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 pl-11 pr-4 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-gray-400"
+                className="w-full bg-background text-text-primary text-sm font-medium rounded-xl border border-neutral h-11 pl-11 pr-4 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-text-secondary"
               />
             </div>
             {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
@@ -105,7 +105,7 @@ export default function LupaKataSandiPage() {
         </form>
 
         {/* Back to login */}
-        <div className="border-t border-gray-100 mt-7 pt-5 flex justify-center">
+        <div className="border-t border-border mt-7 pt-5 flex justify-center">
           <Link
             href="/login"
             className="flex items-center gap-1.5 text-[13px] font-semibold text-[#8B0000] hover:underline transition-all"
@@ -117,7 +117,7 @@ export default function LupaKataSandiPage() {
       </div>
 
       {/* Footer note */}
-      <p className="mt-6 text-[11px] text-gray-400 font-medium text-center">
+      <p className="mt-6 text-[11px] text-text-secondary font-medium text-center">
         © 2026 Sistem Monitoring PRASOJO
       </p>
     </main>

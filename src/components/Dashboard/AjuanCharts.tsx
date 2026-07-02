@@ -207,17 +207,17 @@ export default function AjuanCharts() {
   ];
 
   if (!mounted) {
-    return <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 h-[380px] bg-gray-50/50 rounded-2xl animate-pulse"></div>;
+    return <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 h-[380px] bg-background/50 rounded-2xl animate-pulse"></div>;
   }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Pie Chart Card */}
-      <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden bg-white">
+      <div className="card shadow-sm border border-border flex flex-col p-0 overflow-hidden bg-surface">
         {/* Header */}
-        <div className="px-6 pt-5 pb-4 border-b border-gray-100">
-          <h3 className="text-sm font-bold text-gray-900">Persentase Distribusi Status</h3>
-          <p className="text-[11px] text-gray-400 font-medium mt-0.5">
+        <div className="px-6 pt-5 pb-4 border-b border-border">
+          <h3 className="text-sm font-bold text-text-primary">Persentase Distribusi Status</h3>
+          <p className="text-[11px] text-text-secondary font-medium mt-0.5">
             Proporsi berkas berdasarkan status ajuan saat ini
           </p>
         </div>
@@ -230,11 +230,11 @@ export default function AjuanCharts() {
       </div>
 
       {/* Bar Chart Card */}
-      <div className="card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden bg-white">
+      <div className="card shadow-sm border border-border flex flex-col p-0 overflow-hidden bg-surface">
         {/* Header */}
-        <div className="px-6 pt-5 pb-4 border-b border-gray-100">
-          <h3 className="text-sm font-bold text-gray-900">Jumlah per Jenis Layanan</h3>
-          <p className="text-[11px] text-gray-400 font-medium mt-0.5">
+        <div className="px-6 pt-5 pb-4 border-b border-border">
+          <h3 className="text-sm font-bold text-text-primary">Jumlah per Jenis Layanan</h3>
+          <p className="text-[11px] text-text-secondary font-medium mt-0.5">
             Distribusi volume pengajuan untuk setiap jenis layanan
           </p>
         </div>
@@ -247,7 +247,7 @@ export default function AjuanCharts() {
           <div className="flex items-center justify-center gap-4 border-t border-gray-50 mt-auto">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-primary flex-shrink-0"></span>
-              <span className="text-[11px] font-semibold text-gray-500">Volume Pengajuan (Juni)</span>
+              <span className="text-[11px] font-semibold text-text-secondary">Volume Pengajuan (Juni)</span>
             </div>
           </div>
         </div>

@@ -137,7 +137,7 @@ export default function Ajuan() {
       render: (row: any) => (
         <div className="flex flex-col">
           <span>{row.tanggal}</span>
-          <span className="text-[10px] text-gray-500 font-bold">{row.waktu}</span>
+          <span className="text-[10px] text-text-secondary font-bold">{row.waktu}</span>
         </div>
       )
     },
@@ -297,9 +297,9 @@ export default function Ajuan() {
       <AjuanCharts />
 
       {/* Table Card */}
-      <div className={`card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
+      <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <div className="p-6 flex items-center justify-between">
-          <h3 className="text-lg font-bold text-gray-900">Tabel Ajuan</h3>
+          <h3 className="text-lg font-bold text-text-primary">Tabel Ajuan</h3>
           <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm" onClick={handleExport}>
             EXPORT EXCEL
           </Button>
@@ -317,13 +317,13 @@ export default function Ajuan() {
               onRowClick={handleRowClick}
             />
           ) : (
-            <div className="flex items-center justify-center h-full text-sm text-gray-400 py-12">
+            <div className="flex items-center justify-center h-full text-sm text-text-secondary py-12">
               Tidak ada data ditemukan
             </div>
           )}
         </div>
 
-        <div className="p-6 border-t border-gray-100">
+        <div className="p-6 border-t border-border">
           <Pagination 
             currentPage={currentPage}
             totalPages={totalPages}

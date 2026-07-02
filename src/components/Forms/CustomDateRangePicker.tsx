@@ -179,44 +179,44 @@ export default function CustomDateRangePicker({
   return (
     <div className={`flex flex-col gap-1.5 ${wrapperClassName}`} ref={dropdownRef}>
       {label && (
-        <label className={`text-[10px] font-bold tracking-wider uppercase ${disabled ? 'text-gray-400' : 'text-gray-700'}`}>
+        <label className={`text-[10px] font-bold tracking-wider uppercase ${disabled ? 'text-text-secondary' : 'text-text-secondary'}`}>
           {label}
         </label>
       )}
       <div className="relative">
         <div
           className={`w-full text-sm rounded-[30px] border h-[44px] flex items-center justify-between transition-all select-none
-            ${disabled ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[var(--surface-secondary)] border-[#E5E7EB] text-gray-900 cursor-pointer hover:border-gray-300'}
-            ${isOpen ? 'ring-2 ring-primary border-primary bg-white' : ''}
+            ${disabled ? 'bg-gray-100 border-neutral text-text-secondary cursor-not-allowed' : 'bg-[var(--surface-secondary)] border-[#E5E7EB] text-text-primary cursor-pointer hover:border-gray-300'}
+            ${isOpen ? 'ring-2 ring-primary border-primary bg-surface' : ''}
             pl-11 pr-4`}
           onClick={() => !disabled && setIsOpen(!isOpen)}
         >
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <i className={`ri-calendar-line ${disabled ? 'text-gray-300' : 'text-gray-400'} text-lg`}></i>
+            <i className={`ri-calendar-line ${disabled ? 'text-gray-300' : 'text-text-secondary'} text-lg`}></i>
           </div>
           <span className="truncate text-xs font-semibold">
             {startDate || endDate ? (
               getDisplayText()
             ) : (
-              <span className="text-gray-400 font-medium">{placeholder}</span>
+              <span className="text-text-secondary font-medium">{placeholder}</span>
             )}
           </span>
-          <i className={`ri-arrow-down-s-line text-xl transition-transform ${isOpen ? 'rotate-180 text-primary' : 'text-gray-400'}`}></i>
+          <i className={`ri-arrow-down-s-line text-xl transition-transform ${isOpen ? 'rotate-180 text-primary' : 'text-text-secondary'}`}></i>
         </div>
 
         {/* Calendar Dropdown */}
         {isOpen && (
-          <div className="absolute top-[calc(100%+8px)] left-0 lg:right-0 lg:left-auto w-[320px] bg-white border border-gray-100 rounded-[16px] shadow-lg z-[100] p-4 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="absolute top-[calc(100%+8px)] left-0 lg:right-0 lg:left-auto w-[320px] bg-surface border border-border rounded-[16px] shadow-lg z-[100] p-4 animate-in fade-in slide-in-from-top-2 duration-200">
             
             {/* Real-time Preview Section */}
-            <div className="bg-gray-50 border border-gray-100 rounded-xl p-2.5 mb-3 flex flex-col gap-0.5">
-              <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Preview Tanggal</span>
-              <div className="flex items-center gap-1.5 text-xs font-bold text-gray-700">
+            <div className="bg-background border border-border rounded-xl p-2.5 mb-3 flex flex-col gap-0.5">
+              <span className="text-[9px] font-bold text-text-secondary uppercase tracking-wider">Preview Tanggal</span>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-text-secondary">
                 <i className="ri-calendar-check-line text-primary text-base"></i>
                 {tempStart ? (
                   <span className="truncate">
                     {formatPreviewDate(tempStart)}
-                    <span className="mx-1.5 text-gray-400 font-medium"> s/d </span>
+                    <span className="mx-1.5 text-text-secondary font-medium"> s/d </span>
                     {tempEnd ? (
                       formatPreviewDate(tempEnd)
                     ) : (
@@ -224,7 +224,7 @@ export default function CustomDateRangePicker({
                     )}
                   </span>
                 ) : (
-                  <span className="text-gray-400 font-medium">Pilih tanggal awal...</span>
+                  <span className="text-text-secondary font-medium">Pilih tanggal awal...</span>
                 )}
               </div>
             </div>
@@ -234,17 +234,17 @@ export default function CustomDateRangePicker({
               <button
                 type="button"
                 onClick={handlePrevMonth}
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-primary/5 hover:text-primary transition-colors text-gray-600 cursor-pointer"
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-primary/5 hover:text-primary transition-colors text-text-secondary cursor-pointer"
               >
                 <i className="ri-arrow-left-s-line text-lg"></i>
               </button>
-              <span className="text-sm font-bold text-gray-800">
+              <span className="text-sm font-bold text-text-primary">
                 {monthNames[viewMonth]} {viewYear}
               </span>
               <button
                 type="button"
                 onClick={handleNextMonth}
-                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-primary/5 hover:text-primary transition-colors text-gray-600 cursor-pointer"
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-primary/5 hover:text-primary transition-colors text-text-secondary cursor-pointer"
               >
                 <i className="ri-arrow-right-s-line text-lg"></i>
               </button>
@@ -253,7 +253,7 @@ export default function CustomDateRangePicker({
             {/* Weekdays Header */}
             <div className="grid grid-cols-7 gap-1 text-center mb-1">
               {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map((day) => (
-                <span key={day} className="text-[10px] font-bold text-gray-400 uppercase">
+                <span key={day} className="text-[10px] font-bold text-text-secondary uppercase">
                   {day}
                 </span>
               ))}
@@ -285,7 +285,7 @@ export default function CustomDateRangePicker({
                         ? 'bg-primary text-white font-bold z-10 shadow-sm' 
                         : inRange 
                           ? 'bg-primary/10 text-primary hover:bg-primary/20' 
-                          : 'text-gray-700 hover:bg-gray-100'
+                          : 'text-text-secondary hover:bg-gray-100'
                       }`}
                   >
                     {day}
@@ -299,7 +299,7 @@ export default function CustomDateRangePicker({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-between border-t border-gray-100 mt-4 pt-3 gap-2">
+            <div className="flex items-center justify-between border-t border-border mt-4 pt-3 gap-2">
               <button
                 type="button"
                 onClick={handleClear}
@@ -311,7 +311,7 @@ export default function CustomDateRangePicker({
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-[30px] border border-gray-200 px-3 py-1.5 transition-colors cursor-pointer bg-white"
+                  className="text-xs font-bold text-text-secondary hover:bg-gray-100 rounded-[30px] border border-neutral px-3 py-1.5 transition-colors cursor-pointer bg-surface"
                 >
                   Batal
                 </button>

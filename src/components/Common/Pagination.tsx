@@ -31,7 +31,7 @@ export default function Pagination({
 
   return (
     <div className={`flex items-center justify-between ${className}`}>
-      <div className="text-xs font-medium text-gray-500">
+      <div className="text-xs font-medium text-text-secondary">
         {totalItems && itemsPerPage ? (
           <>Menampilkan {showingStart}-{showingEnd} dari {totalItems} operator</>
         ) : null}
@@ -41,7 +41,7 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:hover:bg-transparent disabled:active:bg-transparent transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:hover:bg-transparent disabled:active:bg-transparent transition-colors"
         >
           <i className="ri-arrow-left-s-line text-lg"></i>
         </button>
@@ -55,7 +55,7 @@ export default function Pagination({
               className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-bold transition-colors ${
                 isActive
                   ? 'bg-primary hover:bg-primary-hover active:bg-primary-active text-white'
-                  : 'text-gray-700 hover:bg-gray-100 active:bg-gray-200'
+                  : 'text-text-secondary hover:bg-gray-100 active:bg-gray-200'
               }`}
             >
               {page}
@@ -66,7 +66,7 @@ export default function Pagination({
         <button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:hover:bg-transparent disabled:active:bg-transparent transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:hover:bg-transparent disabled:active:bg-transparent transition-colors"
         >
           <i className="ri-arrow-right-s-line text-lg"></i>
         </button>

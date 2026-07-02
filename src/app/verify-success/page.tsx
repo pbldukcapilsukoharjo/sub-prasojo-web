@@ -22,7 +22,7 @@ export default function VerifySuccessPage() {
       </div>
 
       {/* Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm w-full max-w-[440px] p-8 sm:p-10 text-center">
+      <div className="bg-surface rounded-2xl border border-border shadow-sm w-full max-w-[440px] p-8 sm:p-10 text-center">
         {/* Icon Badge Success */}
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center">
@@ -34,7 +34,7 @@ export default function VerifySuccessPage() {
         <h2 className="text-[22px] font-bold text-gray-950 leading-tight">
           Verifikasi Email Berhasil!
         </h2>
-        <p className="mt-3 text-[14px] text-gray-600 font-medium leading-relaxed">
+        <p className="mt-3 text-[14px] text-text-secondary font-medium leading-relaxed">
           Selamat! Alamat email Anda telah berhasil diverifikasi. Akun Anda kini telah aktif dan siap digunakan.
         </p>
 
@@ -51,7 +51,7 @@ export default function VerifySuccessPage() {
       </div>
 
       {/* Footer note */}
-      <p className="mt-6 text-[11px] text-gray-400 font-medium text-center">
+      <p className="mt-6 text-[11px] text-text-secondary font-medium text-center">
         © 2026 Sistem Monitoring PRASOJO
       </p>
     </main>

@@ -20,7 +20,7 @@ export default function DetailProduk() {
   if (!produk || !ajuan) {
     return (
       <div className="flex flex-col gap-6">
-        <Button variant="ghost" onClick={() => router.back()} className="self-start text-gray-500 hover:text-gray-900 !p-0 gap-2">
+        <Button variant="ghost" onClick={() => router.back()} className="self-start text-text-secondary hover:text-text-primary !p-0 gap-2">
           <i className="ri-arrow-left-line text-xl"></i>
           <span className="font-bold text-lg">Kembali</span>
         </Button>
@@ -64,25 +64,25 @@ export default function DetailProduk() {
   return (
     <div className="flex flex-col gap-6">
       {/* Header Back Button */}
-      <Button variant="ghost" onClick={() => router.back()} className="self-start text-gray-700 hover:text-gray-900 !p-0 gap-3">
-        <div className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center bg-white shadow-sm">
+      <Button variant="ghost" onClick={() => router.back()} className="self-start text-text-secondary hover:text-text-primary !p-0 gap-3">
+        <div className="w-8 h-8 rounded-full border border-neutral flex items-center justify-center bg-surface shadow-sm">
           <i className="ri-arrow-left-line text-lg"></i>
         </div>
         <span className="font-bold text-xl">Detail Ajuan</span>
       </Button>
 
       {/* Main Card */}
-      <div className="card shadow-sm border border-gray-100 p-4 md:p-8 flex flex-col gap-6 md:gap-8">
+      <div className="card shadow-sm border border-border p-4 md:p-8 flex flex-col gap-6 md:gap-8">
         
         {/* Top Section: Header & Buttons */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 md:pb-8 border-b border-gray-100 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between pb-6 md:pb-8 border-b border-border gap-4">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="w-12 h-12 md:w-16 md:h-16 rounded-[20px] bg-[#F3F4F6] flex items-center justify-center flex-shrink-0">
-              <i className="ri-user-line text-xl md:text-2xl text-gray-500"></i>
+              <i className="ri-user-line text-xl md:text-2xl text-text-secondary"></i>
             </div>
             <div className="min-w-0">
-              <p className="text-[10px] md:text-xs font-bold text-gray-600 tracking-wider mb-1 truncate">{ajuan.ajuan_no_reg}</p>
-              <h3 className="text-lg md:text-2xl font-bold text-gray-900 truncate">
+              <p className="text-[10px] md:text-xs font-bold text-text-secondary tracking-wider mb-1 truncate">{ajuan.ajuan_no_reg}</p>
+              <h3 className="text-lg md:text-2xl font-bold text-text-primary truncate">
                 Detail Pemohon : {ajuan.ajuan_no_reg}
               </h3>
             </div>
@@ -103,20 +103,20 @@ export default function DetailProduk() {
             {/* User Data Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 md:gap-y-6 gap-x-4">
               <div>
-                <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1 uppercase">Nama Lengkap</p>
-                <p className="text-base md:text-lg font-bold text-gray-900">{namaIdentitas}</p>
+                <p className="text-[10px] font-bold text-text-secondary tracking-wider mb-1 uppercase">Nama Lengkap</p>
+                <p className="text-base md:text-lg font-bold text-text-primary">{namaIdentitas}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1 uppercase">NIK</p>
-                <p className="text-base md:text-lg font-bold text-gray-900">{ajuan.ajuan_pelapor_kk || produk.prod_nomor || '-'}</p>
+                <p className="text-[10px] font-bold text-text-secondary tracking-wider mb-1 uppercase">NIK</p>
+                <p className="text-base md:text-lg font-bold text-text-primary">{ajuan.ajuan_pelapor_kk || produk.prod_nomor || '-'}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1 uppercase">Jenis Layanan</p>
-                <p className="text-base md:text-lg font-bold text-gray-900">{jenisAjuan?.ja_judul || 'Umum'}</p>
+                <p className="text-[10px] font-bold text-text-secondary tracking-wider mb-1 uppercase">Jenis Layanan</p>
+                <p className="text-base md:text-lg font-bold text-text-primary">{jenisAjuan?.ja_judul || 'Umum'}</p>
               </div>
               <div>
-                <p className="text-[10px] font-bold text-gray-500 tracking-wider mb-1 uppercase">Kecamatan</p>
-                <p className="text-base md:text-lg font-bold text-gray-900">{ajuan.ajuan_kecamatan_name || '-'}</p>
+                <p className="text-[10px] font-bold text-text-secondary tracking-wider mb-1 uppercase">Kecamatan</p>
+                <p className="text-base md:text-lg font-bold text-text-primary">{ajuan.ajuan_kecamatan_name || '-'}</p>
               </div>
             </div>
 
@@ -124,7 +124,7 @@ export default function DetailProduk() {
             <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 mt-0 md:mt-4 overflow-hidden">
               <div className="flex items-center gap-2 mb-6">
                 <div className="w-1 h-4 bg-gray-900 rounded-full"></div>
-                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider">
                   Timeline Status : Diajukan Pada Tanggal {formattedDate}, {formattedTime}
                 </h4>
               </div>
@@ -146,15 +146,15 @@ export default function DetailProduk() {
                     colorClass = 'text-blue-500';
                     dotColorClass = 'bg-blue-500';
                   } else if (step.label === 'Diproses') {
-                    colorClass = 'text-gray-500';
-                    dotColorClass = 'bg-gray-500';
+                    colorClass = 'text-text-secondary';
+                    dotColorClass = 'bg-background0';
                   } else if (step.label === 'Selesai') {
                     colorClass = 'text-purple-500';
                     dotColorClass = 'bg-purple-500';
                   }
 
                   return (
-                    <div key={idx} className={`relative pl-6 ${idx !== currentIndex ? 'border-l-2 border-gray-200' : ''} ml-2 ${idx !== currentIndex ? 'pb-6' : 'pb-2'}`}>
+                    <div key={idx} className={`relative pl-6 ${idx !== currentIndex ? 'border-l-2 border-neutral' : ''} ml-2 ${idx !== currentIndex ? 'pb-6' : 'pb-2'}`}>
                       <div className={`absolute w-3 h-3 rounded-full -left-[7px] top-1 ${dotColorClass}`}></div>
                       <div className="flex gap-4 items-start">
                         <div className={`text-sm font-bold mt-0.5 ${colorClass}`}>{formattedTime}</div>
@@ -162,8 +162,8 @@ export default function DetailProduk() {
                           <p className={`text-sm font-bold ${colorClass}`}>
                             {step.label}
                           </p>
-                          <p className="text-xs text-gray-500 mt-1">{step.desc}</p>
-                          <p className="text-xs font-bold text-gray-500 mt-1">{formattedDate}</p>
+                          <p className="text-xs text-text-secondary mt-1">{step.desc}</p>
+                          <p className="text-xs font-bold text-text-secondary mt-1">{formattedDate}</p>
                         </div>
                       </div>
                     </div>
@@ -177,7 +177,7 @@ export default function DetailProduk() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="w-1 h-4 bg-gray-900 rounded-full"></div>
-                  <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                  <h4 className="text-xs font-bold text-text-primary uppercase tracking-wider">
                     FILE PRODUK
                   </h4>
                 </div>
@@ -186,22 +186,22 @@ export default function DetailProduk() {
                 </Button>
               </div>
 
-              <div className="bg-white rounded-[16px] p-4 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm gap-4">
+              <div className="bg-surface rounded-[16px] p-4 flex flex-col sm:flex-row sm:items-center justify-between shadow-sm gap-4">
                 <div className="flex items-start sm:items-center gap-4 w-full">
                   <div className="w-10 h-10 rounded-[12px] bg-green-50 flex items-center justify-center flex-shrink-0">
                     <i className="ri-file-check-line text-xl text-green-600"></i>
                   </div>
                   <div className="flex flex-col justify-center flex-1 min-w-0">
-                    <h4 className="text-sm font-bold text-gray-900 mb-0.5 truncate">{produk.prod_nama}</h4>
-                    <p className="text-xs text-gray-500 mb-1 truncate">Nomor: {produk.prod_nomor || '-'}</p>
+                    <h4 className="text-sm font-bold text-text-primary mb-0.5 truncate">{produk.prod_nama}</h4>
+                    <p className="text-xs text-text-secondary mb-1 truncate">Nomor: {produk.prod_nomor || '-'}</p>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[10px] font-bold text-purple-600 uppercase whitespace-nowrap">{produk.prod_status}</span>
-                      <span className="text-[10px] text-gray-500 font-bold whitespace-nowrap">{formattedDate} - {formattedTime}</span>
+                      <span className="text-[10px] text-text-secondary font-bold whitespace-nowrap">{formattedDate} - {formattedTime}</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <a href={produk.prod_url} target="_blank" rel="noreferrer" className="text-gray-500 hover:text-blue-600 transition-colors bg-gray-50 p-2 rounded-lg" title="Lihat/Unduh File">
+                  <a href={produk.prod_url} target="_blank" rel="noreferrer" className="text-text-secondary hover:text-blue-600 transition-colors bg-background p-2 rounded-lg" title="Lihat/Unduh File">
                     <i className="ri-download-2-line text-lg"></i>
                   </a>
                   <Button variant="primary" className="text-xs px-4 py-2 whitespace-nowrap">
@@ -215,50 +215,50 @@ export default function DetailProduk() {
 
           {/* Right Column: DOKUMEN PENDUKUNG */}
           <div className="bg-[#F3F4F6] rounded-[20px] p-4 md:p-6 flex flex-col h-fit">
-            <h4 className="text-xs font-bold text-gray-900 text-center tracking-wider mb-6">DOKUMEN PENDUKUNG</h4>
+            <h4 className="text-xs font-bold text-text-primary text-center tracking-wider mb-6">DOKUMEN PENDUKUNG</h4>
             
             <div className="flex flex-col gap-4">
-              <div className="bg-white rounded-[16px] p-4 flex items-center justify-between shadow-sm">
+              <div className="bg-surface rounded-[16px] p-4 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-[12px] bg-gray-100 flex items-center justify-center">
-                    <i className="ri-image-line text-xl text-gray-500"></i>
+                    <i className="ri-image-line text-xl text-text-secondary"></i>
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-900">Akta_Kelahiran.jpg</p>
-                    <p className="text-[10px] font-bold text-gray-500">2.4 MB</p>
+                    <p className="text-xs font-bold text-text-primary">Akta_Kelahiran.jpg</p>
+                    <p className="text-[10px] font-bold text-text-secondary">2.4 MB</p>
                   </div>
                 </div>
-                <button className="text-gray-500 hover:text-gray-900 transition-colors">
+                <button className="text-text-secondary hover:text-text-primary transition-colors">
                   <i className="ri-eye-line text-xl"></i>
                 </button>
               </div>
 
-              <div className="bg-white rounded-[16px] p-4 flex items-center justify-between shadow-sm">
+              <div className="bg-surface rounded-[16px] p-4 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-[12px] bg-gray-100 flex items-center justify-center">
-                    <i className="ri-image-line text-xl text-gray-500"></i>
+                    <i className="ri-image-line text-xl text-text-secondary"></i>
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-900">KTP_Ayah.jpg</p>
-                    <p className="text-[10px] font-bold text-gray-500">1.8 MB</p>
+                    <p className="text-xs font-bold text-text-primary">KTP_Ayah.jpg</p>
+                    <p className="text-[10px] font-bold text-text-secondary">1.8 MB</p>
                   </div>
                 </div>
-                <button className="text-gray-500 hover:text-gray-900 transition-colors">
+                <button className="text-text-secondary hover:text-text-primary transition-colors">
                   <i className="ri-eye-line text-xl"></i>
                 </button>
               </div>
 
-              <div className="bg-white rounded-[16px] p-4 flex items-center justify-between shadow-sm">
+              <div className="bg-surface rounded-[16px] p-4 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-[12px] bg-gray-100 flex items-center justify-center">
-                    <i className="ri-file-text-line text-xl text-gray-500"></i>
+                    <i className="ri-file-text-line text-xl text-text-secondary"></i>
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-gray-900">Formulir_F101.pdf</p>
-                    <p className="text-[10px] font-bold text-gray-500">500 KB</p>
+                    <p className="text-xs font-bold text-text-primary">Formulir_F101.pdf</p>
+                    <p className="text-[10px] font-bold text-text-secondary">500 KB</p>
                   </div>
                 </div>
-                <button className="text-gray-500 hover:text-gray-900 transition-colors">
+                <button className="text-text-secondary hover:text-text-primary transition-colors">
                   <i className="ri-eye-line text-xl"></i>
                 </button>
               </div>

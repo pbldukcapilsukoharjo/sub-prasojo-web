@@ -16,7 +16,7 @@ interface FilterCardProps {
  */
 export default function FilterCard({ children, onReset, onApply }: FilterCardProps) {
   return (
-    <div className="card shadow-sm border border-gray-100 p-6">
+    <div className="card shadow-sm border border-border p-6">
       <div className="flex flex-col lg:flex-row gap-6 items-stretch">
 
         {/* Left Side: Inputs (grid layout handled by the parent via children) */}

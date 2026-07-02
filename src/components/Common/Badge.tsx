@@ -15,7 +15,7 @@ export default function Badge({ children, variant = 'default', className = '' }:
       break;
     case 'pending':
     case 'default':
-      variantClass = 'bg-gray-100 text-gray-500 border-gray-200';
+      variantClass = 'bg-gray-100 text-text-secondary border-neutral';
       break;
     case 'outline-warning':
       variantClass = 'bg-transparent text-[#D97706] border-[#D97706]';

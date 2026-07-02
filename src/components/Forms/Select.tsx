@@ -15,15 +15,15 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 export default function Select({ label, options, icon, wrapperClassName = '', className = '', ...props }: SelectProps) {
   return (
     <div className={`flex flex-col gap-1.5 ${wrapperClassName}`}>
-      {label && <label className="text-[10px] font-bold text-gray-700 tracking-wider uppercase">{label}</label>}
+      {label && <label className="text-[10px] font-bold text-text-secondary tracking-wider uppercase">{label}</label>}
       <div className="relative">
         {icon && (
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <i className={`${icon} text-gray-400 text-lg`}></i>
+            <i className={`${icon} text-text-secondary text-lg`}></i>
           </div>
         )}
         <select
-          className={`w-full bg-[var(--surface-secondary)] text-gray-900 text-sm rounded-[30px] border border-[#E5E7EB] h-[44px] focus:ring-2 focus:ring-primary focus:outline-none appearance-none transition-all cursor-pointer ${
+          className={`w-full bg-[var(--surface-secondary)] text-text-primary text-sm rounded-[30px] border border-[#E5E7EB] h-[44px] focus:ring-2 focus:ring-primary focus:outline-none appearance-none transition-all cursor-pointer ${
             icon ? 'pl-11' : 'pl-5'
           } pr-11 ${className}`}
           {...props}
@@ -35,7 +35,7 @@ export default function Select({ label, options, icon, wrapperClassName = '', cl
           ))}
         </select>
         <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
-          <i className="ri-arrow-down-s-line text-gray-400 text-xl"></i>
+          <i className="ri-arrow-down-s-line text-text-secondary text-xl"></i>
         </div>
       </div>
     </div>

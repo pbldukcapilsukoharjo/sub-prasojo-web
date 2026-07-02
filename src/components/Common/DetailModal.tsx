@@ -73,7 +73,7 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
 
   // Define the 5 sequential steps
   const steps = [
-    { label: 'Ajuan Dibuat', colorClass: 'gray', textColor: 'text-gray-900 border-gray-900', statuses: ['MENUNGGU'] },
+    { label: 'Ajuan Dibuat', colorClass: 'gray', textColor: 'text-text-primary border-gray-900', statuses: ['MENUNGGU'] },
     { label: 'Diverifikasi', colorClass: 'blue', textColor: 'text-blue-500 border-blue-500', statuses: ['DIVERIFIKASI'] },
     { label: isRejected ? 'Ditolak' : 'Disetujui', colorClass: isRejected ? 'red' : 'green', textColor: isRejected ? 'text-red-500 border-red-500' : 'text-green-500 border-green-500', statuses: ['DISETUJUI', 'DITOLAK'] },
     { label: 'Diproses', colorClass: 'slate', textColor: 'text-slate-600 border-slate-600', statuses: ['DIPROSES'] },
@@ -106,12 +106,12 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
         onClick={onClose}
       />
       
-      <div className={`bg-white rounded-2xl w-full max-w-[680px] p-6 lg:p-8 relative z-10 shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200 m-4 max-h-[90vh] overflow-y-auto transition-opacity ${isLoading ? 'opacity-70 pointer-events-none' : 'opacity-100'}`}>
+      <div className={`bg-surface rounded-2xl w-full max-w-[680px] p-6 lg:p-8 relative z-10 shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200 m-4 max-h-[90vh] overflow-y-auto transition-opacity ${isLoading ? 'opacity-70 pointer-events-none' : 'opacity-100'}`}>
         
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 border border-slate-100">
+            <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 border border-border">
               <i className="ri-user-line text-xl text-slate-600"></i>
             </div>
             <h2 className="text-[18px] font-bold text-slate-950 font-manrope">
@@ -120,14 +120,14 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
           </div>
           <button 
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center text-slate-900 hover:bg-slate-50 border border-transparent hover:border-slate-100 rounded-full transition-colors self-start cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center text-slate-900 hover:bg-slate-50 border border-transparent hover:border-border rounded-full transition-colors self-start cursor-pointer"
           >
             <i className="ri-close-line text-xl font-bold"></i>
           </button>
         </div>
 
         {/* Info Card */}
-        <div className="border border-slate-100 rounded-[16px] p-6 mb-8 bg-white shadow-xs">
+        <div className="border border-border rounded-[16px] p-6 mb-8 bg-surface shadow-xs">
           <div className="grid grid-cols-2 gap-y-6 gap-x-4">
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Nama Lengkap</p>

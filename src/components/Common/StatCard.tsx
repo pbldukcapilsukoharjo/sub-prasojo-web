@@ -22,10 +22,10 @@ export default function StatCard({
   children
 }: StatCardProps) {
   return (
-    <div className={`card shadow-sm border border-gray-100 p-5 flex flex-col gap-4 bg-white ${className}`}>
+    <div className={`card shadow-sm border border-border p-5 flex flex-col gap-4 bg-surface ${className}`}>
       {/* Top: label + icon */}
       <div className="flex items-start justify-between gap-3">
-        <span className="text-[11px] font-bold text-gray-500 tracking-wider uppercase leading-snug pt-0.5">
+        <span className="text-[11px] font-bold text-text-secondary tracking-wider uppercase leading-snug pt-0.5">
           {title}
         </span>
         {icon && (
@@ -42,7 +42,7 @@ export default function StatCard({
       <div className="flex flex-col gap-1.5">
         <div className="flex items-end gap-2">
           {typeof value === 'string' || typeof value === 'number' ? (
-             <p className="text-3xl font-bold font-manrope text-gray-900 leading-none">
+             <p className="text-3xl font-bold font-manrope text-text-primary leading-none">
                {value}
              </p>
           ) : (
@@ -50,7 +50,7 @@ export default function StatCard({
           )}
         </div>
         {subtitle && (
-          <div className="text-[11px] text-gray-400 font-medium">
+          <div className="text-[11px] text-text-secondary font-medium">
             {subtitle}
           </div>
         )}

@@ -18,8 +18,8 @@ export default function Button({
 }: ButtonProps) {
   let variantClass = 'btn-primary';
   if (variant === 'secondary') variantClass = 'btn-secondary';
-  else if (variant === 'ghost') variantClass = 'bg-transparent text-gray-700 shadow-none border-transparent';
-  else if (variant === 'outline') variantClass = 'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 active:bg-gray-100';
+  else if (variant === 'ghost') variantClass = 'bg-transparent text-text-secondary shadow-none border-transparent';
+  else if (variant === 'outline') variantClass = 'bg-transparent border border-gray-300 text-text-secondary hover:bg-background active:bg-gray-100';
   
   // Handling sizing
   let sizeClass = 'px-6 py-3 text-sm';

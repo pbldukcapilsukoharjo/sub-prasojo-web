@@ -198,15 +198,15 @@ export default function PeringkatOperatorPage() {
   };
 
   const leaderboardColumns = [
-    { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-400">{String(row.peringkat).padStart(2, '0')}</span> },
-    { key: 'name', header: 'Nama Operator', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.operator}</span> },
+    { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-secondary">{String(row.peringkat).padStart(2, '0')}</span> },
+    { key: 'name', header: 'Nama Operator', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.operator}</span> },
     { key: 'desaKec', header: 'Desa/Kecamatan', render: (row: any) => (
       <div className="flex flex-col items-center">
-        <span className="font-bold text-gray-900 text-xs">{row.desa}</span>
-        <span className="text-[10px] font-semibold text-gray-500">{row.kecamatan}</span>
+        <span className="font-bold text-text-primary text-xs">{row.desa}</span>
+        <span className="text-[10px] font-semibold text-text-secondary">{row.kecamatan}</span>
       </div>
     ) },
-    { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-semibold text-xs">{row.jumlah_ajuan}</span> },
+    { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-semibold text-xs">{row.jumlah_ajuan}</span> },
     { key: 'aksi', header: 'Aksi', align: 'center' as const, render: (row: any) => (
       <button 
         onClick={(e) => {
@@ -320,15 +320,15 @@ export default function PeringkatOperatorPage() {
   ];
 
   const historyColumns = [
-    { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-bold text-gray-400">{String((detailCurrentPage - 1) * detailPerPage + idx + 1).padStart(2, '0')}</span> },
-    { key: 'regis', header: 'No.Regis', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.no_regis}</span> },
-    { key: 'pemohon', header: 'Pemohon', align: 'center' as const, render: (row: any) => <span className="text-gray-800 text-xs font-semibold">{row.pemohon}</span> },
-    { key: 'kode', header: 'Kode Ajuan', align: 'center' as const, render: (row: any) => <span className="text-gray-500 font-bold text-xs">{row.kode_ajuan}</span> },
-    { key: 'desaKec', header: 'Desa', align: 'center' as const, render: (row: any) => <span className="text-gray-600 font-semibold text-xs">{row.desa}</span> },
+    { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-bold text-text-secondary">{String((detailCurrentPage - 1) * detailPerPage + idx + 1).padStart(2, '0')}</span> },
+    { key: 'regis', header: 'No.Regis', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.no_regis}</span> },
+    { key: 'pemohon', header: 'Pemohon', align: 'center' as const, render: (row: any) => <span className="text-text-primary text-xs font-semibold">{row.pemohon}</span> },
+    { key: 'kode', header: 'Kode Ajuan', align: 'center' as const, render: (row: any) => <span className="text-text-secondary font-bold text-xs">{row.kode_ajuan}</span> },
+    { key: 'desaKec', header: 'Desa', align: 'center' as const, render: (row: any) => <span className="text-text-secondary font-semibold text-xs">{row.desa}</span> },
     { key: 'tanggalWaktu', header: 'Tanggal & Waktu', align: 'center' as const, render: (row: any) => (
       <div className="flex flex-col items-center">
-        <span className="font-semibold text-gray-800 text-xs">{row.tanggal}</span>
-        <span className="text-[9px] font-bold text-gray-400">{row.waktu}</span>
+        <span className="font-semibold text-text-primary text-xs">{row.tanggal}</span>
+        <span className="text-[9px] font-bold text-text-secondary">{row.waktu}</span>
       </div>
     ) },
     { key: 'status', header: 'Status', align: 'center' as const, render: (row: any) => {
@@ -430,8 +430,8 @@ export default function PeringkatOperatorPage() {
               title="RATA-RATA DURASI"
               value={
                 <>
-                  <span className="text-4xl font-bold font-manrope text-gray-900 leading-none">{kpiGlobal?.rata_rata_durasi || '0'}</span>
-                  <span className="text-xs font-semibold text-gray-500 pb-0.5">menit</span>
+                  <span className="text-4xl font-bold font-manrope text-text-primary leading-none">{kpiGlobal?.rata_rata_durasi || '0'}</span>
+                  <span className="text-xs font-semibold text-text-secondary pb-0.5">menit</span>
                 </>
               }
               icon="ri-time-line"
@@ -448,9 +448,9 @@ export default function PeringkatOperatorPage() {
           </div>
 
           {/* Leaderboard Table Card */}
-          <div className={`card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isListLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
-            <div className="p-6 flex justify-between items-center border-b border-gray-100">
-              <h3 className="text-base font-bold text-gray-900">Peringkat Operator Berdasarkan Jumlah Ajuan</h3>
+          <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isListLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
+            <div className="p-6 flex justify-between items-center border-b border-border">
+              <h3 className="text-base font-bold text-text-primary">Peringkat Operator Berdasarkan Jumlah Ajuan</h3>
             </div>
             <div className="w-full min-h-[300px]">
               {rankingsData.length > 0 ? (
@@ -459,12 +459,12 @@ export default function PeringkatOperatorPage() {
                   data={rankingsData} 
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-sm text-gray-400 py-12">
+                <div className="flex items-center justify-center h-full text-sm text-text-secondary py-12">
                   Tidak ada data peringkat ditemukan
                 </div>
               )}
             </div>
-            <div className="p-6 border-t border-gray-100">
+            <div className="p-6 border-t border-border">
               <Pagination
                 currentPage={listCurrentPage}
                 totalPages={listTotalPages}
@@ -482,29 +482,29 @@ export default function PeringkatOperatorPage() {
           <div className="flex items-center gap-3 select-none">
             <button
               onClick={() => setSelectedOperator(null)}
-              className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center bg-white text-gray-700 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full border border-neutral flex items-center justify-center bg-surface text-text-secondary hover:bg-background active:bg-gray-100 transition-colors cursor-pointer"
             >
               <i className="ri-arrow-left-line text-lg"></i>
             </button>
-            <h2 className="text-base font-bold text-gray-900">Detail Peringkat Operator</h2>
+            <h2 className="text-base font-bold text-text-primary">Detail Peringkat Operator</h2>
           </div>
 
           {/* Main Detail Panel */}
-          <div className={`card shadow-sm border border-gray-100 flex flex-col p-6 gap-6 transition-opacity duration-300 ${isDetailLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
+          <div className={`card shadow-sm border border-border flex flex-col p-6 gap-6 transition-opacity duration-300 ${isDetailLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
             {/* Header: Profile Card */}
-            <div className="flex items-center justify-between border-b border-gray-100 pb-5">
+            <div className="flex items-center justify-between border-b border-border pb-5">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-gray-400">
+                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-text-secondary">
                   <i className="ri-user-3-line text-2xl"></i>
                 </div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
-                    <span className="text-base font-bold text-gray-900">{operatorKpi?.nama || selectedOperator.operator}</span>
+                    <span className="text-base font-bold text-text-primary">{operatorKpi?.nama || selectedOperator.operator}</span>
                     <span className="bg-[#800000] text-white flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
                       <i className="ri-trophy-fill text-[10px]"></i> #{selectedOperator.peringkat}
                     </span>
                   </div>
-                  <span className="text-xs font-semibold text-gray-400 mt-0.5">
+                  <span className="text-xs font-semibold text-text-secondary mt-0.5">
                     {selectedOperator.desa} - {selectedOperator.kecamatan.replace('KEC : ', 'Kec. ')}
                   </span>
                 </div>
@@ -528,9 +528,9 @@ export default function PeringkatOperatorPage() {
             </div>
 
             {/* Monthly Service Bar Chart */}
-            <div className="border border-gray-100 rounded-xl p-5 flex flex-col">
+            <div className="border border-border rounded-xl p-5 flex flex-col">
               <div className="flex justify-between items-center mb-4">
-                <h4 className="text-xs font-bold text-gray-800 tracking-wide uppercase">Chart Jumlah Layanan per Bulan</h4>
+                <h4 className="text-xs font-bold text-text-primary tracking-wide uppercase">Chart Jumlah Layanan per Bulan</h4>
               </div>
               <div className="w-full h-[280px]">
                 {mounted && (
@@ -540,27 +540,27 @@ export default function PeringkatOperatorPage() {
               {/* Custom Legend */}
               <div className="flex items-center justify-center gap-2 mt-2">
                 <span className="w-2.5 h-2.5 rounded-sm bg-primary"></span>
-                <span className="text-[10px] font-bold text-gray-500">{currentYear}</span>
+                <span className="text-[10px] font-bold text-text-secondary">{currentYear}</span>
               </div>
             </div>
 
             {/* Service History Section */}
             <div className="flex flex-col gap-4">
-              <h4 className="text-sm font-bold text-gray-900">Daftar Riwayat Layanan</h4>
+              <h4 className="text-sm font-bold text-text-primary">Daftar Riwayat Layanan</h4>
               
               <Tabs tabs={detailTabs} activeTab={activeTab} onChange={(val) => {
                 setActiveTab(val);
                 setDetailCurrentPage(1);
               }} className="mb-2" />
 
-              <div className="w-full border border-gray-100 rounded-xl overflow-hidden min-h-[200px]">
+              <div className="w-full border border-border rounded-xl overflow-hidden min-h-[200px]">
                 {historyData.length > 0 ? (
                   <Table 
                     columns={historyColumns} 
                     data={historyData} 
                   />
                 ) : (
-                  <div className="flex items-center justify-center h-full text-sm text-gray-400 py-10">
+                  <div className="flex items-center justify-center h-full text-sm text-text-secondary py-10">
                     Tidak ada riwayat ditemukan
                   </div>
                 )}

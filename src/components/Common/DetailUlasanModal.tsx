@@ -33,13 +33,13 @@ export default function DetailUlasanModal({ isOpen, onClose, review }: DetailUla
       />
       
       {/* Modal Container */}
-      <div className="bg-white rounded-[24px] w-full max-w-[620px] p-8 relative z-10 shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200 m-4 max-h-[90vh] overflow-y-auto">
+      <div className="bg-surface rounded-[24px] w-full max-w-[620px] p-8 relative z-10 shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200 m-4 max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             {/* Avatar Circle */}
-            <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-12 rounded-full bg-slate-50 border border-border flex items-center justify-center flex-shrink-0">
               <i className="ri-user-3-line text-xl text-slate-500"></i>
             </div>
             {/* Reviewer Name */}
@@ -50,17 +50,17 @@ export default function DetailUlasanModal({ isOpen, onClose, review }: DetailUla
           {/* Close Button */}
           <button 
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center text-slate-950 hover:bg-slate-50 rounded-full transition-all cursor-pointer border border-transparent hover:border-slate-100"
+            className="w-8 h-8 flex items-center justify-center text-slate-950 hover:bg-slate-50 rounded-full transition-all cursor-pointer border border-transparent hover:border-border"
           >
             <i className="ri-close-line text-xl font-bold"></i>
           </button>
         </div>
 
         {/* Separator Line */}
-        <div className="border-b border-slate-100 mt-5 mb-6" />
+        <div className="border-b border-border mt-5 mb-6" />
 
         {/* Details Card Grid */}
-        <div className="border border-slate-100 rounded-[20px] p-6 mb-6 bg-white">
+        <div className="border border-border rounded-[20px] p-6 mb-6 bg-surface">
           <div className="grid grid-cols-2 gap-y-6 gap-x-6">
             {/* Jenis Layanan */}
             <div>
@@ -110,7 +110,7 @@ export default function DetailUlasanModal({ isOpen, onClose, review }: DetailUla
           </div>
 
           {/* Content Textarea-like Box */}
-          <div className="bg-slate-50 border border-slate-100/50 rounded-2xl p-5 text-sm text-slate-600 leading-relaxed font-medium">
+          <div className="bg-slate-50 border border-border/50 rounded-2xl p-5 text-sm text-slate-600 leading-relaxed font-medium">
             <p>{review.content}</p>
           </div>
         </div>

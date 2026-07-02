@@ -10,7 +10,7 @@ function VerifyFailureContent() {
   const errorMessage = searchParams.get("message") || "Tautan verifikasi tidak valid atau telah kadaluarsa.";
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm w-full max-w-[440px] p-8 sm:p-10 text-center">
+    <div className="bg-surface rounded-2xl border border-border shadow-sm w-full max-w-[440px] p-8 sm:p-10 text-center">
       {/* Icon Badge Failure */}
       <div className="flex justify-center mb-6">
         <div className="w-16 h-16 rounded-full bg-red-50 border border-red-100 flex items-center justify-center">
@@ -25,7 +25,7 @@ function VerifyFailureContent() {
       <p className="mt-3 text-[14px] text-red-600 font-medium leading-relaxed bg-red-50 p-3 rounded-xl border border-red-100">
         {errorMessage}
       </p>
-      <p className="mt-4 text-[13px] text-gray-500 font-medium leading-relaxed">
+      <p className="mt-4 text-[13px] text-text-secondary font-medium leading-relaxed">
         Silakan lakukan pendaftaran ulang akun Anda untuk mendapatkan tautan verifikasi baru.
       </p>
 
@@ -61,12 +61,12 @@ export default function VerifyFailurePage() {
         </p>
       </div>
 
-      <Suspense fallback={<div className="text-gray-500 text-sm">Loading...</div>}>
+      <Suspense fallback={<div className="text-text-secondary text-sm">Loading...</div>}>
         <VerifyFailureContent />
       </Suspense>
 
       {/* Footer note */}
-      <p className="mt-6 text-[11px] text-gray-400 font-medium text-center">
+      <p className="mt-6 text-[11px] text-text-secondary font-medium text-center">
         © 2026 Sistem Monitoring PRASOJO
       </p>
     </main>

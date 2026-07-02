@@ -54,9 +54,9 @@ export default function RegisterPage() {
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#6b0000] via-[#8B0000] to-[#3d0000]" />
         {/* Decorative circles */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-white/5" />
-        <div className="absolute bottom-0 -left-16 w-72 h-72 rounded-full bg-white/5" />
-        <div className="absolute top-1/2 right-8 w-48 h-48 rounded-full bg-white/5" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-surface/5" />
+        <div className="absolute bottom-0 -left-16 w-72 h-72 rounded-full bg-surface/5" />
+        <div className="absolute top-1/2 right-8 w-48 h-48 rounded-full bg-surface/5" />
 
         {/* Logo */}
         <div className="relative z-10">
@@ -89,7 +89,7 @@ export default function RegisterPage() {
             {["Akta Kelahiran", "KTP-el", "Kartu Keluarga", "PRASOJO"].map((item) => (
               <span
                 key={item}
-                className="text-[11px] font-bold text-white/80 bg-white/10 border border-white/20 rounded-full px-3 py-1"
+                className="text-[11px] font-bold text-white/80 bg-surface/10 border border-white/20 rounded-full px-3 py-1"
               >
                 {item}
               </span>
@@ -122,14 +122,14 @@ export default function RegisterPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm w-full max-w-[420px] p-8 sm:p-10">
+        <div className="bg-surface rounded-2xl border border-border shadow-sm w-full max-w-[420px] p-8 sm:p-10">
 
           {/* Card Header */}
           <div className="mb-7">
             <h2 className="text-[22px] font-bold text-gray-950 leading-tight">
               Daftar Akun Baru
             </h2>
-            <p className="mt-1.5 text-[13px] text-gray-500 font-medium">
+            <p className="mt-1.5 text-[13px] text-text-secondary font-medium">
               Isi data diri Anda untuk membuat akun
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function RegisterPage() {
           <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
             {/* Nama Lengkap */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 tracking-[0.12em] uppercase">
+              <label className="text-[10px] font-bold text-text-secondary tracking-[0.12em] uppercase">
                 Nama Lengkap
               </label>
               <input
@@ -145,14 +145,14 @@ export default function RegisterPage() {
                 type="text"
                 {...register("fullname", { required: "Nama lengkap wajib diisi" })}
                 placeholder="Masukkan nama lengkap"
-                className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 px-4 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-gray-400"
+                className="w-full bg-background text-text-primary text-sm font-medium rounded-xl border border-neutral h-11 px-4 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-text-secondary"
               />
               {errors.fullname && <span className="text-red-500 text-xs mt-1">{errors.fullname.message}</span>}
             </div>
 
             {/* Email */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 tracking-[0.12em] uppercase">
+              <label className="text-[10px] font-bold text-text-secondary tracking-[0.12em] uppercase">
                 Alamat Email
               </label>
               <input
@@ -163,14 +163,14 @@ export default function RegisterPage() {
                   pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Format email tidak valid" }
                 })}
                 placeholder="nama@email.com"
-                className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 px-4 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-gray-400"
+                className="w-full bg-background text-text-primary text-sm font-medium rounded-xl border border-neutral h-11 px-4 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-text-secondary"
               />
               {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
             </div>
 
             {/* Kata Sandi */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 tracking-[0.12em] uppercase">
+              <label className="text-[10px] font-bold text-text-secondary tracking-[0.12em] uppercase">
                 Kata Sandi
               </label>
               <div className="relative">
@@ -182,12 +182,12 @@ export default function RegisterPage() {
                     minLength: { value: 8, message: "Minimal 8 karakter" }
                   })}
                   placeholder="Minimal 8 karakter"
-                  className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 pl-4 pr-11 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-gray-400"
+                  className="w-full bg-background text-text-primary text-sm font-medium rounded-xl border border-neutral h-11 pl-4 pr-11 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-text-secondary"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-secondary hover:text-text-secondary transition-colors cursor-pointer"
                   aria-label="Tampilkan/sembunyikan kata sandi"
                 >
                   <i className={showPassword ? "ri-eye-off-line text-[17px]" : "ri-eye-line text-[17px]"} />
@@ -198,7 +198,7 @@ export default function RegisterPage() {
 
             {/* Konfirmasi Kata Sandi */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-[10px] font-bold text-gray-500 tracking-[0.12em] uppercase">
+              <label className="text-[10px] font-bold text-text-secondary tracking-[0.12em] uppercase">
                 Konfirmasi Kata Sandi
               </label>
               <div className="relative">
@@ -210,12 +210,12 @@ export default function RegisterPage() {
                     validate: (value) => value === password || "Kata sandi tidak cocok"
                   })}
                   placeholder="Ulangi kata sandi"
-                  className="w-full bg-gray-50 text-gray-900 text-sm font-medium rounded-xl border border-gray-200 h-11 pl-4 pr-11 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-gray-400"
+                  className="w-full bg-background text-text-primary text-sm font-medium rounded-xl border border-neutral h-11 pl-4 pr-11 focus:ring-2 focus:ring-[#8B0000]/25 focus:border-[#8B0000] focus:outline-none transition-all placeholder:text-text-secondary"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-secondary hover:text-text-secondary transition-colors cursor-pointer"
                   aria-label="Tampilkan/sembunyikan konfirmasi kata sandi"
                 >
                   <i className={showConfirmPassword ? "ri-eye-off-line text-[17px]" : "ri-eye-line text-[17px]"} />
@@ -237,12 +237,12 @@ export default function RegisterPage() {
             {/* Divider */}
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-gray-100" />
-              <span className="text-[11px] text-gray-400 font-medium">atau</span>
+              <span className="text-[11px] text-text-secondary font-medium">atau</span>
               <div className="flex-1 h-px bg-gray-100" />
             </div>
 
             {/* Login link */}
-            <p className="text-center text-[13px] text-gray-500 font-medium">
+            <p className="text-center text-[13px] text-text-secondary font-medium">
               Sudah punya akun?{" "}
               <Link
                 href="/login"

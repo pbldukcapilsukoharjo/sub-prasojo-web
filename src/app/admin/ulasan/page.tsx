@@ -235,23 +235,23 @@ export default function DetailUlasanPage() {
       {/* 2. Below Filters Layout */}
       <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 items-start transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         {/* Left: Rating Breakdown (Summary Card) */}
-        <div className="card shadow-sm border border-gray-100 lg:col-span-4 p-6 flex flex-col items-center bg-white sticky top-6">
-          <span className="text-6xl font-bold font-manrope text-gray-900 mb-2">{avgRating.toFixed(1)}</span>
+        <div className="card shadow-sm border border-border lg:col-span-4 p-6 flex flex-col items-center bg-surface sticky top-6">
+          <span className="text-6xl font-bold font-manrope text-text-primary mb-2">{avgRating.toFixed(1)}</span>
           <div className="flex gap-1 text-[#F59E0B] text-2xl mb-4">
             {renderStars(avgRating)}
           </div>
-          <span className="text-sm font-semibold text-gray-500 mb-8">Berdasarkan {totalReviews.toLocaleString('id-ID')} Ulasan</span>
+          <span className="text-sm font-semibold text-text-secondary mb-8">Berdasarkan {totalReviews.toLocaleString('id-ID')} Ulasan</span>
 
           <div className="w-full flex flex-col gap-4">
             {[5, 4, 3, 2, 1].map((stars) => {
               const count = distCounts[stars as keyof typeof distCounts];
               return (
                 <div key={stars} className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-gray-700 w-12 text-right">{stars} Bintang</span>
+                  <span className="text-xs font-bold text-text-secondary w-12 text-right">{stars} Bintang</span>
                   <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div className="h-full bg-primary rounded-full" style={{ width: getWidthPercent(count) }}></div>
                   </div>
-                  <span className="text-xs font-bold text-gray-700 w-8">{count.toLocaleString('id-ID')}</span>
+                  <span className="text-xs font-bold text-text-secondary w-8">{count.toLocaleString('id-ID')}</span>
                 </div>
               );
             })}
@@ -264,15 +264,15 @@ export default function DetailUlasanPage() {
           <div className="flex flex-col gap-4 min-h-[400px]">
             {reviews.length > 0 ? (
               reviews.map((review) => (
-                <div key={review.id} className="card shadow-sm border border-gray-100 p-6">
+                <div key={review.id} className="card shadow-sm border border-border p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                        <i className="ri-user-3-line text-gray-500 text-xl"></i>
+                        <i className="ri-user-3-line text-text-secondary text-xl"></i>
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-gray-900">{review.nama}</h4>
-                        <span className="text-xs font-semibold text-gray-500">{review.tanggal} {review.waktu && `, ${review.waktu}`}</span>
+                        <h4 className="text-sm font-bold text-text-primary">{review.nama}</h4>
+                        <span className="text-xs font-semibold text-text-secondary">{review.tanggal} {review.waktu && `, ${review.waktu}`}</span>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
@@ -286,7 +286,7 @@ export default function DetailUlasanPage() {
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-700 leading-relaxed mb-4">
+                  <p className="text-sm text-text-secondary leading-relaxed mb-4">
                     {review.ulasan}
                   </p>
                   <div className="flex justify-end items-center gap-4 border-t border-gray-50 pt-4 mt-2">
@@ -311,13 +311,13 @@ export default function DetailUlasanPage() {
                 </div>
               ))
             ) : (
-              <div className="flex items-center justify-center h-full text-sm text-gray-400 py-12 border border-gray-100 rounded-xl bg-white">
+              <div className="flex items-center justify-center h-full text-sm text-text-secondary py-12 border border-border rounded-xl bg-surface">
                 Tidak ada ulasan ditemukan
               </div>
             )}
           </div>
 
-          <div className="card shadow-sm border border-gray-100 p-6">
+          <div className="card shadow-sm border border-border p-6">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

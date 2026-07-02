@@ -52,7 +52,7 @@ export default function EmailVerifyPage() {
       </div>
 
       {/* Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm w-full max-w-[440px] p-8 sm:p-10 text-center">
+      <div className="bg-surface rounded-2xl border border-border shadow-sm w-full max-w-[440px] p-8 sm:p-10 text-center">
         {/* Icon Badge */}
         <div className="flex justify-center mb-6">
           <div className="w-16 h-16 rounded-2xl bg-[#8B0000]/8 flex items-center justify-center relative">
@@ -68,7 +68,7 @@ export default function EmailVerifyPage() {
         <h2 className="text-[22px] font-bold text-gray-950 leading-tight">
           Verifikasi Email Anda
         </h2>
-        <p className="mt-3 text-[14px] text-gray-600 font-medium leading-relaxed">
+        <p className="mt-3 text-[14px] text-text-secondary font-medium leading-relaxed">
           Tautan verifikasi telah dikirimkan ke alamat email Anda. Silakan periksa kotak masuk (inbox) atau folder spam email Anda untuk mengaktifkan akun.
         </p>
 
@@ -100,7 +100,7 @@ export default function EmailVerifyPage() {
 
           <Link
             href="/login"
-            className="w-full h-11 rounded-xl font-bold text-[13px] tracking-[0.08em] text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-[0.99] transition-all duration-200 flex items-center justify-center"
+            className="w-full h-11 rounded-xl font-bold text-[13px] tracking-[0.08em] text-text-secondary bg-gray-100 hover:bg-gray-200 active:scale-[0.99] transition-all duration-200 flex items-center justify-center"
           >
             KEMBALI KE HALAMAN LOGIN
           </Link>
@@ -108,7 +108,7 @@ export default function EmailVerifyPage() {
       </div>
 
       {/* Footer note */}
-      <p className="mt-6 text-[11px] text-gray-400 font-medium text-center">
+      <p className="mt-6 text-[11px] text-text-secondary font-medium text-center">
         © 2026 Sistem Monitoring PRASOJO
       </p>
     </main>

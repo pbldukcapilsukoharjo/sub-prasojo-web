@@ -14,7 +14,7 @@ export default function MainScroll({ children }: { children: React.ReactNode }) 
   }, [pathname]);
 
   return (
-    <main ref={mainRef} className="flex-1 overflow-x-hidden overflow-y-auto bg-[#F9FAFB] p-6">
+    <main ref={mainRef} className="flex-1 overflow-x-hidden overflow-y-auto bg-background p-6">
       {children}
     </main>
   );

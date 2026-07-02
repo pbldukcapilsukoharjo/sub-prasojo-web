@@ -181,11 +181,11 @@ export default function Dashboard() {
           {statCards.map((stat, i) => (
             <div
               key={i}
-              className="card shadow-sm border border-gray-100 p-5 flex flex-col gap-4 bg-white"
+              className="card shadow-sm border border-border p-5 flex flex-col gap-4 bg-surface"
             >
               {/* Top: label + icon */}
               <div className="flex items-start justify-between gap-3">
-                <span className="text-[11px] font-bold text-gray-500 tracking-wider uppercase leading-snug pt-0.5">
+                <span className="text-[11px] font-bold text-text-secondary tracking-wider uppercase leading-snug pt-0.5">
                   {stat.title}
                 </span>
                 <div
@@ -198,10 +198,10 @@ export default function Dashboard() {
 
               {/* Value + subtitle */}
               <div>
-                <p className="text-3xl font-bold font-manrope text-gray-900 leading-none">
+                <p className="text-3xl font-bold font-manrope text-text-primary leading-none">
                   {stat.value}
                 </p>
-                <p className="text-[11px] text-gray-400 font-medium mt-1.5">{stat.sub}</p>
+                <p className="text-[11px] text-text-secondary font-medium mt-1.5">{stat.sub}</p>
               </div>
             </div>
           ))}
@@ -211,11 +211,11 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Line Chart Card */}
-          <div className="card bg-white shadow-sm border border-gray-100 lg:col-span-8 flex flex-col">
+          <div className="card bg-surface shadow-sm border border-border lg:col-span-8 flex flex-col">
             {/* Card Header */}
             <div className="px-6 pt-5 pb-2">
-              <h3 className="text-sm font-bold text-gray-900">Total per Status Ajuan</h3>
-              <p className="text-[11px] text-gray-400 font-medium mt-0.5">
+              <h3 className="text-sm font-bold text-text-primary">Total per Status Ajuan</h3>
+              <p className="text-[11px] text-text-secondary font-medium mt-0.5">
                 Pergerakan data berdasarkan tanggal pengajuan
               </p>
             </div>
@@ -230,7 +230,7 @@ export default function Dashboard() {
                   width="100%"
                 />
               ) : mounted ? (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm font-medium">
+                <div className="absolute inset-0 flex items-center justify-center text-text-secondary text-sm font-medium">
                   Belum ada data tersedia
                 </div>
               ) : null}
@@ -238,11 +238,11 @@ export default function Dashboard() {
           </div>
 
           {/* Distribution Card */}
-          <div className="card bg-white shadow-sm border border-gray-100 lg:col-span-4 flex flex-col p-0 overflow-hidden min-h-[415px]">
+          <div className="card bg-surface shadow-sm border border-border lg:col-span-4 flex flex-col p-0 overflow-hidden min-h-[415px]">
             {/* Header */}
-            <div className="px-6 pt-5 pb-4 border-b border-gray-100">
-              <h3 className="text-sm font-bold text-gray-900">Distribusi Wilayah</h3>
-              <p className="text-[11px] text-gray-400 font-medium mt-0.5">
+            <div className="px-6 pt-5 pb-4 border-b border-border">
+              <h3 className="text-sm font-bold text-text-primary">Distribusi Wilayah</h3>
+              <p className="text-[11px] text-text-secondary font-medium mt-0.5">
                 Top wilayah dengan pengajuan terbanyak
               </p>
             </div>
@@ -254,13 +254,13 @@ export default function Dashboard() {
                   {/* Row: rank + name + count + pct badge */}
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-600 flex-shrink-0">
+                      <span className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-bold text-text-secondary flex-shrink-0">
                         {String(item.rank).padStart(2, '0')}
                       </span>
-                      <span className="text-[13px] font-semibold text-gray-800 line-clamp-1">{item.name}</span>
+                      <span className="text-[13px] font-semibold text-text-primary line-clamp-1">{item.name}</span>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-[11px] font-semibold text-gray-400">
+                      <span className="text-[11px] font-semibold text-text-secondary">
                         {item.total.toLocaleString('id-ID')}
                       </span>
                       <span
@@ -280,7 +280,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               )) : (
-                <div className="py-10 text-center text-gray-400 text-sm font-medium">
+                <div className="py-10 text-center text-text-secondary text-sm font-medium">
                   Belum ada data distribusi wilayah
                 </div>
               )}

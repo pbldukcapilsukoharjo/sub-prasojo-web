@@ -111,22 +111,22 @@ export default function DistribusiWilayahPage() {
   })) || [];
 
   const columns = [
-    { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-medium text-gray-900">{String((currentPage - 1) * perPage + idx + 1).padStart(2, '0')}</span> },
+    { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-medium text-text-primary">{String((currentPage - 1) * perPage + idx + 1).padStart(2, '0')}</span> },
     { key: 'desaKec', header: 'Desa/Kecamatan', render: (row: any) => (
       <div className="flex flex-col">
-        <span className="font-bold text-gray-900 text-xs">{row.desa}</span>
-        <span className="text-[10px] font-semibold text-gray-500">{row.kecamatan}</span>
+        <span className="font-bold text-text-primary text-xs">{row.desa}</span>
+        <span className="text-[10px] font-semibold text-text-secondary">{row.kecamatan}</span>
       </div>
     ) },
-    { key: 'totalAjuan', header: 'Total Ajuan', align: 'center' as const, render: (row: any) => <span className="font-bold text-gray-900 text-xs">{row.totalAjuan}</span> },
-    { key: 'ktpel', header: 'KTP-el', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.ktpel}</span> },
-    { key: 'kia', header: 'KIA', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.kia}</span> },
-    { key: 'aktaKelahiran', header: 'Akta Kelahiran', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.aktaKelahiran}</span> },
-    { key: 'aktaKematian', header: 'Akta Kematian', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.aktaKematian}</span> },
-    { key: 'perpindahan', header: 'Perpindahan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.perpindahan}</span> },
-    { key: 'kedatangan', header: 'Kedatangan', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.kedatangan}</span> },
-    { key: 'updateData', header: 'Update Data', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.updateData}</span> },
-    { key: 'rekamJemputBola', header: 'Rekam Jemput Bola', align: 'center' as const, render: (row: any) => <span className="text-gray-900 font-medium text-xs">{row.rekamJemputBola}</span> }
+    { key: 'totalAjuan', header: 'Total Ajuan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.totalAjuan}</span> },
+    { key: 'ktpel', header: 'KTP-el', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.ktpel}</span> },
+    { key: 'kia', header: 'KIA', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.kia}</span> },
+    { key: 'aktaKelahiran', header: 'Akta Kelahiran', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.aktaKelahiran}</span> },
+    { key: 'aktaKematian', header: 'Akta Kematian', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.aktaKematian}</span> },
+    { key: 'perpindahan', header: 'Perpindahan', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.perpindahan}</span> },
+    { key: 'kedatangan', header: 'Kedatangan', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.kedatangan}</span> },
+    { key: 'updateData', header: 'Update Data', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.updateData}</span> },
+    { key: 'rekamJemputBola', header: 'Rekam Jemput Bola', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rekamJemputBola}</span> }
   ];
 
   return (
@@ -196,8 +196,8 @@ export default function DistribusiWilayahPage() {
           title="TOTAL KECAMATAN"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-gray-900">{data?.total_kecamatan || 0}</span>
-              <span className="text-sm font-semibold text-gray-500 mb-1 ml-1">Kecamatan</span>
+              <span className="text-4xl font-bold font-manrope text-text-primary">{data?.total_kecamatan || 0}</span>
+              <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">Kecamatan</span>
             </>
           }
         />
@@ -205,8 +205,8 @@ export default function DistribusiWilayahPage() {
           title="TOTAL AJUAN DOKUMEN"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-gray-900">{data?.total_ajuan_dokumen?.toLocaleString('id-ID') || 0}</span>
-              <span className="text-sm font-semibold text-gray-500 mb-1 ml-1">Dokumen</span>
+              <span className="text-4xl font-bold font-manrope text-text-primary">{data?.total_ajuan_dokumen?.toLocaleString('id-ID') || 0}</span>
+              <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">Dokumen</span>
             </>
           }
         />
@@ -214,17 +214,17 @@ export default function DistribusiWilayahPage() {
           title="RATA-RATA AJUAN"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-gray-900">{data?.rata_rata_ajuan || 0}</span>
-              <span className="text-sm font-semibold text-gray-500 mb-1 ml-1">per Wilayah</span>
+              <span className="text-4xl font-bold font-manrope text-text-primary">{data?.rata_rata_ajuan || 0}</span>
+              <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">per Wilayah</span>
             </>
           }
         />
       </div>
 
       {/* 3. Data Table (Bottom) */}
-      <div className={`card shadow-sm border border-gray-100 flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
-        <div className="p-6 flex justify-between items-center border-b border-gray-100">
-          <h3 className="text-base font-bold text-gray-900">Daftar Ajuan per Desa/Kecamatan</h3>
+      <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
+        <div className="p-6 flex justify-between items-center border-b border-border">
+          <h3 className="text-base font-bold text-text-primary">Daftar Ajuan per Desa/Kecamatan</h3>
           <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9">
             <i className="ri-upload-2-line"></i>
             EKSPOR EXCEL
@@ -237,12 +237,12 @@ export default function DistribusiWilayahPage() {
               data={mappedData} 
             />
           ) : (
-            <div className="flex items-center justify-center h-full text-sm text-gray-400 py-12">
+            <div className="flex items-center justify-center h-full text-sm text-text-secondary py-12">
               Tidak ada data ditemukan
             </div>
           )}
         </div>
-        <div className="p-6 border-t border-gray-100">
+        <div className="p-6 border-t border-border">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

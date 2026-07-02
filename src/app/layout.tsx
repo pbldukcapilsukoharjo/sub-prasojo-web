@@ -4,6 +4,7 @@ import "remixicon/fonts/remixicon.css";
 import { ThemeLangProvider } from "@/providers/theme-lang-provider";
 import { AuthProvider } from "@/providers/auth-provider";
 import { QueryProvider } from "@/providers/query-provider";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "PRASOJO - Sistem Monitoring Disdukcapil Sukoharjo",
@@ -47,7 +48,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <QueryProvider>
           <AuthProvider>
-            <ThemeLangProvider>{children}</ThemeLangProvider>
+            <ThemeProvider attribute="class" defaultTheme="light" enableSystem={true}>
+              <ThemeLangProvider>{children}</ThemeLangProvider>
+            </ThemeProvider>
           </AuthProvider>
         </QueryProvider>
         <Toaster position="top-right" />

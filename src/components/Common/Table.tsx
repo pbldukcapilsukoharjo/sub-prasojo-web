@@ -23,7 +23,7 @@ export default function Table({ columns, data, className = '', onRowClick }: Tab
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`py-4 px-6 text-[10px] font-bold text-gray-600 tracking-wider uppercase whitespace-nowrap ${
+                className={`py-4 px-6 text-[10px] font-bold text-text-secondary tracking-wider uppercase whitespace-nowrap ${
                   col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'
                 }`}
               >
@@ -37,12 +37,12 @@ export default function Table({ columns, data, className = '', onRowClick }: Tab
             <tr 
               key={rowIndex} 
               onClick={() => onRowClick && onRowClick(row)}
-              className={`transition-colors ${onRowClick ? 'cursor-pointer hover:bg-gray-100 even:bg-gray-50' : 'hover:bg-gray-100 even:bg-gray-50'}`}
+              className={`transition-colors ${onRowClick ? 'cursor-pointer hover:bg-gray-100 even:bg-background' : 'hover:bg-gray-100 even:bg-background'}`}
             >
               {columns.map((col) => (
                 <td
                   key={col.key}
-                  className={`py-5 px-6 text-xs font-semibold text-gray-900 whitespace-nowrap ${
+                  className={`py-5 px-6 text-xs font-semibold text-text-primary whitespace-nowrap ${
                     col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left'
                   }`}
                 >
