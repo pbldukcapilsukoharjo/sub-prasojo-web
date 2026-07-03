@@ -92,28 +92,23 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const currentRefreshToken = Cookies.get("refresh_token");
         const currentAccessToken = Cookies.get("token");
-        const payload = currentRefreshToken ? { refresh_token: currentRefreshToken } : {};
 
         const refreshResponse = await axios.post(
           `${baseURL}/auth/refresh`,
-          payload,
+          {},
           {
             headers: {
-              Authorization: `Bearer ${currentRefreshToken || currentAccessToken}`,
+              Authorization: `Bearer ${currentAccessToken}`,
             },
+            withCredentials: true,
           }
         );
 
         const newAccessToken = refreshResponse.data?.data?.access_token;
-        const newRefreshToken = refreshResponse.data?.data?.refresh_token;
 
         if (newAccessToken) {
           Cookies.set("token", newAccessToken, { expires: 1 });
-          if (newRefreshToken) {
-            Cookies.set("refresh_token", newRefreshToken, { expires: 7 });
-          }
 
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
@@ -126,6 +121,7 @@ axiosInstance.interceptors.response.use(
       } catch (refreshErr) {
         processQueue(refreshErr, null);
         Cookies.remove("token");
+        Cookies.remove("refresh_token");
         if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
           window.location.href = "/login";
         }

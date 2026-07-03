@@ -69,7 +69,9 @@ export const authService = {
   },
 
   async refreshToken(): Promise<LoginResponse> {
-    const response = await axiosInstance.post<LoginResponse>("/auth/refresh");
+    const response = await axiosInstance.post<LoginResponse>("/auth/refresh", {}, {
+      withCredentials: true,
+    });
     return response.data;
   },
 
