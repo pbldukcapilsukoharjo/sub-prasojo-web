@@ -11,33 +11,24 @@ export interface DistribusiWilayahParams {
   end_date?: string;
 }
 
-export interface DistribusiAjuanItem {
-  id: number;
-  desa: string;
-  kecamatan: string;
+export interface DistribusiWilayahItem {
   total_ajuan: number;
-  "ktp-el": number;
-  kia: number;
-  akta_kelahiran: number;
-  akta_kematian: number;
-  perpindahan: number;
-  kedatangan: number;
-  update_data: number;
-  rekam_jemput_bola: number;
+  rata_rata_waktu: string;
+  rasio_selesai_persen: number;
+  id_kecamatan: string;
+  nama_kecamatan: string;
 }
 
-export interface DistribusiWilayahData {
-  total_kecamatan: number;
-  total_ajuan_dokumen: number;
-  rata_rata_ajuan: number;
-  daftar_ajuan: {
-    list: DistribusiAjuanItem[];
-    meta: {
-      page: number;
-      per_page: number;
-      total: number;
-      total_page: number;
-    };
+export interface DistribusiWilayahResponse {
+  status: boolean;
+  code: number;
+  message: string;
+  data: DistribusiWilayahItem[];
+  meta: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_page: number;
   };
 }
 
@@ -55,8 +46,15 @@ const buildQueryParams = (params?: Record<string, any>) => {
 };
 
 export const wilayahService = {
-  async getDistribusiWilayah(params?: DistribusiWilayahParams): Promise<ApiBaseResponse<DistribusiWilayahData>> {
-    const response = await axiosInstance.get<ApiBaseResponse<DistribusiWilayahData>>("/wilayah/distribusi", {
+  async getDistribusiWilayah(params?: DistribusiWilayahParams): Promise<DistribusiWilayahResponse> {
+    const response = await axiosInstance.get<DistribusiWilayahResponse>("/wilayah/distribusi", {
+      params: buildQueryParams(params),
+    });
+    return response.data;
+  },
+
+  async getExportDistribusiWilayah(params?: DistribusiWilayahParams): Promise<ApiBaseResponse<any>> {
+    const response = await axiosInstance.get<ApiBaseResponse<any>>("/wilayah/export", {
       params: buildQueryParams(params),
     });
     return response.data;

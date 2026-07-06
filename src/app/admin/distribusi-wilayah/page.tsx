@@ -10,20 +10,20 @@ import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
 import Pagination from '@/components/Common/Pagination';
 import { useKecamatanOptions } from '@/hooks/useFilterOptions';
-import { wilayahService, DistribusiWilayahData, DistribusiWilayahParams } from '@/services/wilayah.service';
+import { wilayahService, DistribusiWilayahResponse, DistribusiWilayahParams } from '@/services/wilayah.service';
 import { handleApiError } from '@/lib/api-error';
 
 export default function DistribusiWilayahPage() {
   const [search, setSearch] = useState('');
   const [kecamatan, setKecamatan] = useState('all');
   const [periode, setPeriode] = useState('');
-  const [sortBy, setSortBy] = useState('newest');
+  const [sortBy, setSortBy] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
-  const [data, setData] = useState<DistribusiWilayahData | null>(null);
+  const [data, setData] = useState<DistribusiWilayahResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -55,19 +55,19 @@ export default function DistribusiWilayahPage() {
         page: currentPage,
         search: search || undefined,
         id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        sort_by: sortBy,
+        sort_by: sortBy || undefined,
         periode_bulan: periode ? Number(periode) : undefined,
-        start_date: formatToDDMMYYYY(startDate),
-        end_date: formatToDDMMYYYY(endDate),
+        start_date: formatToDDMMYYYY(startDate) || undefined,
+        end_date: formatToDDMMYYYY(endDate) || undefined,
       };
 
       const res = await wilayahService.getDistribusiWilayah(params);
       if (res.status && res.data) {
-        setData(res.data);
-        if (res.data.daftar_ajuan?.meta) {
-          setTotalItems(res.data.daftar_ajuan.meta.total);
-          setTotalPages(res.data.daftar_ajuan.meta.total_page);
-          setPerPage(res.data.daftar_ajuan.meta.per_page);
+        setData(res);
+        if (res.meta) {
+          setTotalItems(res.meta.total);
+          setTotalPages(res.meta.total_page);
+          setPerPage(res.meta.per_page);
         }
       }
     } catch (error) {
@@ -81,7 +81,7 @@ export default function DistribusiWilayahPage() {
     setSearch('');
     setKecamatan('all');
     setPeriode('');
-    setSortBy('newest');
+    setSortBy('');
     setStartDate('');
     setEndDate('');
     setCurrentPage(1);
@@ -89,6 +89,25 @@ export default function DistribusiWilayahPage() {
     setTimeout(() => {
       fetchData();
     }, 0);
+  };
+
+  const handleExport = async () => {
+    try {
+      const params: DistribusiWilayahParams = {
+        search: search || undefined,
+        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+        sort_by: sortBy || undefined,
+        periode_bulan: periode ? Number(periode) : undefined,
+        start_date: formatToDDMMYYYY(startDate) || undefined,
+        end_date: formatToDDMMYYYY(endDate) || undefined,
+      };
+      await wilayahService.getExportDistribusiWilayah(params);
+      import('react-hot-toast').then(({ toast }) => {
+        toast.success('Berhasil memulai export data');
+      });
+    } catch (error) {
+      handleApiError(error);
+    }
   };
 
   const handleFilter = () => {
@@ -99,38 +118,29 @@ export default function DistribusiWilayahPage() {
     }
   };
 
-  const mappedData = data?.daftar_ajuan?.list?.map((item) => ({
-    desa: item.desa,
-    kecamatan: item.kecamatan,
+  const mappedData = data?.data?.map((item) => ({
+    kecamatan: item.nama_kecamatan,
+    id_kecamatan: item.id_kecamatan,
     totalAjuan: item.total_ajuan,
-    ktpel: item['ktp-el'],
-    kia: item.kia,
-    aktaKelahiran: item.akta_kelahiran,
-    aktaKematian: item.akta_kematian,
-    perpindahan: item.perpindahan,
-    kedatangan: item.kedatangan,
-    updateData: item.update_data,
-    rekamJemputBola: item.rekam_jemput_bola,
+    rataWaktu: item.rata_rata_waktu,
+    rasioSelesai: item.rasio_selesai_persen,
   })) || [];
 
   const columns = [
     { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-medium text-text-primary">{String((currentPage - 1) * perPage + idx + 1).padStart(2, '0')}</span> },
-    { key: 'desaKec', header: 'Desa/Kecamatan', render: (row: any) => (
+    { key: 'kecamatan', header: 'Kecamatan', render: (row: any) => (
       <div className="flex flex-col">
-        <span className="font-bold text-text-primary text-xs">{row.desa}</span>
-        <span className="text-[10px] font-semibold text-text-secondary">{row.kecamatan}</span>
+        <span className="font-bold text-text-primary text-xs">{row.kecamatan}</span>
+        <span className="text-[10px] font-semibold text-text-secondary">{row.id_kecamatan}</span>
       </div>
     ) },
     { key: 'totalAjuan', header: 'Total Ajuan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.totalAjuan}</span> },
-    { key: 'ktpel', header: 'KTP-el', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.ktpel}</span> },
-    { key: 'kia', header: 'KIA', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.kia}</span> },
-    { key: 'aktaKelahiran', header: 'Akta Kelahiran', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.aktaKelahiran}</span> },
-    { key: 'aktaKematian', header: 'Akta Kematian', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.aktaKematian}</span> },
-    { key: 'perpindahan', header: 'Perpindahan', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.perpindahan}</span> },
-    { key: 'kedatangan', header: 'Kedatangan', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.kedatangan}</span> },
-    { key: 'updateData', header: 'Update Data', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.updateData}</span> },
-    { key: 'rekamJemputBola', header: 'Rekam Jemput Bola', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rekamJemputBola}</span> }
+    { key: 'rataWaktu', header: 'Rata-Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rataWaktu}</span> },
+    { key: 'rasioSelesai', header: 'Rasio Selesai', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rasioSelesai}%</span> }
   ];
+
+  const pageTotalAjuan = mappedData.reduce((acc, curr) => acc + curr.totalAjuan, 0);
+  const pageRataAjuan = mappedData.length > 0 ? (pageTotalAjuan / mappedData.length).toFixed(1) : 0;
 
   return (
     <div className="flex flex-col gap-6">
@@ -194,25 +204,25 @@ export default function DistribusiWilayahPage() {
           title="TOTAL KECAMATAN"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">{data?.total_kecamatan || 0}</span>
+              <span className="text-4xl font-bold font-manrope text-text-primary">{totalItems}</span>
               <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">Kecamatan</span>
             </>
           }
         />
         <StatCard 
-          title="TOTAL AJUAN DOKUMEN"
+          title="TOTAL AJUAN (HALAMAN INI)"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">{data?.total_ajuan_dokumen?.toLocaleString('id-ID') || 0}</span>
+              <span className="text-4xl font-bold font-manrope text-text-primary">{pageTotalAjuan.toLocaleString('id-ID')}</span>
               <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">Dokumen</span>
             </>
           }
         />
         <StatCard 
-          title="RATA-RATA AJUAN"
+          title="RATA-RATA AJUAN (HALAMAN INI)"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">{data?.rata_rata_ajuan || 0}</span>
+              <span className="text-4xl font-bold font-manrope text-text-primary">{pageRataAjuan}</span>
               <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">per Wilayah</span>
             </>
           }
@@ -222,8 +232,8 @@ export default function DistribusiWilayahPage() {
       {/* 3. Data Table (Bottom) */}
       <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <div className="p-6 flex justify-between items-center border-b border-border">
-          <h3 className="text-base font-bold text-text-primary">Daftar Ajuan per Desa/Kecamatan</h3>
-          <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9">
+          <h3 className="text-base font-bold text-text-primary">Daftar Ajuan per Wilayah/Kecamatan</h3>
+          <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9" onClick={handleExport} disabled={isLoading}>
             <i className="ri-upload-2-line"></i>
             EKSPOR EXCEL
           </Button>
