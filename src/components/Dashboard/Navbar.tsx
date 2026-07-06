@@ -95,7 +95,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
         {/* User Profile Trigger */}
         <Link
           href="/admin/profile"
-          className={`group flex items-center gap-3 h-full pl-4 lg:pl-6 rounded-2xl px-2 lg:px-4 transition-all duration-200 cursor-pointer ${
+          className={`group flex items-center gap-3 h-full lg:pl-6 rounded-2xl px-2 lg:px-4 transition-all duration-200 cursor-pointer ${
             isProfileActive
               ? 'bg-primary/5 ring-1 ring-primary/20'
               : 'hover:bg-background'

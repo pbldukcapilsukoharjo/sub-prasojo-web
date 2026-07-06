@@ -298,17 +298,10 @@ export default function PeringkatOperatorPage() {
       strokeDashArray: 4,
       padding: { left: 16, right: 16, top: 0, bottom: 0 },
     },
-    colors: ['#800000'],
+    colors: ['var(--color-primary)'],
     fill: {
-      type: 'gradient',
-      gradient: {
-        shade: 'dark',
-        type: 'vertical',
-        shadeIntensity: 0.1,
-        opacityFrom: 0.9,
-        opacityTo: 0.75,
-        stops: [0, 100],
-      },
+      type: 'solid',
+      opacity: 1,
     },
     legend: { show: false },
     tooltip: {
@@ -503,7 +496,7 @@ export default function PeringkatOperatorPage() {
           <div className="flex items-center gap-3 select-none">
             <button
               onClick={() => setSelectedOperator(null)}
-              className="w-9 h-9 rounded-full border border-neutral flex items-center justify-center bg-surface text-text-secondary hover:bg-background active:bg-gray-100 transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full flex items-center justify-center bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer"
             >
               <i className="ri-arrow-left-line text-lg"></i>
             </button>
@@ -515,13 +508,13 @@ export default function PeringkatOperatorPage() {
             {/* Header: Profile Card */}
             <div className="flex items-center justify-between border-b border-border pb-5">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-text-secondary">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
                   <i className="ri-user-3-line text-2xl"></i>
                 </div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
                     <span className="text-base font-bold text-text-primary">{operatorKpi?.nama || selectedOperator.operator}</span>
-                    <span className="bg-[#800000] text-white flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                    <span className="bg-primary text-white flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold shadow-sm">
                       <i className="ri-trophy-fill text-[10px]"></i> #{selectedOperator.peringkat}
                     </span>
                   </div>

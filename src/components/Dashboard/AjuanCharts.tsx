@@ -174,17 +174,10 @@ export default function AjuanCharts() {
       strokeDashArray: 4,
       padding: { left: 16, right: 16, top: 0, bottom: 28 },
     },
-    colors: ['#800000'],
+    colors: ['var(--color-primary)'],
     fill: {
-      type: 'gradient',
-      gradient: {
-        shade: 'dark',
-        type: 'vertical',
-        shadeIntensity: 0.1,
-        opacityFrom: 0.95,
-        opacityTo: 0.85,
-        stops: [0, 100],
-      },
+      type: 'solid',
+      opacity: 1,
     },
     legend: { show: false },
     tooltip: {

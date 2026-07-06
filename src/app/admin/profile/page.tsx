@@ -179,16 +179,7 @@ export default function ProfilePage() {
               </a>
             </div>
 
-            {/* Bahasa Sistem */}
-            <div>
-              <Select
-                label="Bahasa Sistem"
-                options={[
-                  { label: 'Bahasa Indonesia (ID)', value: 'id' },
-                  { label: 'English (EN)', value: 'en' },
-                ]}
-              />
-            </div>
+
 
             <div className="flex-1"></div>
 
