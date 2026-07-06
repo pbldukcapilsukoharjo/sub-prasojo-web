@@ -134,5 +134,12 @@ export const operatorService = {
       params: buildQueryParams(params),
     });
     return response.data;
+  },
+
+  async getExportPeringkat(params?: OperatorPeringkatParams): Promise<ApiBaseResponse<any>> {
+    const response = await axiosInstance.get<ApiBaseResponse<any>>("/operator/export", {
+      params: buildQueryParams(params),
+    });
+    return response.data;
   }
 };

@@ -200,6 +200,26 @@ export default function PeringkatOperatorPage() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const params = {
+        search: search || undefined,
+        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+        periode_bulan: periode ? Number(periode) : undefined,
+        sort: sortBy,
+        start_date: formatToDDMMYYYY(startDate),
+        end_date: formatToDDMMYYYY(endDate),
+        id_operator: operatorFilter !== 'all' ? Number(operatorFilter) : undefined,
+      };
+      await operatorService.getExportPeringkat(params);
+      import('react-hot-toast').then(({ toast }) => {
+        toast.success('Berhasil memulai export data');
+      });
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
   const leaderboardColumns = [
     { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-secondary">{String(row.peringkat).padStart(2, '0')}</span> },
     { key: 'name', header: 'Nama Operator', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.operator}</span> },
@@ -449,6 +469,9 @@ export default function PeringkatOperatorPage() {
           <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isListLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
             <div className="p-6 flex justify-between items-center border-b border-border">
               <h3 className="text-base font-bold text-text-primary">Peringkat Operator Berdasarkan Jumlah Ajuan</h3>
+              <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm" onClick={handleExport} disabled={isListLoading}>
+                EXPORT EXCEL
+              </Button>
             </div>
             <div className="w-full min-h-[300px]">
               {rankingsData.length > 0 ? (
