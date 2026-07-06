@@ -9,6 +9,7 @@ import FilterCard from '@/components/Common/FilterCard';
 import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
 import Pagination from '@/components/Common/Pagination';
+import { useKecamatanOptions } from '@/hooks/useFilterOptions';
 import { wilayahService, DistribusiWilayahData, DistribusiWilayahParams } from '@/services/wilayah.service';
 import { handleApiError } from '@/lib/api-error';
 
@@ -19,6 +20,8 @@ export default function DistribusiWilayahPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
   const [data, setData] = useState<DistribusiWilayahData | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -143,12 +146,7 @@ export default function DistribusiWilayahPage() {
           label="Kecamatan"
           value={kecamatan}
           onChange={(val) => setKecamatan(String(val))}
-          options={[
-            { label: 'Seluruh Kecamatan', value: 'all' },
-            { label: 'Baki', value: '1' },
-            { label: 'Grogol', value: '2' },
-            { label: 'Kartasura', value: '3' },
-          ]}
+          options={kecamatanOptions}
         />
         <CustomSelect
           label="Periode"

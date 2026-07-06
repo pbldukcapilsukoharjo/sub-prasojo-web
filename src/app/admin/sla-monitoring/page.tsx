@@ -12,6 +12,7 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import { slaService, SlaData, SlaKpiData, SlaParams, SlaKpiParams } from '@/services/sla.service';
 import { handleApiError } from '@/lib/api-error';
+import { useLayananOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
 
 export default function SlaMonitoringPage() {
   const [search, setSearch] = useState('');
@@ -23,6 +24,9 @@ export default function SlaMonitoringPage() {
   // Custom API states
   const [kecamatan, setKecamatan] = useState('all');
   const [layanan, setLayanan] = useState('all');
+
+  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Layanan' });
+  const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Semua Kecamatan' });
 
   const [listData, setListData] = useState<SlaData | null>(null);
   const [kpiData, setKpiData] = useState<SlaKpiData | null>(null);
@@ -178,22 +182,13 @@ export default function SlaMonitoringPage() {
           label="Kecamatan"
           value={kecamatan}
           onChange={(val) => setKecamatan(String(val))}
-          options={[
-            { label: 'Semua Kecamatan', value: 'all' },
-            { label: 'Baki', value: '1' },
-            { label: 'Grogol', value: '2' },
-          ]}
+          options={kecamatanOptions}
         />
         <CustomSelect
           label="Layanan"
           value={layanan}
           onChange={(val) => setLayanan(String(val))}
-          options={[
-            { label: 'Semua Layanan', value: 'all' },
-            { label: 'KTP-el', value: '1' },
-            { label: 'KIA', value: '2' },
-            { label: 'Akta Kelahiran', value: '3' },
-          ]}
+          options={layananOptions}
         />
         <CustomSelect
           label="Periode"

@@ -13,6 +13,7 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
 import AjuanCharts from '@/components/Dashboard/AjuanCharts';
+import { usePelaporOptions, useKecamatanOptions, useStatusOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, AjuanItem, PengajuanAjuanParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 
@@ -20,7 +21,6 @@ export default function Ajuan() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('semua');
   const [currentPage, setCurrentPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
 
@@ -31,6 +31,11 @@ export default function Ajuan() {
   const [endDate, setEndDate] = useState('');
   const [periode, setPeriode] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [filterStatus, setFilterStatus] = useState('all');
+
+  const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
+  const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
+  const { data: statusOptions = [] } = useStatusOptions({ addAllOption: true, allOptionLabel: 'Semua Status' });
 
   const [data, setData] = useState<AjuanItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -226,21 +231,13 @@ export default function Ajuan() {
           label="Pelapor"
           value={pelapor}
           onChange={(val) => setPelapor(String(val))}
-          options={[
-            { label: 'Semua Pelapor', value: 'all' },
-            { label: 'PADUKA', value: 'paduka' },
-          ]}
+          options={pelaporOptions}
         />
         <CustomSelect
           label="Kecamatan"
           value={kecamatan}
           onChange={(val) => setKecamatan(String(val))}
-          options={[
-            { label: 'Seluruh Kecamatan', value: 'all' },
-            { label: 'Laweyan', value: 'laweyan' },
-            { label: 'Banjarsari', value: 'banjarsari' },
-            { label: 'Serengan', value: 'serengan' },
-          ]}
+          options={kecamatanOptions}
         />
         <CustomDateRangePicker
           label="Rentang Tanggal"
@@ -284,13 +281,7 @@ export default function Ajuan() {
           label="Status Ajuan"
           value={filterStatus}
           onChange={(val) => setFilterStatus(String(val))}
-          options={[
-            { label: 'Semua Status', value: 'all' },
-            { label: 'Diverifikasi', value: 'DIVERIFIKASI' },
-            { label: 'Diproses', value: 'DIPROSES' },
-            { label: 'Disetujui', value: 'DISETUJUI' },
-            { label: 'Ditolak', value: 'DITOLAK' },
-          ]}
+          options={statusOptions}
         />
       </FilterCard>
 

@@ -12,6 +12,7 @@ import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
+import { useKecamatanOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, AjuanItem, PengajuanProdukParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 
@@ -23,13 +24,14 @@ export default function Produk() {
   const [selectedData, setSelectedData] = useState<any>(null);
 
   const [search, setSearch] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [namaIdentitas, setNamaIdentitas] = useState('');
   const [kecamatan, setKecamatan] = useState('all');
   const [periode, setPeriode] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-  const [namaIdentitas, setNamaIdentitas] = useState('');
 
+  const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
   const [data, setData] = useState<AjuanItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -218,12 +220,7 @@ export default function Produk() {
           label="Kecamatan"
           value={kecamatan}
           onChange={(val) => setKecamatan(String(val))}
-          options={[
-            { label: 'Seluruh Kecamatan', value: 'all' },
-            { label: 'Laweyan', value: 'laweyan' },
-            { label: 'Banjarsari', value: 'banjarsari' },
-            { label: 'Serengan', value: 'serengan' },
-          ]}
+          options={kecamatanOptions}
         />
         <CustomSelect
           label="Periode"

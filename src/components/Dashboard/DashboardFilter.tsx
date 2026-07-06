@@ -6,6 +6,7 @@ import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import { DashboardFilterParams } from '@/services/dashboard.service';
+import { useLayananOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
 
 interface DashboardFilterProps {
   onFilterChange?: (filters: DashboardFilterParams) => void;
@@ -20,6 +21,9 @@ export default function DashboardFilter({ onFilterChange }: DashboardFilterProps
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
+
+  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Jenis Layanan' });
+  const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
   // Trigger default filter on initial mount
   useEffect(() => {
@@ -67,22 +71,13 @@ export default function DashboardFilter({ onFilterChange }: DashboardFilterProps
         label="Jenis Layanan"
         value={jenisLayanan}
         onChange={setJenisLayanan}
-        options={[
-          { label: 'Semua Jenis Layanan', value: 'all' },
-          { label: 'Kartu Keluarga', value: 1 },
-          { label: 'KTP-el', value: 2 },
-          { label: 'KIA', value: 3 },
-          { label: 'Akta Kelahiran', value: 4 },
-          { label: 'Akta Kematian', value: 5 },
-          { label: 'Perpindahan', value: 6 },
-          { label: 'Surket KTP', value: 7 },
-        ]}
+        options={layananOptions}
       />
       <CustomSelect
         label="Kecamatan"
         value={kecamatan}
         onChange={setKecamatan}
-        options={[{ label: 'Seluruh Kecamatan', value: 'all' }]}
+        options={kecamatanOptions}
       />
       <CustomSelect
         label="Periode"

@@ -7,6 +7,7 @@ import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import FilterCard from '@/components/Common/FilterCard';
 import DetailUlasanModal from '@/components/Common/DetailUlasanModal';
 import Pagination from '@/components/Common/Pagination';
+import { useLayananOptions } from '@/hooks/useFilterOptions';
 import { ulasanService, UlasanData, UlasanKpiData, UlasanParams } from '@/services/ulasan.service';
 import { handleApiError } from '@/lib/api-error';
 
@@ -19,6 +20,8 @@ export default function DetailUlasanPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   
+  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Jenis Layanan' });
+
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -210,14 +213,7 @@ export default function DetailUlasanPage() {
           label="Jenis Layanan"
           value={jenisLayanan}
           onChange={(val) => setJenisLayanan(String(val))}
-          options={[
-            { label: 'Semua Jenis Layanan', value: 'all' },
-            { label: 'Kartu Keluarga', value: 'kk' },
-            { label: 'KTP-el', value: 'ktp' },
-            { label: 'KIA', value: 'kia' },
-            { label: 'Akta Kelahiran', value: 'akta_kelahiran' },
-            { label: 'Akta Kematian', value: 'akta_kematian' },
-          ]}
+          options={layananOptions}
         />
         <CustomSelect
           label="Urutkan Dari"

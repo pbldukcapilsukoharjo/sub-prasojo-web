@@ -12,6 +12,7 @@ import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
+import { usePelaporOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, AjuanItem, PengajuanLembarKerjaParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 
@@ -29,6 +30,9 @@ export default function LembarKerja() {
   const [endDate, setEndDate] = useState('');
   const [periode, setPeriode] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+
+  const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
+  const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
   const [data, setData] = useState<AjuanItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -216,21 +220,13 @@ export default function LembarKerja() {
           label="Pelapor"
           value={pelapor}
           onChange={(val) => setPelapor(String(val))}
-          options={[
-            { label: 'Semua Pelapor', value: 'all' },
-            { label: 'PADUKA', value: 'paduka' },
-          ]}
+          options={pelaporOptions}
         />
         <CustomSelect
           label="Kecamatan"
           value={kecamatan}
           onChange={(val) => setKecamatan(String(val))}
-          options={[
-            { label: 'Seluruh Kecamatan', value: 'all' },
-            { label: 'Laweyan', value: 'laweyan' },
-            { label: 'Banjarsari', value: 'banjarsari' },
-            { label: 'Serengan', value: 'serengan' },
-          ]}
+          options={kecamatanOptions}
         />
         <CustomDateRangePicker
           label="Rentang Tanggal"

@@ -12,6 +12,7 @@ import Tabs from '@/components/Common/Tabs';
 import Pagination from '@/components/Common/Pagination';
 import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
+import { useKecamatanOptions } from '@/hooks/useFilterOptions';
 import { operatorService, KpiGlobalData, OperatorItem, OperatorKpiData, RiwayatItem } from '@/services/operator.service';
 import { handleApiError } from '@/lib/api-error';
 
@@ -30,6 +31,8 @@ export default function PeringkatOperatorPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [operatorFilter, setOperatorFilter] = useState('all');
+
+  const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
   // List View Data States
   const [kpiGlobal, setKpiGlobal] = useState<KpiGlobalData | null>(null);
@@ -360,12 +363,7 @@ export default function PeringkatOperatorPage() {
               label="Kecamatan"
               value={kecamatan}
               onChange={(val) => setKecamatan(String(val))}
-              options={[
-                { label: 'Seluruh Kecamatan', value: 'all' },
-                { label: 'Baki', value: '1' },
-                { label: 'Grogol', value: '2' },
-                { label: 'Kartasura', value: '3' },
-              ]}
+              options={kecamatanOptions}
             />
             <CustomSelect
               label="Periode"
@@ -405,7 +403,7 @@ export default function PeringkatOperatorPage() {
                 { label: 'Terlama', value: 'oldest' },
               ]}
             />
-            <CustomSelect
+            {/* <CustomSelect
               label="Operator"
               value={operatorFilter}
               onChange={(val) => setOperatorFilter(String(val))}
@@ -414,7 +412,7 @@ export default function PeringkatOperatorPage() {
                 { label: 'Operator 1', value: '1' },
                 { label: 'Operator 2', value: '2' },
               ]}
-            />
+            /> */}
           </FilterCard>
 
           {/* Metric Summary Cards */}
