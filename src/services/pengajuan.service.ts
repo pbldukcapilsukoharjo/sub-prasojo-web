@@ -80,6 +80,31 @@ export interface PengajuanAjuanResponse {
 }
 
 
+// --- AJUAN CHART ---
+export interface ChartDataItem {
+  label: string;
+  value: number;
+}
+
+export interface ChartAjuanData {
+  chart_status: ChartDataItem[];
+  chart_layanan: ChartDataItem[];
+}
+
+export type ChartAjuanResponse = ApiBaseResponse<ChartAjuanData>;
+
+export interface ChartAjuanParams {
+  start_date?: string;
+  end_date?: string;
+  periode_bulan?: string | number;
+  id_kecamatan?: string | number;
+  id_layanan?: string;
+  id_jenis_ajuan?: string | number;
+  jalur?: string;
+  id_pelapor?: string;
+}
+
+
 // --- PRODUK ---
 export interface PengajuanProdukParams {
   search?: string;
@@ -147,6 +172,21 @@ export const pengajuanService = {
   async getAjuan(params?: PengajuanAjuanParams): Promise<PengajuanAjuanResponse> {
     const response = await axiosInstance.get<PengajuanAjuanResponse>("/pengajuan/ajuan", {
       params: buildQueryParams(params),
+    });
+    return response.data;
+  },
+
+  async getChartAjuan(params?: ChartAjuanParams): Promise<ChartAjuanResponse> {
+    const query: Record<string, any> = {};
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== '' && value !== 'all') {
+          query[key] = value;
+        }
+      });
+    }
+    const response = await axiosInstance.get<ChartAjuanResponse>("/pengajuan/ajuan/chart", {
+      params: query,
     });
     return response.data;
   },

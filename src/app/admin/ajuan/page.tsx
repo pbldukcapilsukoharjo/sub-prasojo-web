@@ -14,7 +14,7 @@ import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
 import AjuanCharts from '@/components/Dashboard/AjuanCharts';
 import { usePelaporOptions, useKecamatanOptions, useStatusOptions } from '@/hooks/useFilterOptions';
-import { pengajuanService, AjuanItem, PengajuanAjuanParams } from '@/services/pengajuan.service';
+import { pengajuanService, AjuanItem, PengajuanAjuanParams, ChartDataItem, ChartAjuanParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 
 export default function Ajuan() {
@@ -40,11 +40,14 @@ export default function Ajuan() {
   const [data, setData] = useState<AjuanItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
+  const [perPage, setPerPage] = useState(10);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [chartStatus, setChartStatus] = useState<ChartDataItem[]>([]);
+  const [chartLayanan, setChartLayanan] = useState<ChartDataItem[]>([]);
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
-  const perPage = 10;
 
   useEffect(() => {
     fetchData();
@@ -78,13 +81,31 @@ export default function Ajuan() {
         per_page: perPage,
       };
 
-      const response = await pengajuanService.getAjuan(params);
+      const chartParams: ChartAjuanParams = {
+        start_date: formatToDDMMYYYY(startDate) || undefined,
+        end_date: formatToDDMMYYYY(endDate) || undefined,
+        periode_bulan: periode ? Number(periode) : undefined,
+        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+        id_layanan: activeTab !== 'semua' ? activeTab : undefined,
+        id_pelapor: pelapor !== 'all' ? pelapor : undefined,
+      };
+
+      const [response, chartResponse] = await Promise.all([
+        pengajuanService.getAjuan(params),
+        pengajuanService.getChartAjuan(chartParams),
+      ]);
+
       if (response.status) {
         setData(response.data || []);
         if (response.meta) {
           setTotalItems(response.meta.total);
           setTotalPages(response.meta.total_page);
         }
+      }
+
+      if (chartResponse.status && chartResponse.data) {
+        setChartStatus(chartResponse.data.chart_status || []);
+        setChartLayanan(chartResponse.data.chart_layanan || []);
       }
     } catch (error) {
       handleApiError(error);
@@ -285,7 +306,7 @@ export default function Ajuan() {
         />
       </FilterCard>
 
-      <AjuanCharts />
+      <AjuanCharts chartStatus={chartStatus} chartLayanan={chartLayanan} />
 
       {/* Table Card */}
       <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>

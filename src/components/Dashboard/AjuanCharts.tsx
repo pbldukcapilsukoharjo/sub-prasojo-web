@@ -5,7 +5,14 @@ import dynamic from 'next/dynamic';
 
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
-export default function AjuanCharts() {
+import { ChartDataItem } from '@/services/pengajuan.service';
+
+interface AjuanChartsProps {
+  chartStatus?: ChartDataItem[];
+  chartLayanan?: ChartDataItem[];
+}
+
+export default function AjuanCharts({ chartStatus = [], chartLayanan = [] }: AjuanChartsProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -18,8 +25,15 @@ export default function AjuanCharts() {
       fontFamily: 'Inter, sans-serif',
       animations: { enabled: true, speed: 600 },
     },
-    labels: ['Diverifikasi', 'Disetujui', 'Ditolak', 'Diproses'],
-    colors: ['#3B82F6', '#10B981', '#EF4444', '#6B7280'],
+    labels: chartStatus.map(item => item.label),
+    colors: chartStatus.map(item => {
+      const l = item.label.toUpperCase();
+      if (l.includes('BELUM')) return '#F59E0B'; // yellow/amber
+      if (l.includes('SETUJU')) return '#10B981'; // green
+      if (l.includes('TOLAK')) return '#EF4444'; // red
+      if (l.includes('SELESAI') || l.includes('PROSES')) return '#3B82F6'; // blue
+      return '#6B7280';
+    }),
     stroke: {
       show: true,
       width: 2,
@@ -115,7 +129,7 @@ export default function AjuanCharts() {
       },
     },
   };
-  const pieSeries = [38, 20, 7, 35];
+  const pieSeries = chartStatus.map(item => item.value);
 
   const barOptions: any = {
     chart: {
@@ -134,15 +148,7 @@ export default function AjuanCharts() {
     dataLabels: { enabled: false },
     stroke: { show: false },
     xaxis: {
-      categories: [
-        'Kartu Keluarga',
-        'KTP-EL',
-        'KIA',
-        'Akta Kelahiran',
-        'Akta Kematian',
-        'Perpindahan',
-        'Surket KTP',
-      ],
+      categories: chartLayanan.map(item => item.label),
       labels: {
         rotate: -35,
         rotateAlways: true,
@@ -159,7 +165,6 @@ export default function AjuanCharts() {
     },
     yaxis: {
       min: 0,
-      max: 80,
       tickAmount: 4,
       labels: {
         style: {
@@ -195,7 +200,7 @@ export default function AjuanCharts() {
   const barSeries = [
     {
       name: 'Jumlah Ajuan',
-      data: [70, 18, 32, 20, 42, 12, 58],
+      data: chartLayanan.map(item => item.value),
     },
   ];
 
