@@ -1,188 +1,219 @@
 =============================================================================
-DOKUMENTASI FRONTEND - SUB-PRASOJO WEB (DASHBOARD PELAYANAN ADMINDUK ONLINE)
+DOKUMENTASI FRONTEND - SUB-PRASOJO WEB (DASHBOARD MONITORING ADMINDUK KHUSUS OPERATOR)
 =============================================================================
 
 Kelompok: 06 - Dukcapil Sukoharjo
 Anggota:
-1. Roid Robih - V3424074
+1. Roid Robih - V3424074 (Frontend Engineer)
 2. Tazkia Putri Hidayati - V3424079
 3. Ahmad Alaudin Falah - V3424082
 4. Amru Dzaky Ramadhan - V3424087
 5. Surya Putra Pamungkas - V3424101
 
------------------------------------------------------------------------------
-1. PENJELASAN FRAMEWORK, TOOLS, DAN LIBRARY YANG DIGUNAKAN
------------------------------------------------------------------------------
-Aplikasi Frontend Sub-Prasojo dibangun dengan arsitektur modern untuk memastikan performa yang cepat, kode yang terstruktur, dan kemudahan dalam pengembangan (Developer Experience). Mengingat ini adalah aplikasi internal instansi, fokus utama adalah pada kecepatan, keamanan, dan fungsionalitas manajemen data, tanpa memerlukan optimasi SEO eksternal.
-
-Framework Utama:
-- Next.js (App Router): Dipilih karena mendukung arsitektur Component-Based, Server-Side Rendering (SSR), dan Client-Side Rendering secara fleksibel. Penggunaan App Router mempermudah manajemen routing (seperti `/login`, `/admin`).
-- TypeScript: Digunakan sebagai bahasa pemrograman utama. Alasan pemilihan adalah karena sistem "Strong Typing" yang mencegah banyak error pada saat kompilasi (compile-time) dan mempermudah auto-completion saat menulis kode.
-
-Styling & UI:
-- Tailwind CSS: Utility-first CSS framework. Dipilih karena mempermudah pembuatan UI yang responsif dan rapi secara cepat tanpa perlu berpindah ke file CSS terpisah.
-- RemixIcon: Library ikon open-source yang digunakan secara konsisten untuk memberikan visual pada tombol, sidebar, dan menu.
-
-State Management & Data Fetching:
-- Axios: Digunakan untuk melakukan HTTP request (GET, POST, PUT, DELETE) ke backend API Dukcapil. Fitur Interceptor pada Axios sangat membantu untuk otomatisasi pengiriman Token otorisasi.
-- TanStack Query (React Query): Digunakan untuk manajemen state dari server, sinkronisasi data, caching, dan penanganan loading/error state. Sangat cocok untuk dashboard real-time.
-
-Form Handling & Validasi:
-- React Hook Form: Digunakan untuk mengelola state form (seperti login, register, form pengajuan) tanpa membuat re-render yang tidak perlu.
-- TypeBox: Digunakan bersama React Hook Form untuk memvalidasi skema data input dari pengguna sebelum dikirim ke server.
-
-Visualisasi Data & UX:
-- ApexCharts & React-ApexCharts: Library untuk merender grafik dan chart interaktif pada halaman dashboard statistik.
-- React Hot Toast: Untuk menampilkan pop-up notifikasi (sukses, error, peringatan).
-- React Loading Skeleton: Memberikan efek animasi loading (skeleton) sebelum data sesungguhnya muncul di layar.
-- Next-Themes: Untuk mengelola transisi tema (Light/Dark mode) pada aplikasi.
-- Cloudinary: Library untuk manajemen media/aset, khususnya foto profil pengguna atau lampiran berkas.
-
-Tools Ekosistem:
-- Bun: Sebagai package manager pengganti npm/yarn. Dipilih karena kecepatan instalasi dan eksekusinya yang sangat tinggi.
-- Biome: Digunakan untuk linter dan code formatter. Memastikan konsistensi penulisan kode di antara anggota tim.
-
------------------------------------------------------------------------------
-2. INSTALASI PROJECT, KONFIGURASI, DAN SETTING REPO GITHUB
------------------------------------------------------------------------------
-[GAMBAR: Screenshot Terminal saat melakukan instalasi atau tampilan folder struktur project]
-
-A. Prasyarat (Prerequisites)
-Pastikan telah menginstal "Bun" (https://bun.sh) di perangkat Anda.
-
-B. Instalasi Project (Lokal)
-1. Clone repositori dari GitHub:
-   git clone [URL_REPO_GITHUB_ANDA]
-2. Masuk ke direktori project:
-   cd sub-prasojo-web
-3. Instal semua dependensi:
-   bun install
-4. Konfigurasi Environment Variables:
-   Buat file `.env` di root folder (bisa menyalin dari `.env.example` jika ada) dan isi dengan konfigurasi backend API, seperti:
-   NEXT_PUBLIC_API_URL=http://api-dukcapil.sukoharjo.go.id/api
-5. Jalankan Development Server:
-   bun dev
-6. Buka http://localhost:3000 di browser.
-
-C. Konfigurasi & Setting Repo GitHub
-- Repositori disetting private/public tergantung kebutuhan tim.
-- Penggunaan Conventional Commits: Semua riwayat commit dikelompokkan dengan label seperti `feat:` (fitur baru), `fix:` (perbaikan bug), `package:` (perubahan dependensi) untuk mempermudah pelacakan.
-
------------------------------------------------------------------------------
-3. MODUL & FITUR
------------------------------------------------------------------------------
-Aplikasi Sub-Prasojo terdiri dari beberapa modul utama yang melayani fungsionalitas admin dan masyarakat:
-
-[GAMBAR: Screenshot Halaman Login/Register]
-1. Modul Autentikasi (Auth):
-   - Login & Register (Pendaftaran Akun).
-   - Verifikasi Email (verify-success / verify-failure).
-   - Lupa Kata Sandi & Reset Password.
-
-[GAMBAR: Screenshot Halaman Utama Dashboard yang menampilkan grafik]
-2. Modul Dashboard & Analitik:
-   - Menampilkan KPI Summary (Ringkasan total pengajuan, sukses, dll).
-   - Grafik Tren (Trend Charts) harian/bulanan menggunakan ApexCharts.
-   - Statistik top-region (Wilayah dengan pengajuan terbanyak).
-
-[GAMBAR: Screenshot Tabel Data Pengajuan/SLA]
-3. Modul Pengajuan (Adminduk):
-   - Manajemen data pengajuan masyarakat.
-   - Modal Ajuan (pop-up form detail ajuan).
-   - Monitoring SLA (Service Level Agreement) untuk melihat batas waktu pengerjaan dokumen.
-
-4. Modul Manajemen Operator:
-   - Menampilkan Peringkat Operator berdasarkan kecepatan dan penyelesaian tugas.
-
-5. Modul Distribusi Wilayah:
-   - Data persebaran pengajuan berdasarkan wilayah di Kabupaten Sukoharjo.
-
-6. Modul Fitur Pendukung:
-   - Filter Global (Dropdown filter per tanggal/wilayah).
-   - Pengaturan Tema (Light/Dark Mode).
-   - Ulasan (Feedback dari masyarakat terkait layanan).
-
------------------------------------------------------------------------------
-4. KONTRIBUTOR
------------------------------------------------------------------------------
-- Nama : Roid Robih
-- NIM  : V3424074
-- Peran: Frontend Engineer
-(Catatan: Pengerjaan difokuskan pada integrasi API, implementasi Chart/Grafik, routing, sistem autentikasi aplikasi, penanganan refresh token, dan integrasi modul-modul lainnya).
-
------------------------------------------------------------------------------
-5. TIMELINE PENGERJAAN & LOG GIT (PULL/PUSH)
------------------------------------------------------------------------------
-[GAMBAR: Screenshot History Git atau Tampilan Network Graph di GitHub]
-
-Berikut adalah log riwayat utama pengerjaan berdasarkan riwayat Git:
-
-- 10 hari yang lalu : Inisiasi struktur modul (Login, Register page, Modal ajuan).
-- 10 hari yang lalu : Integrasi (consume) API Register & Login.
-- 9 hari yang lalu  : Perbaikan (Fix) konsistensi UI.
-- 8 hari yang lalu  : Setup package next-themes; Pembuatan Middleware Auth & Verifikasi.
-- 8 hari yang lalu  : Integrasi Dashboard API untuk halaman utama.
-- 7 hari yang lalu  : Integrasi sistem Refresh Token; Penambahan modul Pengajuan; Integrasi API Operator, SLA Monitoring, Distribusi Wilayah, & Ulasan.
-- 5 hari yang lalu  : Integrasi fitur dropdown Filter data; Perbaikan integrasi navigasi & paginasi Peringkat Operator.
-- 4 hari yang lalu  : Pembuatan fitur Setting Tema (Dark/Light).
-- 3 hari yang lalu  : Penyesuaian konfigurasi ApexCharts (mengubah sumbu grafik dari tanggal ke bulan, style grafik batang); Fix endpoint Distribusi Wilayah.
-- Beberapa jam lalu : Finalisasi label login/register & grafik status ajuan.
-
------------------------------------------------------------------------------
-6. PENJELASAN FUNGSI PER METHOD
------------------------------------------------------------------------------
-Aplikasi menggunakan pola pemisahan lapisan (Separation of Concerns). Logika pemanggilan API dipisahkan ke dalam folder `src/services/` (contoh: auth.service.ts, dashboard.service.ts, dll).
-
-Metode HTTP yang digunakan dalam services:
-1. Method GET (Mengambil Data):
-   - Digunakan untuk mengambil data yang bersifat *read-only*.
-   - Contoh Fungsi: `getDashboardSummary()`, `getOperatorRankings()`, `getPengajuanList()`.
-   - Data yang diterima dari backend (JSON) langsung dipasangkan (mapping) ke antarmuka (interface) TypeScript lalu dirender pada tabel/grafik.
-
-2. Method POST (Mengirim Data Baru):
-   - Digunakan untuk membuat *resource* baru atau mengirim kredensial.
-   - Contoh Fungsi: `loginUser()`, `registerUser()`, `submitPengajuan()`.
-   - Method ini menggunakan validasi form dari frontend (TypeBox) sebelum melempar Payload (body) ke server.
-
-3. Method PUT / PATCH (Memperbarui Data):
-   - Digunakan untuk memperbarui data spesifik, misalnya `updateStatusAjuan()`, atau mereset kata sandi.
-
-4. Method DELETE (Menghapus Data):
-   - Digunakan jika ada fitur untuk menarik pengajuan atau menghapus data spesifik oleh operator.
-
------------------------------------------------------------------------------
-7. PENJELASAN INTEGRASI API
------------------------------------------------------------------------------
-[GAMBAR: Screenshot Postman saat test API atau cuplikan kode dari axios interceptor]
-
-Integrasi API dilakukan dengan arsitektur yang tersentralisasi:
-1. Axios Configuration & Interceptor:
-   Aplikasi membuat sebuah *instance* Axios global. Interceptor disetting untuk secara otomatis menyematkan header `Authorization: Bearer <token>` di setiap request yang membutuhkan autentikasi (seperti mengambil data pengajuan).
-2. Standarisasi Response:
-   Setiap respons dari API direpresentasikan menggunakan tipe data (Interfaces) TypeScript untuk mencegah undefined error di tengah jalan.
-3. React Query / TanStack Query:
-   Digunakan untuk memanggil fungsi-fungsi service. Fitur ini secara otomatis mengelola loading state (`isLoading`), error state (`isError`), dan me-refresh data tanpa reload browser (`refetchOnWindowFocus`).
-4. Refresh Token Mechanism:
-   Jika backend mengembalikan response `401 Unauthorized` (token kedaluwarsa), Axios Interceptor akan mem-pause request, diam-diam memanggil API `/refresh-token` untuk mendapatkan token baru, memperbarui token di cookies/local storage, dan melanjutkan request yang gagal tadi tanpa disadari pengguna (Seamless user experience).
-
------------------------------------------------------------------------------
-8. PENJELASAN TROUBLESHOOTING
------------------------------------------------------------------------------
-Selama proses pengembangan, terdapat beberapa kendala (troubleshooting) yang telah diselesaikan:
-
-1. Kendala: Penanganan Token Kedaluwarsa (Expired Token)
-   - Masalah: User tiba-tiba ter-logout jika sedang mengisi form pengajuan karena token access kedaluwarsa.
-   - Solusi: Diimplementasikan interceptor pada Axios. Apabila API mengembalikan error 401, aplikasi memanggil endpoint Refresh Token untuk menukar refresh token dengan access token yang baru (commit: `fix: refresh token api integration`), lalu mengulang request sebelumnya secara otomatis.
-
-2. Kendala: Format & Render Grafik (ApexCharts) Tidak Sesuai
-   - Masalah: Data sumbu X pada grafik tidak rapi saat data harian menumpuk, serta warna grafik batang (bar) tidak konsisten.
-   - Solusi: Melakukan formatting ulang data di frontend untuk mengubah rentang *tanggal ke bulan* (commit: `fix: grafik ajuan tanggal to bulan`) dan menyesuaikan properti CSS/fill di ApexCharts (commit: `fix: style grafik batang`).
-
-3. Kendala: Integrasi Komponen Paginasi
-   - Masalah: Terjadi bug di mana state paginasi pada tabel peringkat operator dan tabel pengajuan tidak mereset dengan benar saat filter dropdown diubah.
-   - Solusi: Menyinkronkan dependency array pada `useEffect` atau React Query key agar ketika parameter wilayah/filter berubah, paginasi otomatis kembali ke `page 1` (commit: `fix: navigation pagination and integration peringkat operator`).
-
-4. Kendala: Linting Error saat Proses Build (Biome)
-   - Masalah: Tidak bisa di-build untuk production karena ketidakcocokan tipe (Type mismatch).
-   - Solusi: Mengkoreksi interface TypeScript dan merapikan syntax dengan menjalankan `bun run format` dan memperbaiki warning/error manual (commit: `fix: error lint`).
 =============================================================================
+BAB I: PENDAHULUAN
+=============================================================================
+Aplikasi Frontend Sub-Prasojo merupakan sebuah sistem antarmuka berbasis web yang dikembangkan khusus untuk memfasilitasi pemantauan (monitoring) pelayanan Administrasi Kependudukan (Adminduk) di wilayah Sukoharjo. 
+
+Mengingat ini adalah aplikasi monitoring yang bersifat tertutup dan eksklusif HANYA untuk operator, admin, atau pihak Dukcapil yang berwenang (tidak dapat diakses oleh masyarakat umum), maka perancangan sistem sangat mengutamakan:
+1. Keamanan Akses: Implementasi sistem autentikasi bertingkat, verifikasi sesi, dan mekanisme proteksi *routes*.
+2. Kecepatan & Performa: Menyajikan data ribuan pengajuan secara *real-time* tanpa membuat peramban (browser) memuat ulang secara lambat.
+3. Fungsionalitas Visualisasi: Menampilkan tren pengajuan dan SLA secara interaktif menggunakan grafik/chart yang mudah dipahami oleh eksekutif dan operator.
+4. Tanpa Optimasi SEO: Karena sistem bersifat internal, tidak ada pengaturan *Search Engine Optimization* (SEO) yang diterapkan pada tag meta aplikasi.
+
+=============================================================================
+BAB II: ARSITEKTUR, FRAMEWORK, DAN LIBRARY
+=============================================================================
+Aplikasi ini dibangun di atas ekosistem JavaScript/TypeScript modern dengan pendekatan *Separation of Concerns* menggunakan pola Data Access Layer (DAL) untuk memisahkan logika UI dengan logika pemanggilan API.
+
+1. Framework Utama & Bahasa Pemrograman:
+   - Next.js (App Router, v14/v15): Dipilih karena kemampuannya dalam memisahkan *Server Components* dan *Client Components*. App Router mempermudah manajemen rute bersarang (nested routing) seperti `/admin/dashboard` atau `/login`.
+   - TypeScript: Digunakan secara ketat di seluruh *codebase*. TypeScript memberikan *type-safety* (keamanan tipe data), mencegah *runtime error*, dan menyediakan definisi antarmuka (Interface) yang jelas untuk semua respons dari backend.
+
+2. State Management & Data Fetching:
+   - TanStack Query (React Query): Digunakan sebagai pengelola status server (*server state management*). Library ini menangani proses *caching*, *background fetching*, *stale data*, serta status pemuatan (`isLoading`) secara otomatis sehingga sangat cocok untuk memantau data yang terus berubah.
+   - Axios: Klien HTTP berbasis *promise* untuk melakukan panggilan REST API (GET, POST, PUT, DELETE). Dilengkapi dengan fitur *Interceptor* untuk otomatisasi penyisipan token otorisasi.
+
+3. Styling & Antarmuka (UI/UX):
+   - Tailwind CSS: Framework *utility-first* CSS yang mempercepat pembuatan tata letak responsif dan penerapan desain sistem tanpa penulisan *file* CSS terpisah.
+   - RemixIcon: Sistem ikon modern yang disematkan untuk memperjelas visualisasi tombol dan navigasi menu.
+   - ApexCharts & React-ApexCharts: Digunakan untuk merender grafik interaktif, seperti *trend chart* pengajuan harian/bulanan dan *bar chart* untuk distribusi wilayah.
+   - Next-Themes: Library untuk mengatur perpindahan mode terang (Light Mode) dan mode gelap (Dark Mode) tanpa menimbulkan efek *flicker*.
+   - React Hot Toast: Menyajikan notifikasi (*toast*) umpan balik interaktif atas setiap aksi yang berhasil atau gagal dilakukan operator.
+   - React Loading Skeleton: Memberikan pengalaman *loading* yang modern berupa bentuk *placeholder* abstrak sebelum data riil selesai dimuat.
+
+4. Form & Validasi Data:
+   - React Hook Form: Digunakan pada antarmuka *Login*, *Register*, dan *Filter* untuk mengelola nilai *input* pengguna secara performan tanpa re-render berlebih.
+   - TypeBox: Dimanfaatkan bersama resolver form untuk memvalidasi *payload* data (email valid, password minimal karakter, dll) di sisi klien sebelum dikirim ke API.
+
+5. Tools Pengembangan:
+   - Bun: Package manager yang dipilih karena eksekusi dan instalasinya jauh lebih cepat dibanding NPM/Yarn.
+   - Biome: Pengganti ESLint dan Prettier yang terintegrasi, bertugas untuk melakukan *linting* (pengecekan kode bermasalah) dan memformat kode.
+
+=============================================================================
+BAB III: INSTALASI DAN STRUKTUR PROYEK
+=============================================================================
+[GAMBAR: Screenshot Struktur Folder Proyek]
+
+A. Struktur Folder Utama
+Proyek ini mengadopsi struktur berbasis fitur (Feature-based) dan pemisahan logika (Layered Architecture) yang berpusat di dalam direktori `src/`. Berikut adalah pembedahan detail struktur direktori aplikasinya:
+
+1. `/src/app/` (App Router Core)
+   Berfungsi sebagai jantung sistem routing Next.js v14/v15. Folder ini berisi:
+   - `/admin/`: Rute grup yang dilindungi oleh otentikasi. Berisi sub-halaman dashboard operator:
+     - `/dashboard`: Halaman KPI Utama dan Grafik (Trend Charts).
+     - `/ajuan/[id]`: Rute dinamis untuk menampilkan dan memproses detail pengajuan.
+     - `/distribusi-wilayah`: Halaman statistik persebaran ajuan antar kecamatan.
+     - `/lembar-kerja/[id]`: Halaman untuk menyelesaikan tugas dokumen spesifik.
+     - `/peringkat-operator`: Halaman pemantauan kinerja operator.
+     - `/produk/[id]`: Halaman monitoring dokumen hasil (produk) dari pengajuan.
+     - `/profile`: Halaman pengaturan profil operator.
+     - `/setting-tema`: Halaman konfigurasi kustomisasi tema visual.
+     - `/sla-monitoring`: Halaman pemantauan pemenuhan Service Level Agreement (SLA).
+     - `/ulasan`: Halaman agregasi umpan balik dari pengguna/masyarakat.
+   - Modul Autentikasi Publik: Rute di luar `/admin` yang dapat diakses publik, meliputi `/login`, `/register`, `/lupa-kata-sandi`, `/reset-password`, `/email/verify`, `/verify-success`, dan `/verify-failure`.
+
+2. `/src/assets/`
+   Direktori penyimpanan aset media internal proyek, seperti:
+   - `/img`: File gambar format raster (PNG/JPG), seperti ilustrasi autentikasi atau foto default.
+   - `/svg`: Aset vektor interaktif dan ringan yang dapat digunakan langsung dalam komponen.
+
+3. `/src/components/`
+   Berisi kumpulan blok-blok antarmuka (UI) React yang dirancang agar dapat digunakan berulang kali (*reusable*), terbagi ke dalam:
+   - `/Common/`: Komponen UI umum yang dipakai di banyak tempat (Tabel standar, Tombol (Button), Modal Dialog, Sistem Paginasi, dan Notifikasi Toast).
+   - `/Dashboard/`: Komponen spesifik untuk visualisasi data (Grafik ApexCharts, Kartu Ringkasan KPI, Tabel Peringkat).
+   - `/Forms/`: Kumpulan elemen input form (Input Teks, Dropdown Select, Checkbox) yang sudah terintegrasi dengan validasi React Hook Form.
+
+4. `/src/hooks/`
+   Berisi *Custom React Hooks* untuk mengekstraksi dan merapikan logika state yang sering digunakan berulang, misalnya *hook* khusus pemanggilan `useQuery` (React Query) atau logika manajemen event jendela (window).
+
+5. `/src/lib/`
+   Direktori untuk utilitas dan konfigurasi inti pihak ketiga, contohnya:
+   - Pengaturan *instance* `axios` global berserta *interceptors* (menangkap error 401 dan melakukan siklus *refresh token*).
+   - Fungsi-fungsi *helper* format tanggal, konversi kurs/angka, atau penggabung class Tailwind (seperti library `clsx` atau `tailwind-merge`).
+
+6. `/src/providers/`
+   Berisi *React Context Providers* yang membungkus komponen root (`layout.tsx`), contohnya:
+   - `QueryClientProvider` untuk menginisialisasi ekosistem TanStack React Query.
+   - `ThemeProvider` untuk menyuntikkan konfigurasi Next-Themes ke seluruh pohon aplikasi.
+
+7. `/src/services/`
+   Lapisan Data Access Layer (DAL) atau API Endpoints. Semua permintaan HTTP (*HTTP requests*) diabstraksi ke fungsi-fungsi spesifik di dalam berkas seperti `auth.service.ts`, `dashboard.service.ts`, `pengajuan.service.ts`, `operator.service.ts`, dll. Hal ini memastikan pemisahan jelas antara komponen logika antarmuka dan logika pertukaran data server.
+
+8. `/public/`
+   Penyimpanan aset statis eksternal yang di-*serve* secara bebas oleh server (contoh: *favicon*, *logo* aplikasi).
+
+B. Langkah Instalasi Proyek
+1. Persiapan: Pastikan [Bun](https://bun.sh/) versi terbaru sudah terpasang.
+2. Clone Repository: `git clone [URL_REPO_GITHUB]`
+3. Masuk Direktori: `cd sub-prasojo-web`
+4. Instalasi Dependensi: `bun install`
+5. Environment Variables: Salin `.env.example` menjadi `.env` lalu konfigurasikan *Base URL* dari API backend:
+   ```env
+   NEXT_PUBLIC_API_URL=http://[DOMAIN_API_DUKCAPIL]/api
+   ```
+6. Menjalankan Server Development: `bun dev`
+7. Mengakses Aplikasi: Buka browser di URL `http://localhost:3000`.
+
+C. Standarisasi Kolaborasi (GitHub Repo)
+- Menggunakan pendekatan branch terpisah (seperti `main`, `staging`, `feat/...`, `fix/...`).
+- Penulisan pesan commit wajib mematuhi *Conventional Commits*, misal: `feat: integration dashboard api` atau `fix: refresh token api`.
+
+=============================================================================
+BAB IV: MODUL DAN FITUR SECARA MENDALAM
+=============================================================================
+
+[GAMBAR: Screenshot Halaman Login & Verifikasi]
+1. Modul Autentikasi (Authentication)
+   - Fungsi utama: Menjamin bahwa hanya operator dan pimpinan yang tervalidasi yang dapat memasuki ekosistem sistem.
+   - Fitur Spesifik: Pendaftaran (Register), Masuk (Login) melalui verifikasi email, Lupa Kata Sandi (Forgot Password), dan pengaturan pembaruan profil (`updateProfile`).
+   - Keamanan Tambahan: Seluruh rute dilindungi oleh *Middleware* internal (Next.js) yang memblokir akses ke rute `/admin` jika sesi pengguna tidak valid atau *access_token* tidak ditemukan.
+
+[GAMBAR: Screenshot Halaman Utama Dashboard]
+2. Modul Dashboard & KPI Analitik
+   - Modul pendaratan utama (*landing dashboard*) bagi operator setelah masuk.
+   - Key Performance Indicator (KPI): Menampilkan kotak statistik (Summary KpiData) berupa Total Pengajuan, Selesai, Ditolak, beserta presentase kenaikan/penurunan (trend persen) dan rata-rata batas penyelesaian (*SLA/Service Level Agreement*) dalam hitungan jam.
+   - Grafik Tren: Menerapkan ApexCharts untuk visualisasi naik/turunnya tingkat ajuan masyarakat dari waktu ke waktu. (Dilengkapi integrasi fungsi filter berdasarkan tanggal dan bulan).
+
+3. Modul Monitoring Pengajuan
+   - Fitur untuk memantau data seluruh pengajuan dokumen administrasi kependudukan yang dilakukan oleh warga.
+   - Daftar Pengajuan: Data dimuat dalam bentuk tabel tersistemasi (menggunakan paginasi).
+   - Detail / Modal Ajuan: Jika operator mengklik salah satu baris pengajuan, akan muncul kotak dialog (modal) yang berisi detail permohonan bersangkutan.
+
+[GAMBAR: Screenshot Tabel Peringkat Operator]
+4. Modul Monitoring Operator
+   - Fitur analitik yang memantau tingkat performa, kecepatan, dan keberhasilan sesama agen/operator yang menangani permohonan.
+   - Membantu pimpinan atau dinas (Super Admin) mengevaluasi kinerja staf (Operator Rankings).
+
+5. Modul Distribusi Wilayah
+   - Memberikan peta persebaran atau daftar kecamatan yang paling banyak dan paling sedikit melakukan pengajuan. Fitur ini sangat penting untuk pemetaan fokus pelayanan kependudukan (`TopWilayahItem`).
+
+6. Modul Filter Global & Konfigurasi Antarmuka
+   - Fitur penyaringan data tingkat lanjut yang disematkan ke API (contoh: `DashboardFilterParams` untuk `id_kecamatan`, `id_layanan`, `start_date`, `end_date`).
+   - Tersedia tombol sentral untuk mengganti tema (Terang ke Gelap dan sebaliknya) menyesuaikan ergonomi operator.
+
+=============================================================================
+BAB V: PENJELASAN INTEGRASI API & DATA LAYER
+=============================================================================
+[GAMBAR: Snippet Kode axiosInstance atau struktur auth.service.ts]
+
+A. Konsep Data Access Layer (DAL)
+Kode frontend ini tidak melakukan "pemanggilan API secara kotor" (langsung di dalam komponen React). Sebaliknya, logika tersebut diabstraksi di dalam folder `/src/services/`. Sebagai contoh:
+- `dashboard.service.ts`: Berisi fungsi `getDashboardKpi`, `getDashboardChartTrend`, dan `getDashboardTopWilayah`.
+- Manfaat: Ketika endpoint backend berubah, *developer* hanya perlu mengedit satu file *service* ini, bukan membongkar komponen-komponen UI (halaman React).
+
+B. Interface & Tipe Data Standar
+Sistem ini memastikan kepastian data (Type Safety) dengan membungkus semua panggilan dengan Antarmuka. Seluruh respons dibalut dalam tipe generik `ApiBaseResponse<T>` yang memastikan ada properti baku `status`, `code`, `message`, dan `data` dari server.
+
+C. Interceptor Autentikasi dan Mekanisme *Refresh Token*
+Sistem ini menggunakan pengamanan JWT (JSON Web Tokens) dengan dua jenis token: `access_token` (umur singkat) dan `refresh_token` (umur panjang).
+- Alur Normal: Axios Interceptor akan menyematkan *header* `Authorization: Bearer <access_token>` pada setiap *request*.
+- Alur Kedaluwarsa: Jika operator dibiarkan diam beberapa waktu lalu menekan suatu fungsi, API mungkin merespons `401 Unauthorized` karena token habis. *Interceptor* akan otomatis (tanpa me-logout user) memanggil endpoint `/auth/refresh`, mengambil `access_token` yang baru, dan mengulangi request yang gagal tadi, sehingga pengalaman monitoring tidak terputus.
+
+D. Method HTTP yang Digunakan:
+- GET : Mendapatkan daftar analitik, tabel pengajuan, dan ulasan.
+- POST: Verifikasi login, permintaan token baru, pengiriman form profil.
+- PUT / PATCH : Memperbarui data tunggal (seperti status SLA).
+
+=============================================================================
+BAB VI: TROUBLESHOOTING & PENYELESAIAN MASALAH
+=============================================================================
+Di sepanjang proses pengembangan, tim telah mengidentifikasi dan menambal berbagai kendala krusial:
+
+1. Gangguan Sesi Kedaluwarsa (Expired Token Crash)
+   - Masalah: Pada awal pengembangan, fungsi token yang habis menyebabkan form filter terkunci atau pengguna langsung terlempar paksa ke halaman login saat mencoba memuat grafik.
+   - Solusi: Penerapan konsep *Silent Token Refresh* pada konfigurasi lib `axios.ts`. Antrian *requests* (request queue) disimpan selama proses permintaan token baru berlangsung, dan baru dilempar kembali setelah token baru didapat.
+
+2. Inkonsistensi Visualisasi Grafik ApexCharts
+   - Masalah: Sumbu X pada grafik sering tumpang tindih ketika rentang data (`start_date` hingga `end_date`) sangat besar, dan lebar grafik batang tidak dinamis mengikuti jumlah kecamatan.
+   - Solusi: Menambahkan manipulasi logika array untuk mengonversi rentang "tanggal (harian)" menjadi rentang "bulan" jika data melebihi periode tertentu, serta memperbaiki properti `plotOptions` di ApexCharts.
+
+3. Bug Paginasi Berlawanan dengan React Query
+   - Masalah: Saat operator berada di halaman tabel 5, lalu mengubah *dropdown* filter wilayah, tabel masih mencoba mencari data di halaman 5 (yang seringkali kosong) dan bukan kembali ke halaman 1.
+   - Solusi: Mendaftarkan parameter filter ke dalam *dependency array* React `useEffect` dan menyesuaikan *query key* di React Query. Saat filter berubah, state `currentPage` diatur otomatis kembali ke nilai 1 sebelum *refetch* berjalan.
+
+4. Kegagalan Proses Pembangunan (Build Failures) karena Biome Linter
+   - Masalah: Ketidaksesuaian tipe bentukan, argumen kosong yang dipaksa lolos (`any`), atau impor tak terpakai membuat proses *deployment CI/CD* diblokir.
+   - Solusi: Melakukan pembersihan *codebase* menyeluruh melalui perintah `bun run format` dan `bun run lint`, serta melengkapi setiap *Interface* secara eksplisit (contohnya menambal antarmuka `ChartTrendItem`).
+
+=============================================================================
+BAB VII: TIMELINE DAN RIWAYAT PENGERJAAN
+=============================================================================
+[GAMBAR: Tampilan Grafik Log Git / Network GitHub]
+
+Pekerjaan pada repositori ini terdokumentasi dalam jejak log Git secara berkala. Berikut adalah garis besar fase pengerjaannya:
+
+- Fase 1 (April 2026): Inisialisasi awal proyek. Pembangunan *boilerplate* (fondasi), integrasi *package manager*, pembersihan pustaka, pengaturan GitHub Actions (CI/CD), dan penyusunan kerangka *Data Access Layer* (DAL).
+- Fase 2 (Mei 2026): Fokus pada pekerjaan UI/UX (Slicing). Menciptakan desain komponen tombol, tabel, dan halaman utama yang sifatnya responsif (*Welcome page*, *Detail Produk*).
+- Fase 3 (Pertengahan Juni 2026): Mengubah struktur logika UI dan memisahkan modul-modul penting: pembuatan komponen Dashboard Monitoring interaktif, tata letak menu Peringkat Operator, Wilayah, Ulasan Pengguna, serta modul Autentikasi (Desain Login/Register).
+- Fase 4 (Akhir Juni 2026): Puncak pengintegrasian API. Melakukan *consume* untuk rute backend secara menyeluruh termasuk keamanan Middleware, menghubungkan Dashboard, Pengajuan, Pemantauan SLA, Distribusi Wilayah, dan Ulasan ke database sebenarnya.
+- Fase 5 (Awal Juli 2026 / Tahap Akhir): Implementasi fitur-fitur kompleks *frontend* (perpindahan mode tema terang/gelap, dropdown multi-filter), dan penyelesaian isu (*bug-fixing*) khususnya mengenai sinkronisasi grafik, token penyegaran (Refresh Token), dan pembersihan linter untuk stabilitas versi siap rilis.
+
+=============================================================================
+KONTRIBUTOR / PENYUSUN DOKUMENTASI
+=============================================================================
+- Nama  : Roid Robih
+- NIM   : V3424074
+- Peran : Frontend Engineer (Fokus pada inisialisasi arsitektur frontend, setup infrastruktur state & routing, implementasi antarmuka/grafik, keamanan sistem autentikasi, dan pengolahan logika API).
+
+================================END OF DOCUMENT==============================
