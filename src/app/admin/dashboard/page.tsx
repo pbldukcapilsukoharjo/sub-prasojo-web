@@ -184,6 +184,7 @@ export default function Dashboard() {
       iconBg: '#fffbeb',
       iconColor: 'text-amber-400',
       sub: 'Waktu pelayanan',
+      valueClass: 'text-2xl',
     },
   ];
 
@@ -212,7 +213,7 @@ export default function Dashboard() {
           {statCards.map((stat, i) => (
             <div
               key={i}
-              className="card shadow-sm border border-border p-5 flex flex-col gap-4 bg-surface"
+              className="card shadow-sm border border-border p-5 flex flex-col gap-4 bg-surface justify-between"
             >
               {/* Top: label + icon */}
               <div className="flex items-start justify-between gap-3">
@@ -229,7 +230,7 @@ export default function Dashboard() {
 
               {/* Value + subtitle */}
               <div>
-                <p className="text-3xl font-bold font-manrope text-text-primary leading-none">
+                <p className={`${stat.valueClass || 'text-3xl'} font-bold font-manrope text-text-primary leading-none`}>
                   {stat.value}
                 </p>
                 <p className="text-[11px] text-text-secondary font-medium mt-1.5">{stat.sub}</p>
@@ -242,16 +243,21 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           
           {/* Line Chart Card */}
-          <div className="card bg-surface shadow-sm border border-border lg:col-span-8 flex flex-col">
+          <div className="card bg-surface shadow-sm border border-border lg:col-span-8 flex flex-col p-0 overflow-hidden">
             {/* Card Header */}
-            <div className="px-6 pt-5 pb-2">
-              <h3 className="text-sm font-bold text-text-primary">Total per Status Ajuan</h3>
-              <p className="text-[11px] text-text-secondary font-medium mt-0.5">
-                Pergerakan data berdasarkan tanggal pengajuan
-              </p>
+            <div className="px-6 pt-5 pb-4 border-b border-border flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-text-primary">Total per Status Ajuan</h3>
+                <p className="text-[11px] text-text-secondary font-medium mt-0.5">
+                  Pergerakan data berdasarkan tanggal pengajuan
+                </p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <i className="ri-line-chart-line text-sm"></i>
+              </div>
             </div>
             {/* Chart */}
-            <div className="w-full relative" style={{ height: 340 }}>
+            <div className="w-full relative px-2 pt-4 pb-2" style={{ height: 360 }}>
               {mounted && chartData.length > 0 ? (
                 <Chart
                   options={chartOptions}
@@ -261,7 +267,10 @@ export default function Dashboard() {
                   width="100%"
                 />
               ) : mounted ? (
-                <div className="absolute inset-0 flex items-center justify-center text-text-secondary text-sm font-medium">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-text-secondary text-sm font-medium gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center">
+                    <i className="ri-line-chart-line text-xl text-gray-400"></i>
+                  </div>
                   Belum ada data tersedia
                 </div>
               ) : null}
@@ -271,33 +280,37 @@ export default function Dashboard() {
           {/* Distribution Card */}
           <div className="card bg-surface shadow-sm border border-border lg:col-span-4 flex flex-col p-0 overflow-hidden min-h-[415px]">
             {/* Header */}
-            <div className="px-6 pt-5 pb-4 border-b border-border">
-              <h3 className="text-sm font-bold text-text-primary">Distribusi Wilayah</h3>
-              <p className="text-[11px] text-text-secondary font-medium mt-0.5">
-                Top wilayah dengan pengajuan terbanyak
-              </p>
+            <div className="px-6 pt-5 pb-4 border-b border-border flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-text-primary">Distribusi Wilayah</h3>
+                <p className="text-[11px] text-text-secondary font-medium mt-0.5">
+                  Top wilayah pengajuan terbanyak
+                </p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                <i className="ri-map-pin-line text-sm"></i>
+              </div>
             </div>
 
             {/* List */}
-            <div className="flex flex-col divide-y divide-gray-50 px-5 py-2">
-              {distributionData.length > 0 ? distributionData.map((item) => (
-                <div key={item.rank} className="py-3.5 flex flex-col gap-2">
+            <div className="flex flex-col gap-1 px-4 py-3">
+              {distributionData.length > 0 ? distributionData.map((item, idx) => (
+                <div key={item.rank} className="p-3 rounded-2xl hover:bg-gray-50/80 transition-colors flex flex-col gap-3 group cursor-default">
                   {/* Row: rank + name + count + pct badge */}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-bold text-text-secondary flex-shrink-0">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-bold flex-shrink-0 transition-colors ${idx < 3 ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-text-secondary group-hover:bg-gray-200'}`}>
                         {String(item.rank).padStart(2, '0')}
-                      </span>
-                      <span className="text-[13px] font-semibold text-text-primary line-clamp-1">{item.name}</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-bold text-text-primary line-clamp-1">{item.name}</span>
+                        <span className="text-[11px] font-medium text-text-secondary mt-0.5">
+                          {item.total.toLocaleString('id-ID')} Pengajuan
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-[11px] font-semibold text-text-secondary">
-                        {item.total.toLocaleString('id-ID')}
-                      </span>
-                      <span
-                        className="text-[10px] font-bold text-primary rounded-full px-2 py-0.5"
-                        style={{ backgroundColor: 'rgba(128,0,0,0.08)' }}
-                      >
+                    <div className="flex items-center justify-end">
+                      <span className="text-[11px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg">
                         {item.pct}%
                       </span>
                     </div>
@@ -305,13 +318,16 @@ export default function Dashboard() {
                   {/* Progress bar */}
                   <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      className="h-full rounded-full bg-primary transition-all duration-500"
+                      className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
                       style={{ width: `${item.pct}%` }}
                     />
                   </div>
                 </div>
               )) : (
-                <div className="py-10 text-center text-text-secondary text-sm font-medium">
+                <div className="py-10 flex flex-col items-center justify-center text-text-secondary text-sm font-medium gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center">
+                    <i className="ri-map-pin-line text-xl text-gray-400"></i>
+                  </div>
                   Belum ada data distribusi wilayah
                 </div>
               )}
@@ -319,14 +335,13 @@ export default function Dashboard() {
 
             {/* Footer: Selengkapnya */}
             {distributionData.length > 0 && (
-              <div className="px-5 pb-5 pt-3 mt-auto">
+              <div className="px-6 pb-6 pt-2 mt-auto">
                 <Link
                   href="/admin/distribusi-wilayah"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-[30px] text-primary text-xs font-bold tracking-wider uppercase transition-all duration-200 border-2 border-primary/20 hover:bg-primary hover:text-white hover:border-primary"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gray-50 text-text-primary text-xs font-bold transition-all duration-200 hover:bg-primary hover:text-white group"
                 >
-                  <i className="ri-map-pin-line text-sm"></i>
-                  Selengkapnya
-                  <i className="ri-arrow-right-s-line text-sm"></i>
+                  Lihat Selengkapnya
+                  <i className="ri-arrow-right-line text-sm transition-transform group-hover:translate-x-1"></i>
                 </Link>
               </div>
             )}
