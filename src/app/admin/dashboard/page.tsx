@@ -56,15 +56,46 @@ export default function Dashboard() {
     setFilters(newFilters);
   };
 
-  // Prepare Chart Options
-  const categories = chartData.map(item => item.tanggal);
-  const totalAjuanSeries = chartData.map(item => item.total_ajuan || 0);
-  const belumDiverifikasiSeries = chartData.map(item => item.belum_diverifikasi || 0);
-  const diverifikasiSeries = chartData.map(item => item.diverifikasi || 0);
-  const ditolakSeries = chartData.map(item => item.ditolak || 0);
-  const diprosesSeries = chartData.map(item => item.diproses || 0);
-  const selesaiSeries = chartData.map(item => item.selesai || 0);
-  const disetujuiSeries = chartData.map(item => item.disetujui || 0);
+  // Aggregate chartData by month for the current year
+  const currentYear = new Date().getFullYear();
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+  
+  const aggregatedData = months.map(month => ({
+    tanggal: month,
+    total_ajuan: 0,
+    belum_diverifikasi: 0,
+    diverifikasi: 0,
+    ditolak: 0,
+    diproses: 0,
+    selesai: 0,
+    disetujui: 0,
+  }));
+
+  chartData.forEach(item => {
+    if (!item.tanggal) return;
+    const date = new Date(item.tanggal);
+    if (date.getFullYear() === currentYear) {
+      const monthIndex = date.getMonth();
+      if (monthIndex >= 0 && monthIndex < 12) {
+        aggregatedData[monthIndex].total_ajuan += Number(item.total_ajuan) || 0;
+        aggregatedData[monthIndex].belum_diverifikasi += Number(item.belum_diverifikasi) || 0;
+        aggregatedData[monthIndex].diverifikasi += Number(item.diverifikasi) || 0;
+        aggregatedData[monthIndex].ditolak += Number(item.ditolak) || 0;
+        aggregatedData[monthIndex].diproses += Number(item.diproses) || 0;
+        aggregatedData[monthIndex].selesai += Number(item.selesai) || 0;
+        aggregatedData[monthIndex].disetujui += Number(item.disetujui) || 0;
+      }
+    }
+  });
+
+  const categories = aggregatedData.map(item => item.tanggal);
+  const totalAjuanSeries = aggregatedData.map(item => item.total_ajuan);
+  const belumDiverifikasiSeries = aggregatedData.map(item => item.belum_diverifikasi);
+  const diverifikasiSeries = aggregatedData.map(item => item.diverifikasi);
+  const ditolakSeries = aggregatedData.map(item => item.ditolak);
+  const diprosesSeries = aggregatedData.map(item => item.diproses);
+  const selesaiSeries = aggregatedData.map(item => item.selesai);
+  const disetujuiSeries = aggregatedData.map(item => item.disetujui);
 
   const chartOptions: any = {
     chart: {
@@ -147,12 +178,12 @@ export default function Dashboard() {
       sub: 'Perlu tindak lanjut',
     },
     {
-      title: 'Rata-rata Kepuasan',
-      value: kpiData?.rata_rata_kepuasan ? kpiData.rata_rata_kepuasan.toFixed(1) : '0',
-      icon: 'ri-star-fill',
+      title: 'Rata-rata SLA',
+      value: kpiData?.rata_rata_sla_text || '0 Menit',
+      icon: 'ri-time-line',
       iconBg: '#fffbeb',
       iconColor: 'text-amber-400',
-      sub: 'Skala Indeks Kepuasan',
+      sub: 'Waktu pelayanan',
     },
   ];
 

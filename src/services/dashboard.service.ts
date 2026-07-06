@@ -11,38 +11,29 @@ export interface DashboardFilterParams {
 
 export interface KpiData {
   total_pengajuan: number;
+  total_pengajuan_trend_persen: number;
   total_selesai: number;
+  total_selesai_trend_persen: number;
   total_ditolak: number;
-  rata_rata_kepuasan: number;
-  ajuan_bulanan: Array<{
-    label: string;
-    belum_diverifikasi: number;
-    diverifikasi: number;
-    diproses: number;
-    disetujui: number;
-    ditolak: number;
-    selesai: number;
-  }>;
-  distribusi_wilayah: Array<{
-    id: number;
-    label: string;
-    value: number;
-  }>;
+  total_ditolak_trend_persen: number;
+  rata_rata_sla_jam: number;
+  rata_rata_sla_trend_persen: number;
+  rata_rata_sla_text: string;
 }
 
 export interface ChartTrendItem {
   tanggal: string;
   total_ajuan: number;
-  belum_diverifikasi: number;
-  diverifikasi: number;
-  ditolak: number;
-  diproses: number;
-  selesai: number;
-  disetujui: number;
+  belum_diverifikasi: string | number;
+  diverifikasi: string | number;
+  ditolak: string | number;
+  diproses: string | number;
+  selesai: string | number;
+  disetujui: string | number;
 }
 
 export interface TopWilayahItem {
-  id_kecamatan: number;
+  id_kecamatan: string;
   nama_kecamatan: string;
   total: number;
 }
@@ -56,11 +47,11 @@ const buildQueryParams = (params?: DashboardFilterParams) => {
   const query: Record<string, any> = {};
   if (!params) return query;
 
-  if (params.id_layanan) query.id_layanan = params.id_layanan;
-  if (params.id_kecamatan) query.id_kecamatan = params.id_kecamatan;
-  if (params.periode_bulan) query.periode_bulan = params.periode_bulan;
-  if (params.start_date) query.start_date = params.start_date;
-  if (params.end_date) query.end_date = params.end_date;
+  if (params.id_layanan !== undefined) query.id_layanan = params.id_layanan;
+  if (params.id_kecamatan !== undefined) query.id_kecamatan = params.id_kecamatan;
+  if (params.periode_bulan !== undefined) query.periode_bulan = params.periode_bulan;
+  if (params.start_date !== undefined) query.start_date = params.start_date;
+  if (params.end_date !== undefined) query.end_date = params.end_date;
 
   return query;
 };
