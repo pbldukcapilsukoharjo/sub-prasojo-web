@@ -86,7 +86,7 @@ export default function RegisterPage() {
 
           {/* Feature Pills */}
           <div className="flex flex-wrap gap-2 mt-2">
-            {["Akta Kelahiran", "KTP-el", "Kartu Keluarga", "PRASOJO"].map((item) => (
+            {["Dashboard KPI", "Monitoring Ajuan", "Peringkat Operator", "Distribusi Wilayah"].map((item) => (
               <span
                 key={item}
                 className="text-[11px] font-bold text-white/80 bg-surface/10 border border-white/20 rounded-full px-3 py-1"
