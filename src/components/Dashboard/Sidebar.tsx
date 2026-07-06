@@ -11,11 +11,11 @@ export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; o
     { name: 'DASHBOARD', path: '/admin/dashboard', icon: 'ri-dashboard-line' },
     { name: 'LEMBAR KERJA', path: '/admin/lembar-kerja', icon: 'ri-file-list-3-line' },
     { name: 'AJUAN', path: '/admin/ajuan', icon: 'ri-error-warning-line' },
+    { name: 'PRODUK', path: '/admin/produk', icon: 'ri-folder-open-line' },
     { name: 'PERINGKAT OPERATOR', path: '/admin/peringkat-operator', icon: 'ri-user-star-line' },
     { name: 'DISTRIBUSI WILAYAH', path: '/admin/distribusi-wilayah', icon: 'ri-map-pin-line' },
     { name: 'SLA MONITORING', path: '/admin/sla-monitoring', icon: 'ri-time-line' },
     { name: 'ULASAN', path: '/admin/ulasan', icon: 'ri-star-line' },
-    { name: 'PRODUK', path: '/admin/produk', icon: 'ri-folder-open-line' },
   ];
 
   return (
