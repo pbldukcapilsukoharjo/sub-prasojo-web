@@ -8,7 +8,8 @@ import FilterCard from '@/components/Common/FilterCard';
 import DetailUlasanModal from '@/components/Common/DetailUlasanModal';
 import Pagination from '@/components/Common/Pagination';
 import { useLayananOptions } from '@/hooks/useFilterOptions';
-import { ulasanService, UlasanData, UlasanKpiData, UlasanParams } from '@/services/ulasan.service';
+import Button from '@/components/Common/Button';
+import { ulasanService, UlasanItem, UlasanKpiData, UlasanParams } from '@/services/ulasan.service';
 import { handleApiError } from '@/lib/api-error';
 
 export default function DetailUlasanPage() {
@@ -25,7 +26,7 @@ export default function DetailUlasanPage() {
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [listData, setListData] = useState<UlasanData | null>(null);
+  const [reviews, setReviews] = useState<UlasanItem[]>([]);
   const [kpiData, setKpiData] = useState<UlasanKpiData | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -80,11 +81,11 @@ export default function DetailUlasanPage() {
       ]);
 
       if (listRes.status && listRes.data) {
-        setListData(listRes.data);
-        if (listRes.data.daftar_ulasan?.meta) {
-          setTotalItems(listRes.data.daftar_ulasan.meta.total);
-          setTotalPages(listRes.data.daftar_ulasan.meta.total_page);
-          setPerPage(listRes.data.daftar_ulasan.meta.per_page);
+        setReviews(listRes.data);
+        if (listRes.meta) {
+          setTotalItems(listRes.meta.total);
+          setTotalPages(listRes.meta.total_page);
+          setPerPage(listRes.meta.per_page);
         }
       }
 
@@ -121,6 +122,24 @@ export default function DetailUlasanPage() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const formattedStartDate = formatToDDMMYYYY(startDate);
+      const formattedEndDate = formatToDDMMYYYY(endDate);
+      
+      const params: Omit<UlasanParams, 'page' | 'sort_by'> = {
+        search: search || undefined,
+        start_date: formattedStartDate,
+        end_date: formattedEndDate,
+        rating: rating !== 'all' ? Number(rating) : undefined,
+        layanan_kode: jenisLayanan !== 'all' ? jenisLayanan : undefined,
+      };
+      await ulasanService.exportUlasan(params);
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
   const renderStars = (ratingNum: number) => {
     const stars = [];
     const fullStars = Math.floor(ratingNum);
@@ -139,23 +158,21 @@ export default function DetailUlasanPage() {
   };
 
   // Metrics Logic
-  const avgRating = kpiData?.rata_rata_bintang || listData?.rata_rata_ulasan || 0;
-  const totalReviews = listData?.total_ulasan || 0;
+  const avgRating = kpiData?.rata_rata_bintang || 0;
+  const totalReviews = totalItems || 0;
   
   const distCounts = {
-    5: kpiData?.distribusi?.bintang_5 || listData?.total_rating?.['5'] || 0,
-    4: kpiData?.distribusi?.bintang_4 || listData?.total_rating?.['4'] || 0,
-    3: kpiData?.distribusi?.bintang_3 || listData?.total_rating?.['3'] || 0,
-    2: kpiData?.distribusi?.bintang_2 || listData?.total_rating?.['2'] || 0,
-    1: kpiData?.distribusi?.bintang_1 || listData?.total_rating?.['1'] || 0,
+    5: kpiData?.distribusi?.bintang_5 || 0,
+    4: kpiData?.distribusi?.bintang_4 || 0,
+    3: kpiData?.distribusi?.bintang_3 || 0,
+    2: kpiData?.distribusi?.bintang_2 || 0,
+    1: kpiData?.distribusi?.bintang_1 || 0,
   };
 
   const getWidthPercent = (count: number) => {
     if (!totalReviews || totalReviews === 0) return '0%';
     return `${(count / totalReviews) * 100}%`;
   };
-
-  const reviews = listData?.daftar_ulasan?.list || [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -256,19 +273,25 @@ export default function DetailUlasanPage() {
 
         {/* Right: Reviews List */}
         <div className="lg:col-span-8 flex flex-col gap-6">
+          <div className="flex justify-between items-center bg-surface p-4 rounded-xl border border-border shadow-sm">
+             <h3 className="font-bold text-text-primary">Daftar Ulasan</h3>
+             <Button variant="primary" icon="ri-download-2-line" iconPosition="left" size="sm" onClick={handleExport}>
+               EXPORT EXCEL
+             </Button>
+          </div>
           {/* Reviews List */}
           <div className="flex flex-col gap-4 min-h-[400px]">
             {reviews.length > 0 ? (
               reviews.map((review) => (
-                <div key={review.id} className="card shadow-sm border border-border p-6">
+                <div key={review.id_review} className="card shadow-sm border border-border p-6">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                         <i className="ri-user-3-line text-text-secondary text-xl"></i>
                       </div>
                       <div>
-                        <h4 className="text-sm font-bold text-text-primary">{review.nama}</h4>
-                        <span className="text-xs font-semibold text-text-secondary">{review.tanggal} {review.waktu && `, ${review.waktu}`}</span>
+                        <h4 className="text-sm font-bold text-text-primary">{review.no_reg}</h4>
+                        <span className="text-xs font-semibold text-text-secondary">{review.tanggal}</span>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
@@ -283,15 +306,15 @@ export default function DetailUlasanPage() {
                     </div>
                   </div>
                   <p className="text-sm text-text-secondary leading-relaxed mb-4">
-                    {review.ulasan}
+                    {review.komentar}
                   </p>
                   <div className="flex justify-end items-center gap-4 border-t border-gray-50 pt-4 mt-2">
                     <button 
                       onClick={() => {
                         setSelectedReview({
-                          name: review.nama,
-                          date: `${review.tanggal} ${review.waktu}`,
-                          content: review.ulasan,
+                          name: review.no_reg,
+                          date: review.tanggal,
+                          content: review.komentar,
                           rating: review.rating,
                           type: review.layanan,
                           jenisLayanan: review.layanan,

@@ -129,6 +129,14 @@ export default function SlaMonitoringPage() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      await slaService.exportSla();
+    } catch (error) {
+      handleApiError(error);
+    }
+  };
+
   // Determine SLA status dynamically based on target_sla
   const getStatus = (rata_rata_waktu: number, target: number) => {
     if (rata_rata_waktu < target) return 'ON TIME';
@@ -137,15 +145,11 @@ export default function SlaMonitoringPage() {
   };
 
   const mappedData = listData?.daftar_rincian?.list?.map((item, idx) => {
-    const target = listData.target_sla || kpiData?.target_sla || 6;
-    const statusVal = getStatus(item.rata_rata_waktu, target);
-    
     return {
       rank: String((currentPage - 1) * perPage + idx + 1).padStart(2, '0'),
       service: item.jenis_layanan,
       count: item.jumlah_ajuan,
-      avgTime: `${item.rata_rata_waktu} jam`,
-      status: statusVal
+      avgTime: `${item.rata_rata_waktu} jam`
     };
   }) || [];
 
@@ -153,18 +157,7 @@ export default function SlaMonitoringPage() {
     { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-medium text-text-primary">{row.rank}</span> },
     { key: 'service', header: 'Jenis Layanan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs uppercase">{row.service}</span> },
     { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.count}</span> },
-    { key: 'avgTime', header: 'Rata Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.avgTime}</span> },
-    { key: 'status', header: 'Status', align: 'center' as const, render: (row: any) => {
-      let badgeVariant: 'primary' | 'warning' | 'danger' = 'primary';
-      if (row.status === 'WARNING') badgeVariant = 'warning';
-      else if (row.status === 'OVER SLA') badgeVariant = 'danger';
-
-      return (
-        <Badge variant={badgeVariant as any}>
-          {row.status}
-        </Badge>
-      );
-    } }
+    { key: 'avgTime', header: 'Rata Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.avgTime}</span> }
   ];
 
 
@@ -275,7 +268,7 @@ export default function SlaMonitoringPage() {
       <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <div className="p-6 flex justify-between items-center border-b border-border">
           <h3 className="text-base font-bold text-text-primary">Daftar Rincian Per Jenis Layanan</h3>
-          <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9">
+          <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9" onClick={handleExport}>
             <i className="ri-upload-2-line"></i>
             EKSPOR EXCEL
           </Button>

@@ -12,29 +12,20 @@ export interface UlasanParams {
 }
 
 export interface UlasanItem {
-  id: number;
-  nama: string;
+  id_review: number;
+  tanggal: string;
+  no_reg: string;
   layanan: string;
   rating: number;
-  ulasan: string;
-  tanggal: string;
-  waktu: string;
+  komentar: string;
 }
 
-export interface UlasanData {
-  rata_rata_ulasan: number;
-  total_ulasan: number;
-  total_rating: {
-    [key: string]: number;
-  };
-  daftar_ulasan: {
-    list: UlasanItem[];
-    meta: {
-      page: number;
-      per_page: number;
-      total: number;
-      total_page: number;
-    };
+export interface UlasanListResponse extends ApiBaseResponse<UlasanItem[]> {
+  meta?: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_page: number;
   };
 }
 
@@ -63,8 +54,8 @@ const buildQueryParams = (params?: Record<string, any>) => {
 };
 
 export const ulasanService = {
-  async getUlasan(params?: UlasanParams): Promise<ApiBaseResponse<UlasanData>> {
-    const response = await axiosInstance.get<ApiBaseResponse<UlasanData>>("/ulasan", {
+  async getUlasan(params?: UlasanParams): Promise<UlasanListResponse> {
+    const response = await axiosInstance.get<UlasanListResponse>("/ulasan", {
       params: buildQueryParams(params),
     });
     return response.data;
@@ -75,5 +66,30 @@ export const ulasanService = {
       params: buildQueryParams(params),
     });
     return response.data;
+  },
+
+  async exportUlasan(params?: Omit<UlasanParams, 'page' | 'sort_by'>): Promise<void> {
+    const response = await axiosInstance.get("/ulasan/export", {
+      params: buildQueryParams(params),
+      responseType: 'blob',
+    });
+    
+    // Check if the response is actually JSON instead of a blob file
+    if (response.data && response.data.type === 'application/json') {
+       const text = await response.data.text();
+       const json = JSON.parse(text);
+       if (json.status) {
+         // Maybe it's just a success message without a file
+         return;
+       }
+    }
+
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `export_ulasan_${new Date().getTime()}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 };

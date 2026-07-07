@@ -65,9 +65,15 @@ const buildQueryParams = (params?: Record<string, any>) => {
 
 export const slaService = {
   async getSla(params?: SlaParams): Promise<ApiBaseResponse<SlaData>> {
-    const response = await axiosInstance.get<ApiBaseResponse<SlaData>>("/sla", {
+    const response = await axiosInstance.get<any>("/sla", {
       params: buildQueryParams(params),
     });
+    
+    // Map 'success' to 'status' to maintain compatibility with ApiBaseResponse
+    if (response.data.success !== undefined && response.data.status === undefined) {
+      response.data.status = response.data.success;
+    }
+    
     return response.data;
   },
 
@@ -76,5 +82,19 @@ export const slaService = {
       params: buildQueryParams(params),
     });
     return response.data;
+  },
+
+  async exportSla(): Promise<void> {
+    const response = await axiosInstance.get("/sla/export", {
+      responseType: 'blob',
+    });
+    
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `export_sla_${new Date().getTime()}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 };
