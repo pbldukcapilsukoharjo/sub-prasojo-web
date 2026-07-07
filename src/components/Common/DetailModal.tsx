@@ -49,55 +49,6 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
 
   if (!isOpen || !data) return null;
 
-  // Normalize status and determine active step count
-  const statusStr = timelineStatus || data.status || '';
-  const normalizedStatus = statusStr.toUpperCase();
-  
-  let activeCount = 1;
-  if (normalizedStatus === 'DIVERIFIKASI') {
-    activeCount = 2;
-  } else if (normalizedStatus === 'DISETUJUI' || normalizedStatus === 'DITOLAK') {
-    activeCount = 3;
-  } else if (normalizedStatus === 'DIPROSES') {
-    activeCount = 4;
-  } else if (normalizedStatus === 'SIAP DIDOWNLOAD' || normalizedStatus === 'SELESAI') {
-    activeCount = 5;
-  } else {
-    // Fallback to timeline length if status is not explicitly set
-    if (timelineData.length > 0) {
-      activeCount = timelineData.length;
-    }
-  }
-
-  const isRejected = normalizedStatus === 'DITOLAK';
-
-  // Define the 5 sequential steps
-  const steps = [
-    { label: 'Ajuan Dibuat', colorClass: 'gray', textColor: 'text-text-primary border-gray-900', statuses: ['MENUNGGU'] },
-    { label: 'Diverifikasi', colorClass: 'blue', textColor: 'text-blue-500 border-blue-500', statuses: ['DIVERIFIKASI'] },
-    { label: isRejected ? 'Ditolak' : 'Disetujui', colorClass: isRejected ? 'red' : 'green', textColor: isRejected ? 'text-red-500 border-red-500' : 'text-green-500 border-green-500', statuses: ['DISETUJUI', 'DITOLAK'] },
-    { label: 'Diproses', colorClass: 'slate', textColor: 'text-slate-600 border-slate-600', statuses: ['DIPROSES'] },
-    { label: 'Selesai', colorClass: 'purple', textColor: 'text-purple-600 border-purple-600', statuses: ['SIAP DIDOWNLOAD', 'SELESAI'] },
-  ];
-
-  const getTimelineInfo = (statusLabels: string[], fallbackDate: string, fallbackTime: string) => {
-     const match = timelineData.find(t => statusLabels.includes(t.status.toUpperCase()));
-     if (!match) return { displayDate: fallbackDate, displayTime: fallbackTime, note: '' };
-     
-     try {
-       const dateStr = match.datetime.includes(' ') ? match.datetime.replace(' ', 'T') : match.datetime;
-       const dateObj = new Date(dateStr);
-       const displayDate = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
-       const displayTime = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-       return { displayDate, displayTime, note: match.note };
-     } catch (e) {
-       return { displayDate: fallbackDate, displayTime: fallbackTime, note: match.note };
-     }
-  };
-
-  const baseDisplayDate = data.tanggal || '';
-  const baseDisplayTime = data.waktu ? data.waktu.replace(' WIB', '') : '';
-
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
       {/* Modal overlay with glassmorphism backdrop */}
@@ -157,75 +108,73 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
             </h3>
           </div>
 
-          <div className="flex items-start">
-            {steps.map((step, idx) => {
-              const isActive = idx < activeCount;
-              const isLast = idx === steps.length - 1;
-              const { displayDate, displayTime, note } = getTimelineInfo(step.statuses, baseDisplayDate, baseDisplayTime);
+          <div className="flex flex-col gap-0 px-2">
+            {timelineData.length > 0 ? (
+              timelineData.map((item, idx) => {
+                const isLast = idx === timelineData.length - 1;
+                let displayDate = '-';
+                let displayTime = '-';
+                try {
+                  const dateStr = item.datetime.includes(' ') ? item.datetime.replace(' ', 'T') : item.datetime;
+                  const dateObj = new Date(dateStr);
+                  displayDate = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
+                  displayTime = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+                } catch(e) {}
+                
+                const statusUpper = item.status.toUpperCase();
+                let dotColor = 'bg-blue-500';
+                let bgColor = 'bg-blue-50/50';
+                let textColor = 'text-blue-700';
+                
+                if (statusUpper.includes('TOLAK') || statusUpper.includes('GAGAL')) {
+                  dotColor = 'bg-red-500'; bgColor = 'bg-red-50/50'; textColor = 'text-red-700';
+                } else if (statusUpper.includes('SETUJU') || statusUpper.includes('SELESAI') || statusUpper.includes('TERBIT')) {
+                  dotColor = 'bg-green-500'; bgColor = 'bg-green-50/50'; textColor = 'text-green-700';
+                } else if (statusUpper.includes('BELUM')) {
+                  dotColor = 'bg-slate-400'; bgColor = 'bg-slate-50'; textColor = 'text-slate-600';
+                }
 
-              // Determine dot color
-              let dotColor = 'bg-slate-200';
-              if (isActive) {
-                if (step.colorClass === 'blue') dotColor = 'bg-blue-500';
-                else if (step.colorClass === 'green') dotColor = 'bg-green-500';
-                else if (step.colorClass === 'red') dotColor = 'bg-red-500';
-                else if (step.colorClass === 'purple') dotColor = 'bg-purple-600';
-                else dotColor = 'bg-slate-950';
-              }
-
-              // Determine box background color
-              let bgColor = 'bg-slate-50';
-              if (isActive) {
-                if (step.colorClass === 'blue') bgColor = 'bg-blue-50/50';
-                else if (step.colorClass === 'green') bgColor = 'bg-green-50/50';
-                else if (step.colorClass === 'red') bgColor = 'bg-red-50/50';
-                else if (step.colorClass === 'purple') bgColor = 'bg-purple-50/50';
-              }
-
-              // Determine line color to the next step
-              const isNextActive = idx + 1 < activeCount;
-              let lineColor = 'bg-slate-100';
-              if (isNextActive) {
-                const nextStep = steps[idx + 1];
-                if (nextStep.colorClass === 'blue') lineColor = 'bg-blue-500';
-                else if (nextStep.colorClass === 'green') lineColor = 'bg-green-500';
-                else if (nextStep.colorClass === 'red') lineColor = 'bg-red-500';
-                else if (nextStep.colorClass === 'purple') lineColor = 'bg-purple-600';
-                else lineColor = 'bg-slate-950';
-              }
-
-              return (
-                <div key={idx} className="flex-1 relative">
-                  {/* Connection Line */}
-                  {!isLast && (
-                    <div className={`absolute top-[5px] left-[5px] right-[-5px] h-[2px] ${lineColor} z-0 transition-all duration-300`}></div>
-                  )}
-                  
-                  {/* Dot */}
-                  <div className={`relative w-3 h-3 rounded-full ${dotColor} mb-2 z-10 transition-all duration-300 shadow-xs`}></div>
-                  
-                  {/* Content Box or Empty Space */}
-                  {isActive ? (
-                    <div className={`mr-2 p-3 ${bgColor} border-l-[3px] border-transparent mt-2 rounded-r-md min-h-[85px] transition-all duration-300 flex flex-col justify-center`}>
-                      <p className={`text-[11px] font-extrabold ${step.textColor} mb-1 leading-tight`}>
-                        {step.label}
-                      </p>
-                      <p className="text-[9px] font-bold text-slate-500 leading-normal mb-1">
-                        {displayTime},<br/>{displayDate}
-                      </p>
-                      {note && (
-                        <p className="text-[9px] text-slate-600 italic leading-snug border-t border-slate-200/60 pt-1 mt-0.5">
-                          {note}
+                return (
+                  <div key={idx} className="relative flex gap-5">
+                    {/* Vertical Connection Line */}
+                    {!isLast && (
+                      <div className="absolute left-[11px] top-8 bottom-[-8px] w-[2px] bg-slate-200"></div>
+                    )}
+                    
+                    {/* Dot */}
+                    <div className="relative mt-2">
+                      <div className="w-6 h-6 rounded-full flex items-center justify-center bg-white border-2 border-white shadow-sm ring-1 ring-slate-100 z-10 relative">
+                         <div className={`w-2.5 h-2.5 rounded-full ${dotColor}`}></div>
+                      </div>
+                    </div>
+                    
+                    {/* Content Box */}
+                    <div className={`flex-1 p-4 rounded-xl border border-slate-100 mb-4 ${bgColor} transition-all`}>
+                      <div className="flex justify-between items-start mb-2">
+                        <p className={`text-[11px] font-extrabold ${textColor} uppercase tracking-wide mt-0.5`}>
+                          {item.status}
+                        </p>
+                        <div className="text-right flex flex-col items-end">
+                           <span className="text-[11px] font-bold text-slate-700">{displayTime}</span>
+                           <span className="text-[10px] text-slate-500 font-medium">{displayDate}</span>
+                        </div>
+                      </div>
+                      {item.note && (
+                        <p className="text-xs text-slate-600 leading-relaxed border-t border-slate-200/50 pt-2 mt-1">
+                          {item.note}
                         </p>
                       )}
                     </div>
-                  ) : (
-                    // Space kosong for unreached steps
-                    <div className="mr-2 min-h-[85px] mt-2 transition-all duration-300"></div>
-                  )}
-                </div>
-              );
-            })}
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-10 border border-dashed border-border rounded-xl bg-slate-50/50">
+                 <p className="text-sm font-medium text-slate-500">
+                   {isLoading ? 'Memuat timeline...' : 'Tidak ada data timeline tersedia'}
+                 </p>
+              </div>
+            )}
           </div>
         </div>
 

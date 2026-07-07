@@ -13,7 +13,7 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
 import { usePelaporOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
-import { pengajuanService, AjuanItem, PengajuanLembarKerjaParams } from '@/services/pengajuan.service';
+import { pengajuanService, LembarKerjaItem, PengajuanLembarKerjaParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 
 export default function LembarKerja() {
@@ -34,7 +34,7 @@ export default function LembarKerja() {
   const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
-  const [data, setData] = useState<AjuanItem[]>([]);
+  const [data, setData] = useState<LembarKerjaItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -126,22 +126,11 @@ export default function LembarKerja() {
 
   const tableColumns = [
     { key: 'no', header: 'No' },
-    { key: 'noRegis', header: 'NO.REGIS' },
-    { key: 'kodeProduk', header: 'KODE PRODUK' },
+    { key: 'noRegis', header: 'NO. REG' },
     { key: 'kodeAjuan', header: 'KODE AJUAN' },
-    { key: 'jalur', header: 'JALUR' },
+    { key: 'kodeProduk', header: 'KODE PRODUK' },
+    { key: 'jalur', header: 'JALUR ONLINE / OFFLINE' },
     { key: 'pelapor', header: 'PELAPOR' },
-    { key: 'kecamatan', header: 'KECAMATAN' },
-    { 
-      key: 'tanggal', 
-      header: 'TANGGAL & WAKTU',
-      render: (row: any) => (
-        <div className="flex flex-col">
-          <span>{row.tanggal}</span>
-          <span className="text-[10px] text-text-secondary font-bold">{row.waktu}</span>
-        </div>
-      )
-    },
     { 
       key: 'status', 
       header: 'STATUS',
@@ -151,34 +140,46 @@ export default function LembarKerja() {
         </Badge>
       )
     },
+    { 
+      key: 'tanggal', 
+      header: 'TANGGAL',
+      render: (row: any) => (
+        <div className="flex flex-col">
+          <span>{row.tanggal}</span>
+          <span className="text-[10px] text-text-secondary font-bold">{row.waktu}</span>
+        </div>
+      )
+    },
+    { key: 'kecamatan', header: 'KECAMATAN' },
   ];
 
   const mappedData = data.map((ajuan, index) => {
     let tanggal = '-';
     let waktu = '-';
-    if (ajuan.ajuan_create_datetime) {
+    if (ajuan.tanggal) {
        // Support cross-browser parsing for 'YYYY-MM-DD HH:mm:ss'
-       const dateStr = ajuan.ajuan_create_datetime.includes(' ') 
-         ? ajuan.ajuan_create_datetime.replace(' ', 'T') 
-         : ajuan.ajuan_create_datetime;
+       const dateStr = ajuan.tanggal.includes(' ') 
+         ? ajuan.tanggal.replace(' ', 'T') 
+         : ajuan.tanggal;
        const dateObj = new Date(dateStr);
        tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
        waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
     }
 
     return {
-      id: ajuan.ajuan_id,
+      id: ajuan.id,
       no: String((currentPage - 1) * perPage + index + 1).padStart(2, '0'),
-      noRegis: ajuan.ajuan_no_reg || '-',
-      kodeProduk: ajuan.layanan?.layanan_name || '-',
-      kodeAjuan: (ajuan.layanan?.layanan_name || '') + '-NEW',
-      jalur: ajuan.ajuan_pelapor_role_name || (ajuan.ajuan_is_online ? 'Online' : 'Offline'),
-      pelapor: ajuan.pelapor?.user_nama_lengkap || 'PADUKA',
-      nik: ajuan.pelapor?.user_nik || '-',
-      kecamatan: ajuan.kecamatan?.kecamatan_name || '-',
+      noRegis: ajuan.no_reg || '-',
+      kodeAjuan: ajuan.kode_ajuan || '-',
+      kodeProduk: ajuan.kode_produk || '-',
+      layanan: ajuan.layanan || '-',
+      jalur: ajuan.jalur || '-',
+      pelapor: ajuan.pelapor || '-',
+      nik: '-',
+      kecamatan: ajuan.kecamatan || '-',
       tanggal,
       waktu,
-      status: ajuan.ajuan_status || 'BELUM DIVERIFIKASI'
+      status: ajuan.status || 'BELUM DIVERIFIKASI'
     };
   });
 
@@ -188,7 +189,7 @@ export default function LembarKerja() {
       noRegis: row.noRegis,
       namaLengkap: row.pelapor,
       nik: row.nik,
-      jenisLayanan: row.kodeProduk,
+      jenisLayanan: row.layanan || row.kodeAjuan,
       kecamatan: row.kecamatan,
       status: row.status,
       tanggal: row.tanggal,

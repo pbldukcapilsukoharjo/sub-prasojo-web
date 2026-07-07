@@ -15,27 +15,45 @@ export interface PengajuanLembarKerjaParams {
   page?: number;
 }
 
-export interface AjuanItem {
-  ajuan_id: number;
-  ajuan_no_reg: string;
-  ajuan_create_datetime: string;
-  ajuan_status: string;
-  ajuan_pelapor_role_name: string;
-  ajuan_is_online: number;
-  nama_identitas_produk?: string; // Untuk halaman produk
-  kecamatan: {
-    kecamatan_id: number;
-    kecamatan_name: string;
-  };
-  layanan: {
-    layanan_id: number;
-    layanan_name: string;
-  };
-  pelapor?: {
-    user_id: number;
-    user_nik: string;
-    user_nama_lengkap: string;
-  };
+export interface LembarKerjaItem {
+  id: number;
+  no_reg: string;
+  kode_ajuan: number | string;
+  kode_produk: number | string | null;
+  layanan: string;
+  jalur: string;
+  pelapor: string;
+  status: string;
+  tanggal: string;
+  kecamatan: string;
+}
+
+export interface AjuanListItem {
+  id: number;
+  no_regis: string;
+  nama: string;
+  nik: string;
+  jenis_layanan: string;
+  kecamatan: string;
+  kode_ajuan: string;
+  kode_produk: string | null;
+  jalur: string;
+  pelapor: string;
+  status: string;
+  tanggal: string;
+  tanggal_parse: string;
+}
+
+export interface ProdukItem {
+  id: number;
+  no_reg: string;
+  layanan: string;
+  kecamatan: string;
+  pelapor: string;
+  status: string;
+  created_at: string;
+  nama_identitas_produk: string;
+  nomor: string;
 }
 
 export interface MetaPagination {
@@ -59,7 +77,7 @@ export interface PengajuanLembarKerjaResponse {
   status: boolean;
   code: number;
   message: string;
-  data: AjuanItem[];
+  data: LembarKerjaItem[];
   meta: MetaPagination;
   chart_status?: ChartStatusItem[];
   chart_layanan?: ChartLayananItem[];
@@ -75,7 +93,7 @@ export interface PengajuanAjuanResponse {
   status: boolean;
   code: number;
   message: string;
-  data: AjuanItem[];
+  data: AjuanListItem[];
   meta: MetaPagination;
 }
 
@@ -123,7 +141,7 @@ export interface PengajuanProdukResponse {
   status: boolean;
   code: number;
   message: string;
-  data: AjuanItem[];
+  data: ProdukItem[];
   meta: MetaPagination;
 }
 

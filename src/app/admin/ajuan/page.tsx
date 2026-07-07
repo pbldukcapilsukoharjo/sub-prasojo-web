@@ -14,7 +14,7 @@ import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
 import AjuanCharts from '@/components/Dashboard/AjuanCharts';
 import { usePelaporOptions, useKecamatanOptions, useStatusOptions } from '@/hooks/useFilterOptions';
-import { pengajuanService, AjuanItem, PengajuanAjuanParams, ChartDataItem, ChartAjuanParams } from '@/services/pengajuan.service';
+import { pengajuanService, AjuanListItem, PengajuanAjuanParams, ChartDataItem, ChartAjuanParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 
 export default function Ajuan() {
@@ -37,7 +37,7 @@ export default function Ajuan() {
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
   const { data: statusOptions = [] } = useStatusOptions({ addAllOption: true, allOptionLabel: 'Semua Status' });
 
-  const [data, setData] = useState<AjuanItem[]>([]);
+  const [data, setData] = useState<AjuanListItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -151,31 +151,21 @@ export default function Ajuan() {
 
   const tableColumns = [
     { key: 'no', header: 'No' },
-    { key: 'noRegis', header: 'NO.REGIS' },
-    { key: 'kodeProduk', header: 'KODE PRODUK' },
-    { key: 'kodeAjuan', header: 'KODE AJUAN' },
-    { key: 'jalur', header: 'JALUR' },
+    { key: 'noRegis', header: 'NO. REG' },
+    { key: 'kodeLayanan', header: 'KODE LAYANAN' },
+    { key: 'jenisAjuan', header: 'JENIS AJUAN' },
+    { key: 'jalur', header: 'JALUR ONLINE / OFFLINE' },
     { key: 'pelapor', header: 'PELAPOR' },
-    { key: 'kecamatan', header: 'KECAMATAN' },
-    { 
-      key: 'tanggal', 
-      header: 'TANGGAL & WAKTU',
-      render: (row: any) => (
-        <div className="flex flex-col">
-          <span>{row.tanggal}</span>
-          <span className="text-[10px] text-text-secondary font-bold">{row.waktu}</span>
-        </div>
-      )
-    },
     { 
       key: 'status', 
       header: 'STATUS',
       render: (row: any) => {
-        let variant: 'primary' | 'default' | 'success' | 'danger' = 'default';
+        let variant: 'primary' | 'default' | 'success' | 'danger' | 'warning' = 'default';
         if (row.status === 'DIVERIFIKASI') variant = 'primary';
         else if (row.status === 'DIPROSES') variant = 'default';
         else if (row.status === 'DISETUJUI') variant = 'success';
         else if (row.status === 'DITOLAK') variant = 'danger';
+        else if (row.status === 'MENUNGGU') variant = 'warning';
 
         return (
           <Badge variant={variant as any}>
@@ -184,33 +174,49 @@ export default function Ajuan() {
         );
       }
     },
+    { 
+      key: 'tanggal', 
+      header: 'TANGGAL',
+      render: (row: any) => (
+        <div className="flex flex-col">
+          <span>{row.tanggal}</span>
+          <span className="text-[10px] text-text-secondary font-bold">{row.waktu}</span>
+        </div>
+      )
+    },
+    { key: 'kecamatan', header: 'KECAMATAN' },
   ];
 
   const mappedData = data.map((ajuan, index) => {
     let tanggal = '-';
     let waktu = '-';
-    if (ajuan.ajuan_create_datetime) {
-       const dateStr = ajuan.ajuan_create_datetime.includes(' ') 
-         ? ajuan.ajuan_create_datetime.replace(' ', 'T') 
-         : ajuan.ajuan_create_datetime;
+    if (ajuan.tanggal_parse) {
+       const dateStr = ajuan.tanggal_parse.replace(', ', 'T');
        const dateObj = new Date(dateStr);
-       tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
-       waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+       if (!isNaN(dateObj.getTime())) {
+           tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
+           waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+       } else {
+           tanggal = ajuan.tanggal.split(',')[0] || ajuan.tanggal;
+           waktu = ajuan.tanggal.split(',')[1] ? ajuan.tanggal.split(',')[1].trim() + ' WIB' : '-';
+       }
+    } else if (ajuan.tanggal) {
+       tanggal = ajuan.tanggal;
     }
 
     return {
-      id: ajuan.ajuan_id,
+      id: ajuan.id,
       no: String((currentPage - 1) * perPage + index + 1).padStart(2, '0'),
-      noRegis: ajuan.ajuan_no_reg || '-',
-      kodeProduk: ajuan.layanan?.layanan_name || '-',
-      kodeAjuan: (ajuan.layanan?.layanan_name || '') + '-NEW',
-      jalur: ajuan.ajuan_pelapor_role_name || (ajuan.ajuan_is_online ? 'Online' : 'Offline'),
-      pelapor: ajuan.pelapor?.user_nama_lengkap || 'PADUKA',
-      nik: ajuan.pelapor?.user_nik || '-',
-      kecamatan: ajuan.kecamatan?.kecamatan_name || '-',
+      noRegis: ajuan.no_regis || '-',
+      kodeLayanan: ajuan.jenis_layanan || '-',
+      jenisAjuan: ajuan.kode_ajuan || '-',
+      jalur: ajuan.jalur || '-',
+      pelapor: ajuan.nama || ajuan.pelapor || '-',
+      nik: ajuan.nik || '-',
+      kecamatan: ajuan.kecamatan || '-',
       tanggal,
       waktu,
-      status: ajuan.ajuan_status || 'MENUNGGU'
+      status: ajuan.status || 'MENUNGGU'
     };
   });
 
@@ -220,7 +226,7 @@ export default function Ajuan() {
       noRegis: row.noRegis,
       namaLengkap: row.pelapor,
       nik: row.nik,
-      jenisLayanan: row.kodeProduk,
+      jenisLayanan: row.kodeLayanan || row.jenisAjuan,
       kecamatan: row.kecamatan,
       status: row.status,
       tanggal: row.tanggal,

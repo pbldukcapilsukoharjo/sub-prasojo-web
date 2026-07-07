@@ -13,7 +13,7 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import DetailModal from '@/components/Common/DetailModal';
 import { useKecamatanOptions } from '@/hooks/useFilterOptions';
-import { pengajuanService, AjuanItem, PengajuanProdukParams } from '@/services/pengajuan.service';
+import { pengajuanService, ProdukItem, PengajuanProdukParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 
 export default function Produk() {
@@ -32,7 +32,7 @@ export default function Produk() {
   const [sortBy, setSortBy] = useState('newest');
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
-  const [data, setData] = useState<AjuanItem[]>([]);
+  const [data, setData] = useState<ProdukItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -123,21 +123,10 @@ export default function Produk() {
 
   const tableColumns = [
     { key: 'no', header: 'No' },
-    { key: 'noRegis', header: 'NO.REGIS' },
+    { key: 'noRegis', header: 'NO. REG' },
     { key: 'kodeAjuan', header: 'KODE AJUAN' },
-    { key: 'noKk', header: '-' }, // Sesuai permintaan
+    { key: 'nomor', header: 'NOMOR (KK, KTP-EL, KIA, DLL)' },
     { key: 'namaIdentitas', header: 'NAMA IDENTITAS PRODUK' },
-    { key: 'kecamatan', header: 'KECAMATAN' },
-    { 
-      key: 'tanggal', 
-      header: 'TANGGAL & WAKTU',
-      render: (row: any) => (
-        <div className="flex flex-col items-center">
-          <span>{row.tanggal}</span>
-          <span className="text-[10px] text-text-secondary font-bold">{row.waktu}</span>
-        </div>
-      )
-    },
     { 
       key: 'status', 
       header: 'STATUS',
@@ -147,31 +136,42 @@ export default function Produk() {
         </Badge>
       )
     },
+    { 
+      key: 'tanggal', 
+      header: 'TANGGAL',
+      render: (row: any) => (
+        <div className="flex flex-col items-center">
+          <span>{row.tanggal}</span>
+          <span className="text-[10px] text-text-secondary font-bold">{row.waktu}</span>
+        </div>
+      )
+    },
+    { key: 'kecamatan', header: 'KECAMATAN' },
   ];
 
   const mappedData = data.map((ajuan, index) => {
     let tanggal = '-';
     let waktu = '-';
-    if (ajuan.ajuan_create_datetime) {
-       const dateStr = ajuan.ajuan_create_datetime.includes(' ') 
-         ? ajuan.ajuan_create_datetime.replace(' ', 'T') 
-         : ajuan.ajuan_create_datetime;
+    if (ajuan.created_at) {
+       const dateStr = ajuan.created_at.includes(' ') 
+         ? ajuan.created_at.replace(' ', 'T') 
+         : ajuan.created_at;
        const dateObj = new Date(dateStr);
        tanggal = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '');
        waktu = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
     }
 
     return {
-      id: ajuan.ajuan_id,
+      id: ajuan.id,
       no: String((currentPage - 1) * perPage + index + 1).padStart(2, '0'),
-      noRegis: ajuan.ajuan_no_reg || '-',
-      kodeAjuan: (ajuan.layanan?.layanan_name || '') + '-NEW',
-      noKk: '-', // Sesuai permintaan
+      noRegis: ajuan.no_reg || '-',
+      kodeAjuan: ajuan.layanan || '-',
+      nomor: ajuan.nomor || '-',
       namaIdentitas: ajuan.nama_identitas_produk || '-',
-      kecamatan: ajuan.kecamatan?.kecamatan_name || '-',
+      kecamatan: ajuan.kecamatan || '-',
       tanggal,
       waktu,
-      status: ajuan.ajuan_status || 'SELESAI'
+      status: ajuan.status || 'SELESAI'
     };
   });
 
@@ -181,7 +181,7 @@ export default function Produk() {
       noRegis: row.noRegis,
       namaLengkap: row.namaIdentitas,
       nik: '-', // Not available in produk response currently
-      jenisLayanan: row.kodeAjuan.replace('-NEW', ''),
+      jenisLayanan: row.kodeAjuan,
       kecamatan: row.kecamatan,
       status: row.status,
       tanggal: row.tanggal,
