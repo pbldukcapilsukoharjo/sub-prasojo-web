@@ -148,7 +148,15 @@ BAB IV: MODUL DAN FITUR SECARA MENDALAM
 5. Modul Distribusi Wilayah
    - Memberikan peta persebaran atau daftar kecamatan yang paling banyak dan paling sedikit melakukan pengajuan. Fitur ini sangat penting untuk pemetaan fokus pelayanan kependudukan (`TopWilayahItem`).
 
-6. Modul Filter Global & Konfigurasi Antarmuka
+6. Modul Pemantauan SLA (SLA Monitoring)
+   - Berfungsi untuk mengawasi Service Level Agreement, yaitu kepatuhan terhadap batas waktu maksimal penyelesaian tiap jenis permohonan.
+   - Menampilkan indikator (warna/label) peringatan jika suatu ajuan masyarakat sudah mendekati batas akhir SLA, sehingga operator dapat segera memprioritaskannya demi mempertahankan kualitas dan kecepatan pelayanan.
+
+7. Modul Agregasi Ulasan
+   - Mengumpulkan data umpan balik (*feedback*) berupa ulasan yang diberikan oleh masyarakat pasca menerima layanan Adminduk.
+   - Memungkinkan pimpinan atau operator untuk membaca rincian ulasan kualitatif dan kuantitatif (tingkat kepuasan bintang) sebagai bahan evaluasi objektif perbaikan mutu layanan.
+
+8. Modul Filter Global & Konfigurasi Antarmuka
    - Fitur penyaringan data tingkat lanjut yang disematkan ke API (contoh: `DashboardFilterParams` untuk `id_kecamatan`, `id_layanan`, `start_date`, `end_date`).
    - Tersedia tombol sentral untuk mengganti tema (Terang ke Gelap dan sebaliknya) menyesuaikan ergonomi operator.
 
