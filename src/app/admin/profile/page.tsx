@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import Select from '@/components/Forms/Select';
-import LogoutModal from '@/components/Common/LogoutModal';
+import dynamic from 'next/dynamic';
+
+const LogoutModal = dynamic(() => import('@/components/Common/LogoutModal'), { ssr: false });
 import { useAuth } from '@/providers/auth-provider';
 import { authService } from '@/services/auth.service';
 import { handleApiError } from '@/lib/api-error';
@@ -250,14 +252,16 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <LogoutModal 
-        isOpen={isLogoutModalOpen} 
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={async () => {
-          setIsLogoutModalOpen(false);
-          await logout();
-        }}
-      />
+      {isLogoutModalOpen && (
+        <LogoutModal 
+          isOpen={isLogoutModalOpen} 
+          onClose={() => setIsLogoutModalOpen(false)}
+          onConfirm={async () => {
+            setIsLogoutModalOpen(false);
+            await logout();
+          }}
+        />
+      )}
     </div>
   );
 }

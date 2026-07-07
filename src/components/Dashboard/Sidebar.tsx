@@ -3,9 +3,43 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { pengajuanService } from '@/services/pengajuan.service';
+import { operatorService } from '@/services/operator.service';
+import { wilayahService } from '@/services/wilayah.service';
+import { slaService } from '@/services/sla.service';
+import { ulasanService } from '@/services/ulasan.service';
 
 export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; onLogout?: () => void }) {
   const pathname = usePathname();
+
+  const queryClient = useQueryClient();
+
+  const handlePrefetch = (path: string) => {
+    switch (path) {
+      case '/admin/ajuan':
+        queryClient.prefetchQuery({ queryKey: ['ajuan', { page: 1, per_page: 10 }], queryFn: () => pengajuanService.getAjuan({ page: 1, per_page: 10 }) });
+        break;
+      case '/admin/lembar-kerja':
+        queryClient.prefetchQuery({ queryKey: ['lembarKerja', { page: 1, per_page: 10 }], queryFn: () => pengajuanService.getLembarKerja({ page: 1, per_page: 10 }) });
+        break;
+      case '/admin/produk':
+        queryClient.prefetchQuery({ queryKey: ['produk', { page: 1, per_page: 10 }], queryFn: () => pengajuanService.getProduk({ page: 1, per_page: 10 }) });
+        break;
+      case '/admin/peringkat-operator':
+        queryClient.prefetchQuery({ queryKey: ['peringkatOperatorList', { page: 1, limit: 10, sort: 'newest' }], queryFn: () => operatorService.getPeringkatOperator({ page: 1, limit: 10, sort: 'newest' }) });
+        break;
+      case '/admin/distribusi-wilayah':
+        queryClient.prefetchQuery({ queryKey: ['wilayah', { page: 1 }], queryFn: () => wilayahService.getDistribusiWilayah({ page: 1 }) });
+        break;
+      case '/admin/sla-monitoring':
+        queryClient.prefetchQuery({ queryKey: ['slaList', { page: 1, sort_by: 'newest' }], queryFn: () => slaService.getSla({ page: 1, sort_by: 'newest' }) });
+        break;
+      case '/admin/ulasan':
+        queryClient.prefetchQuery({ queryKey: ['ulasanList', { page: 1, sort_by: 'newest' }], queryFn: () => ulasanService.getUlasan({ page: 1, sort_by: 'newest' }) });
+        break;
+    }
+  };
 
   const menuItems = [
     { name: 'DASHBOARD', path: '/admin/dashboard', icon: 'ri-dashboard-line' },
@@ -40,6 +74,7 @@ export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; o
               key={item.name}
               href={item.path}
               onClick={onClose}
+              onMouseEnter={() => handlePrefetch(item.path)}
               className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] font-semibold text-xs transition-colors ${
                 isActive 
                   ? 'bg-surface text-primary dark:bg-primary dark:text-white' 

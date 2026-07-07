@@ -79,11 +79,11 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-3">
             <h2 className="text-lg lg:text-xl font-black text-text-primary tracking-tight">{title}</h2>
-            {badgeCount > 0 && (
+            {/* {badgeCount > 0 && (
               <span className="hidden lg:inline-flex items-center justify-center bg-amber-100 text-amber-700 text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-amber-200 uppercase tracking-widest">
                 {badgeCount} PENDING
               </span>
-            )}
+            )} */}
           </div>
           {subtitle && (
             <p className="text-[11px] lg:text-xs font-medium text-text-secondary mt-0.5">{subtitle}</p>

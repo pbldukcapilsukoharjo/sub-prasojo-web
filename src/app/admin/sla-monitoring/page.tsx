@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
@@ -13,6 +13,7 @@ import Pagination from '@/components/Common/Pagination';
 import { slaService, SlaData, SlaKpiData, SlaParams, SlaKpiParams } from '@/services/sla.service';
 import { handleApiError } from '@/lib/api-error';
 import { useLayananOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 
 export default function SlaMonitoringPage() {
   const [search, setSearch] = useState('');
@@ -28,22 +29,10 @@ export default function SlaMonitoringPage() {
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Layanan' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Semua Kecamatan' });
 
-  const [listData, setListData] = useState<SlaData | null>(null);
-  const [kpiData, setKpiData] = useState<SlaKpiData | null>(null);
-  
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [perPage, setPerPage] = useState(10);
-  const [isLoading, setIsLoading] = useState(false);
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
 
   const formatToDDMMYYYY = (dateStr: string) => {
     if (!dateStr) return undefined;
@@ -55,58 +44,57 @@ export default function SlaMonitoringPage() {
     return dateStr;
   };
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const formattedStartDate = formatToDDMMYYYY(startDate);
-      const formattedEndDate = formatToDDMMYYYY(endDate);
+  const formattedStartDate = formatToDDMMYYYY(startDate);
+  const formattedEndDate = formatToDDMMYYYY(endDate);
 
-      // Params for KPI
-      const kpiParams: SlaKpiParams = {
-        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        id_layanan: layanan !== 'all' ? Number(layanan) : undefined,
-        periode_bulan: periode ? Number(periode) : undefined,
-        start_date: formattedStartDate,
-        end_date: formattedEndDate,
-      };
-
-      // Params for Table List
-      const listParams: SlaParams = {
-        page: currentPage,
-        search: search || undefined,
-        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        sort_by: sortBy,
-        id_layanan: layanan !== 'all' ? Number(layanan) : undefined,
-        periode_bulan: periode ? Number(periode) : undefined,
-        start_date: formattedStartDate,
-        end_date: formattedEndDate,
-      };
-
-      const [kpiRes, listRes] = await Promise.all([
-        slaService.getSlaKpi(kpiParams),
-        slaService.getSla(listParams)
-      ]);
-
-      if (kpiRes.status && kpiRes.data) {
-        setKpiData(kpiRes.data);
-      }
-      
-      if (listRes.status && listRes.data) {
-        setListData(listRes.data);
-        if (listRes.data.daftar_rincian?.meta) {
-          setTotalItems(listRes.data.daftar_rincian.meta.total);
-          setTotalPages(listRes.data.daftar_rincian.meta.total_page);
-          setPerPage(listRes.data.daftar_rincian.meta.per_page);
-        }
-      }
-    } catch (error) {
-      handleApiError(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const kpiParams: SlaKpiParams = {
+    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+    id_layanan: layanan !== 'all' ? Number(layanan) : undefined,
+    periode_bulan: periode ? Number(periode) : undefined,
+    start_date: formattedStartDate,
+    end_date: formattedEndDate,
   };
 
-  const handleReset = () => {
+  const listParams: SlaParams = {
+    page: currentPage,
+    search: search || undefined,
+    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+    sort_by: sortBy,
+    id_layanan: layanan !== 'all' ? Number(layanan) : undefined,
+    periode_bulan: periode ? Number(periode) : undefined,
+    start_date: formattedStartDate,
+    end_date: formattedEndDate,
+  };
+
+  const queryClient = useQueryClient();
+
+  const handlePageHover = (page: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['slaList', { ...listParams, page }],
+      queryFn: () => slaService.getSla({ ...listParams, page }),
+    });
+  };
+
+  const { data: kpiRes, isLoading: isKpiLoading } = useQuery({
+    queryKey: ['slaKpi', kpiParams],
+    queryFn: () => slaService.getSlaKpi(kpiParams),
+    placeholderData: keepPreviousData,
+  });
+
+  const { data: listRes, isLoading: isListLoading, isFetching: isListFetching } = useQuery({
+    queryKey: ['slaList', listParams],
+    queryFn: () => slaService.getSla(listParams),
+    placeholderData: keepPreviousData,
+  });
+
+  const kpiData = kpiRes?.data || null;
+  const listData = listRes?.data || null;
+  const totalItems = listData?.daftar_rincian?.meta?.total || 0;
+  const totalPages = listData?.daftar_rincian?.meta?.total_page || 1;
+  const isLoading = isKpiLoading || isListLoading;
+  const perPage = listData?.daftar_rincian?.meta?.per_page || 10;
+
+  const handleReset = useCallback(() => {
     setSearch('');
     setKecamatan('all');
     setLayanan('all');
@@ -115,27 +103,19 @@ export default function SlaMonitoringPage() {
     setStartDate('');
     setEndDate('');
     setCurrentPage(1);
+  }, []);
 
-    setTimeout(() => {
-      fetchData();
-    }, 0);
-  };
+  const handleFilter = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
 
-  const handleFilter = () => {
-    if (currentPage === 1) {
-      fetchData();
-    } else {
-      setCurrentPage(1);
-    }
-  };
-
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     try {
       await slaService.exportSla();
     } catch (error) {
       handleApiError(error);
     }
-  };
+  }, []);
 
   // Determine SLA status dynamically based on target_sla
   const getStatus = (rata_rata_waktu: number, target: number) => {
@@ -144,21 +124,21 @@ export default function SlaMonitoringPage() {
     return 'OVER SLA';
   };
 
-  const mappedData = listData?.daftar_rincian?.list?.map((item, idx) => {
+  const mappedData = useMemo(() => listData?.daftar_rincian?.list?.map((item, idx) => {
     return {
       rank: String((currentPage - 1) * perPage + idx + 1).padStart(2, '0'),
       service: item.jenis_layanan,
       count: item.jumlah_ajuan,
       avgTime: `${item.rata_rata_waktu} jam`
     };
-  }) || [];
+  }) || [], [listData, currentPage, perPage]);
 
-  const columns = [
+  const columns = useMemo(() => [
     { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-medium text-text-primary">{row.rank}</span> },
     { key: 'service', header: 'Jenis Layanan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs uppercase">{row.service}</span> },
     { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.count}</span> },
     { key: 'avgTime', header: 'Rata Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.avgTime}</span> }
-  ];
+  ], []);
 
 
   return (
@@ -292,6 +272,7 @@ export default function SlaMonitoringPage() {
             totalItems={totalItems}
             itemsPerPage={perPage}
             onPageChange={setCurrentPage}
+            onPageHover={handlePageHover}
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
@@ -11,11 +11,14 @@ import Tabs from '@/components/Common/Tabs';
 import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
-import DetailModal from '@/components/Common/DetailModal';
+import dynamic from 'next/dynamic';
+
+const DetailModal = dynamic(() => import('@/components/Common/DetailModal'), { ssr: false });
 import AjuanCharts from '@/components/Dashboard/AjuanCharts';
 import { usePelaporOptions, useKecamatanOptions, useStatusOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, AjuanListItem, PengajuanAjuanParams, ChartDataItem, ChartAjuanParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 
 export default function Ajuan() {
   const router = useRouter();
@@ -37,84 +40,74 @@ export default function Ajuan() {
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
   const { data: statusOptions = [] } = useStatusOptions({ addAllOption: true, allOptionLabel: 'Semua Status' });
 
-  const [data, setData] = useState<AjuanListItem[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
   const [perPage, setPerPage] = useState(10);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [chartStatus, setChartStatus] = useState<ChartDataItem[]>([]);
-  const [chartLayanan, setChartLayanan] = useState<ChartDataItem[]>([]);
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
 
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, activeTab]);
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const formatToDDMMYYYY = (dateStr: string) => {
-        if (!dateStr) return undefined;
-        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
-        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-          const parts = dateStr.split('-');
-          return `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-        return dateStr;
-      };
-
-      const params: PengajuanAjuanParams = {
-        search: search || undefined,
-        kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
-        pelapor: pelapor !== 'all' ? pelapor : undefined,
-        start_date: formatToDDMMYYYY(startDate),
-        end_date: formatToDDMMYYYY(endDate),
-        periode: periode ? Number(periode) : undefined,
-        layanan: activeTab !== 'semua' ? activeTab : undefined,
-        status: filterStatus !== 'all' ? filterStatus : undefined,
-        sort: sortBy,
-        page: currentPage,
-        per_page: perPage,
-      };
-
-      const chartParams: ChartAjuanParams = {
-        start_date: formatToDDMMYYYY(startDate) || undefined,
-        end_date: formatToDDMMYYYY(endDate) || undefined,
-        periode_bulan: periode ? Number(periode) : undefined,
-        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        id_layanan: activeTab !== 'semua' ? activeTab : undefined,
-        id_pelapor: pelapor !== 'all' ? pelapor : undefined,
-      };
-
-      const [response, chartResponse] = await Promise.all([
-        pengajuanService.getAjuan(params),
-        pengajuanService.getChartAjuan(chartParams),
-      ]);
-
-      if (response.status) {
-        setData(response.data || []);
-        if (response.meta) {
-          setTotalItems(response.meta.total);
-          setTotalPages(response.meta.total_page);
-        }
-      }
-
-      if (chartResponse.status && chartResponse.data) {
-        setChartStatus(chartResponse.data.chart_status || []);
-        setChartLayanan(chartResponse.data.chart_layanan || []);
-      }
-    } catch (error) {
-      handleApiError(error);
-    } finally {
-      setIsLoading(false);
+  const formatToDDMMYYYY = (dateStr: string) => {
+    if (!dateStr) return undefined;
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const parts = dateStr.split('-');
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
+    return dateStr;
   };
 
-  const handleReset = () => {
+  const params: PengajuanAjuanParams = {
+    search: search || undefined,
+    kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
+    pelapor: pelapor !== 'all' ? pelapor : undefined,
+    start_date: formatToDDMMYYYY(startDate),
+    end_date: formatToDDMMYYYY(endDate),
+    periode: periode ? Number(periode) : undefined,
+    layanan: activeTab !== 'semua' ? activeTab : undefined,
+    status: filterStatus !== 'all' ? filterStatus : undefined,
+    sort: sortBy,
+    page: currentPage,
+    per_page: perPage,
+  };
+
+  const chartParams: ChartAjuanParams = {
+    start_date: formatToDDMMYYYY(startDate) || undefined,
+    end_date: formatToDDMMYYYY(endDate) || undefined,
+    periode_bulan: periode ? Number(periode) : undefined,
+    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+    id_layanan: activeTab !== 'semua' ? activeTab : undefined,
+    id_pelapor: pelapor !== 'all' ? pelapor : undefined,
+  };
+
+  const queryClient = useQueryClient();
+
+  const handlePageHover = (page: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['ajuan', { ...params, page }],
+      queryFn: () => pengajuanService.getAjuan({ ...params, page }),
+    });
+  };
+
+  const { data: ajuanRes, isLoading: isAjuanLoading, isFetching: isAjuanFetching } = useQuery({
+    queryKey: ['ajuan', params],
+    queryFn: () => pengajuanService.getAjuan(params),
+    placeholderData: keepPreviousData,
+  });
+
+  const { data: chartRes } = useQuery({
+    queryKey: ['ajuanChart', chartParams],
+    queryFn: () => pengajuanService.getChartAjuan(chartParams),
+    placeholderData: keepPreviousData,
+  });
+
+  const data = ajuanRes?.data || [];
+  const totalItems = ajuanRes?.meta?.total || 0;
+  const totalPages = ajuanRes?.meta?.total_page || 1;
+  const isLoading = isAjuanLoading;
+
+  const chartStatus = chartRes?.data?.chart_status || [];
+  const chartLayanan = chartRes?.data?.chart_layanan || [];
+
+  const handleReset = useCallback(() => {
     setSearch('');
     setPelapor('all');
     setKecamatan('all');
@@ -124,21 +117,13 @@ export default function Ajuan() {
     setSortBy('newest');
     setFilterStatus('all');
     setCurrentPage(1);
+  }, []);
 
-    setTimeout(() => {
-      fetchData();
-    }, 0);
-  };
+  const handleFilter = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
 
-  const handleFilter = () => {
-    if (currentPage === 1) {
-      fetchData();
-    } else {
-      setCurrentPage(1);
-    }
-  };
-
-  const tabs = [
+  const tabs = useMemo(() => [
     { id: 'semua', label: 'SEMUA' },
     { id: 'kk', label: 'KARTU KELUARGA' },
     { id: 'ktp', label: 'KTP-EL' },
@@ -147,9 +132,9 @@ export default function Ajuan() {
     { id: 'akta_kematian', label: 'AKTA KEMATIAN' },
     { id: 'perpindahan', label: 'PERPINDAHAN' },
     { id: 'surket', label: 'SURKET KTP' },
-  ];
+  ], []);
 
-  const tableColumns = [
+  const tableColumns = useMemo(() => [
     { key: 'no', header: 'No' },
     { key: 'noRegis', header: 'NO. REG' },
     { key: 'kodeLayanan', header: 'KODE LAYANAN' },
@@ -185,9 +170,9 @@ export default function Ajuan() {
       )
     },
     { key: 'kecamatan', header: 'KECAMATAN' },
-  ];
+  ], []);
 
-  const mappedData = data.map((ajuan, index) => {
+  const mappedData = useMemo(() => data.map((ajuan, index) => {
     let tanggal = '-';
     let waktu = '-';
     if (ajuan.tanggal_parse) {
@@ -216,9 +201,10 @@ export default function Ajuan() {
       kecamatan: ajuan.kecamatan || '-',
       tanggal,
       waktu,
-      status: ajuan.status || 'MENUNGGU'
+      status: ajuan.status || 'MENUNGGU',
+      originalData: ajuan,
     };
-  });
+  }), [data, currentPage, perPage]);
 
   const handleRowClick = (row: any) => {
     setSelectedData({
@@ -348,15 +334,18 @@ export default function Ajuan() {
             totalItems={totalItems}
             itemsPerPage={perPage}
             onPageChange={setCurrentPage}
+            onPageHover={handlePageHover}
           />
         </div>
       </div>
 
-      <DetailModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        data={selectedData}
-      />
+      {isModalOpen && (
+        <DetailModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          data={selectedData}
+        />
+      )}
     </div>
   );
 }

@@ -8,28 +8,23 @@ import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import { DashboardFilterParams } from '@/services/dashboard.service';
 import { useLayananOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
 
-interface DashboardFilterProps {
-  onFilterChange?: (filters: DashboardFilterParams) => void;
-}
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function DashboardFilter({ onFilterChange }: DashboardFilterProps) {
-  const [jenisLayanan, setJenisLayanan] = useState<string | number>('all');
-  const [kecamatan, setKecamatan] = useState<string | number>('all');
-  const [periode, setPeriode] = useState<string | number>('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+export default function DashboardFilter() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [jenisLayanan, setJenisLayanan] = useState<string | number>(searchParams.get('id_layanan') || 'all');
+  const [kecamatan, setKecamatan] = useState<string | number>(searchParams.get('id_kecamatan') || 'all');
+  const [periode, setPeriode] = useState<string | number>(searchParams.get('periode_bulan') || '');
+  const [startDate, setStartDate] = useState(searchParams.get('start_date') || '');
+  const [endDate, setEndDate] = useState(searchParams.get('end_date') || '');
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
 
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Jenis Layanan' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
-
-  // Trigger default filter on initial mount
-  useEffect(() => {
-    handleFilter();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleReset = () => {
     setJenisLayanan('all');
@@ -38,31 +33,32 @@ export default function DashboardFilter({ onFilterChange }: DashboardFilterProps
     setStartDate('');
     setEndDate('');
     
-    if (onFilterChange) {
-      onFilterChange({});
-    }
+    router.push('/admin/dashboard');
   };
 
   const handleFilter = () => {
-    if (onFilterChange) {
-      const formatToDDMMYYYY = (dateStr: string) => {
-        if (!dateStr) return undefined;
-        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
-        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-          const parts = dateStr.split('-');
-          return `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-        return dateStr;
-      };
+    const params = new URLSearchParams();
+    
+    const formatToDDMMYYYY = (dateStr: string) => {
+      if (!dateStr) return undefined;
+      if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        const parts = dateStr.split('-');
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      return dateStr;
+    };
 
-      onFilterChange({
-        id_layanan: jenisLayanan !== 'all' ? Number(jenisLayanan) : undefined,
-        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        periode_bulan: periode ? Number(periode) : undefined,
-        start_date: formatToDDMMYYYY(startDate),
-        end_date: formatToDDMMYYYY(endDate),
-      });
-    }
+    if (jenisLayanan !== 'all') params.set('id_layanan', String(jenisLayanan));
+    if (kecamatan !== 'all') params.set('id_kecamatan', String(kecamatan));
+    if (periode) params.set('periode_bulan', String(periode));
+    
+    const start = formatToDDMMYYYY(startDate);
+    const end = formatToDDMMYYYY(endDate);
+    if (start) params.set('start_date', start);
+    if (end) params.set('end_date', end);
+
+    router.push(`/admin/dashboard?${params.toString()}`);
   };
 
   return (

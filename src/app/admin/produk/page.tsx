@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
@@ -11,10 +11,13 @@ import Tabs from '@/components/Common/Tabs';
 import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
-import DetailModal from '@/components/Common/DetailModal';
+import dynamic from 'next/dynamic';
+
+const DetailModal = dynamic(() => import('@/components/Common/DetailModal'), { ssr: false });
 import { useKecamatanOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, ProdukItem, PengajuanProdukParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 
 export default function Produk() {
   const router = useRouter();
@@ -32,62 +35,54 @@ export default function Produk() {
   const [sortBy, setSortBy] = useState('newest');
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
-  const [data, setData] = useState<ProdukItem[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(true);
-
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
   const perPage = 10;
 
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, activeTab]);
-
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const formatToDDMMYYYY = (dateStr: string) => {
-        if (!dateStr) return undefined;
-        if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
-        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
-          const parts = dateStr.split('-');
-          return `${parts[2]}-${parts[1]}-${parts[0]}`;
-        }
-        return dateStr;
-      };
-
-      const params: PengajuanProdukParams = {
-        search: search || undefined,
-        kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
-        nama_identitas_produk: namaIdentitas || undefined,
-        start_date: formatToDDMMYYYY(startDate),
-        end_date: formatToDDMMYYYY(endDate),
-        periode: periode ? Number(periode) : undefined,
-        layanan: activeTab !== 'semua' ? activeTab : undefined,
-        sort: sortBy,
-        page: currentPage,
-        per_page: perPage,
-      };
-
-      const response = await pengajuanService.getProduk(params);
-      if (response.status) {
-        setData(response.data || []);
-        if (response.meta) {
-          setTotalItems(response.meta.total);
-          setTotalPages(response.meta.total_page);
-        }
-      }
-    } catch (error) {
-      handleApiError(error);
-    } finally {
-      setIsLoading(false);
+  const formatToDDMMYYYY = (dateStr: string) => {
+    if (!dateStr) return undefined;
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) return dateStr;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      const parts = dateStr.split('-');
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
     }
+    return dateStr;
   };
 
-  const handleReset = () => {
+  const params: PengajuanProdukParams = {
+    search: search || undefined,
+    kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
+    nama_identitas_produk: namaIdentitas || undefined,
+    start_date: formatToDDMMYYYY(startDate),
+    end_date: formatToDDMMYYYY(endDate),
+    periode: periode ? Number(periode) : undefined,
+    layanan: activeTab !== 'semua' ? activeTab : undefined,
+    sort: sortBy,
+    page: currentPage,
+    per_page: perPage,
+  };
+
+  const queryClient = useQueryClient();
+
+  const handlePageHover = (page: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['produk', { ...params, page }],
+      queryFn: () => pengajuanService.getProduk({ ...params, page }),
+    });
+  };
+
+  const { data: produkRes, isLoading: isQueryLoading, isFetching } = useQuery({
+    queryKey: ['produk', params],
+    queryFn: () => pengajuanService.getProduk(params),
+    placeholderData: keepPreviousData,
+  });
+
+  const data = produkRes?.data || [];
+  const totalItems = produkRes?.meta?.total || 0;
+  const totalPages = produkRes?.meta?.total_page || 1;
+  const isLoading = isQueryLoading;
+
+  const handleReset = useCallback(() => {
     setSearch('');
     setStartDate('');
     setEndDate('');
@@ -96,21 +91,13 @@ export default function Produk() {
     setSortBy('newest');
     setNamaIdentitas('');
     setCurrentPage(1);
-    
-    setTimeout(() => {
-       fetchData();
-    }, 0);
-  };
+  }, []);
 
-  const handleFilter = () => {
-    if (currentPage === 1) {
-      fetchData();
-    } else {
-      setCurrentPage(1);
-    }
-  };
+  const handleFilter = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
 
-  const tabs = [
+  const tabs = useMemo(() => [
     { id: 'semua', label: 'SEMUA' },
     { id: 'kk', label: 'KARTU KELUARGA' },
     { id: 'ktp', label: 'KTP-EL' },
@@ -119,9 +106,9 @@ export default function Produk() {
     { id: 'akta_kematian', label: 'AKTA KEMATIAN' },
     { id: 'perpindahan', label: 'PERPINDAHAN' },
     { id: 'surket', label: 'SURKET KTP' },
-  ];
+  ], []);
 
-  const tableColumns = [
+  const tableColumns = useMemo(() => [
     { key: 'no', header: 'No' },
     { key: 'noRegis', header: 'NO. REG' },
     { key: 'kodeAjuan', header: 'KODE AJUAN' },
@@ -147,9 +134,9 @@ export default function Produk() {
       )
     },
     { key: 'kecamatan', header: 'KECAMATAN' },
-  ];
+  ], []);
 
-  const mappedData = data.map((ajuan, index) => {
+  const mappedData = useMemo(() => data.map((ajuan, index) => {
     let tanggal = '-';
     let waktu = '-';
     if (ajuan.created_at) {
@@ -171,9 +158,10 @@ export default function Produk() {
       kecamatan: ajuan.kecamatan || '-',
       tanggal,
       waktu,
-      status: ajuan.status || 'SELESAI'
+      status: ajuan.status || 'SELESAI',
+      originalData: ajuan,
     };
-  });
+  }), [data, currentPage, perPage]);
 
   const handleRowClick = (row: any) => {
     setSelectedData({
@@ -296,15 +284,18 @@ export default function Produk() {
             totalItems={totalItems}
             itemsPerPage={perPage}
             onPageChange={setCurrentPage}
+            onPageHover={handlePageHover}
           />
         </div>
       </div>
 
-      <DetailModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        data={selectedData}
-      />
+      {isModalOpen && (
+        <DetailModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          data={selectedData}
+        />
+      )}
     </div>
   );
 }

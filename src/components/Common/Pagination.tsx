@@ -6,6 +6,7 @@ interface PaginationProps {
   totalItems?: number;
   itemsPerPage?: number;
   onPageChange: (page: number) => void;
+  onPageHover?: (page: number) => void;
   className?: string;
 }
 
@@ -15,6 +16,7 @@ export default function Pagination({
   totalItems,
   itemsPerPage,
   onPageChange,
+  onPageHover,
   className = '',
 }: PaginationProps) {
   
@@ -51,6 +53,7 @@ export default function Pagination({
       <div className="flex items-center gap-1">
         <button
           onClick={() => onPageChange(currentPage - 1)}
+          onMouseEnter={() => onPageHover && onPageHover(currentPage - 1)}
           disabled={currentPage <= 1}
           className="w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:hover:bg-transparent disabled:active:bg-transparent transition-colors"
         >
@@ -71,6 +74,7 @@ export default function Pagination({
             <button
               key={page}
               onClick={() => onPageChange(page as number)}
+              onMouseEnter={() => onPageHover && onPageHover(page as number)}
               className={`w-8 h-8 flex items-center justify-center rounded-full text-xs font-bold transition-colors ${
                 isActive
                   ? 'bg-primary hover:bg-primary-hover active:bg-primary-active text-white'
@@ -84,6 +88,7 @@ export default function Pagination({
 
         <button
           onClick={() => onPageChange(currentPage + 1)}
+          onMouseEnter={() => onPageHover && onPageHover(currentPage + 1)}
           disabled={currentPage === totalPages}
           className="w-8 h-8 flex items-center justify-center rounded-full text-text-secondary hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50 disabled:hover:bg-transparent disabled:active:bg-transparent transition-colors"
         >

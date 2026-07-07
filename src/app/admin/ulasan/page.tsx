@@ -1,16 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import FilterCard from '@/components/Common/FilterCard';
-import DetailUlasanModal from '@/components/Common/DetailUlasanModal';
+import dynamic from 'next/dynamic';
+
+const DetailUlasanModal = dynamic(() => import('@/components/Common/DetailUlasanModal'), { ssr: false });
 import Pagination from '@/components/Common/Pagination';
 import { useLayananOptions } from '@/hooks/useFilterOptions';
 import Button from '@/components/Common/Button';
 import { ulasanService, UlasanItem, UlasanKpiData, UlasanParams } from '@/services/ulasan.service';
 import { handleApiError } from '@/lib/api-error';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 
 export default function DetailUlasanPage() {
   const [search, setSearch] = useState('');
@@ -26,22 +29,10 @@ export default function DetailUlasanPage() {
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [reviews, setReviews] = useState<UlasanItem[]>([]);
-  const [kpiData, setKpiData] = useState<UlasanKpiData | null>(null);
-
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [perPage, setPerPage] = useState(10);
-  const [isLoading, setIsLoading] = useState(false);
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
 
   const formatToDDMMYYYY = (dateStr: string) => {
     if (!dateStr) return undefined;
@@ -53,53 +44,56 @@ export default function DetailUlasanPage() {
     return dateStr;
   };
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const formattedStartDate = formatToDDMMYYYY(startDate);
-      const formattedEndDate = formatToDDMMYYYY(endDate);
+  const formattedStartDate = formatToDDMMYYYY(startDate);
+  const formattedEndDate = formatToDDMMYYYY(endDate);
 
-      const params: UlasanParams = {
-        page: currentPage,
-        search: search || undefined,
-        sort_by: sortBy,
-        start_date: formattedStartDate,
-        end_date: formattedEndDate,
-        rating: rating !== 'all' ? Number(rating) : undefined,
-        layanan_kode: jenisLayanan !== 'all' ? jenisLayanan : undefined,
-      };
-
-      const [listRes, kpiRes] = await Promise.all([
-        ulasanService.getUlasan(params),
-        ulasanService.getUlasanKpi({
-          search: params.search,
-          start_date: params.start_date,
-          end_date: params.end_date,
-          rating: params.rating,
-          layanan_kode: params.layanan_kode
-        })
-      ]);
-
-      if (listRes.status && listRes.data) {
-        setReviews(listRes.data);
-        if (listRes.meta) {
-          setTotalItems(listRes.meta.total);
-          setTotalPages(listRes.meta.total_page);
-          setPerPage(listRes.meta.per_page);
-        }
-      }
-
-      if (kpiRes.status && kpiRes.data) {
-        setKpiData(kpiRes.data);
-      }
-    } catch (error) {
-      handleApiError(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const params: UlasanParams = {
+    page: currentPage,
+    search: search || undefined,
+    sort_by: sortBy,
+    start_date: formattedStartDate,
+    end_date: formattedEndDate,
+    rating: rating !== 'all' ? Number(rating) : undefined,
+    layanan_kode: jenisLayanan !== 'all' ? jenisLayanan : undefined,
   };
 
-  const handleReset = () => {
+  const kpiParams = {
+    search: params.search,
+    start_date: params.start_date,
+    end_date: params.end_date,
+    rating: params.rating,
+    layanan_kode: params.layanan_kode
+  };
+
+  const queryClient = useQueryClient();
+
+  const handlePageHover = (page: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['ulasanList', { ...params, page }],
+      queryFn: () => ulasanService.getUlasan({ ...params, page }),
+    });
+  };
+
+  const { data: ulasanRes, isLoading: isListLoading, isFetching: isListFetching } = useQuery({
+    queryKey: ['ulasanList', params],
+    queryFn: () => ulasanService.getUlasan(params),
+    placeholderData: keepPreviousData,
+  });
+
+  const { data: kpiRes, isLoading: isKpiLoading } = useQuery({
+    queryKey: ['ulasanKpi', kpiParams],
+    queryFn: () => ulasanService.getUlasanKpi(kpiParams),
+    placeholderData: keepPreviousData,
+  });
+
+  const reviews = ulasanRes?.data || [];
+  const kpiData = kpiRes?.data || null;
+  const totalItems = ulasanRes?.meta?.total || 0;
+  const totalPages = ulasanRes?.meta?.total_page || 1;
+  const perPage = ulasanRes?.meta?.per_page || 10;
+  const isLoading = isListLoading || isKpiLoading;
+
+  const handleReset = useCallback(() => {
     setSearch('');
     setSortBy('newest');
     setRating('all');
@@ -108,37 +102,29 @@ export default function DetailUlasanPage() {
     setStartDate('');
     setEndDate('');
     setCurrentPage(1);
+  }, []);
 
-    setTimeout(() => {
-      fetchData();
-    }, 0);
-  };
+  const handleFilter = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
 
-  const handleFilter = () => {
-    if (currentPage === 1) {
-      fetchData();
-    } else {
-      setCurrentPage(1);
-    }
-  };
-
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     try {
       const formattedStartDate = formatToDDMMYYYY(startDate);
       const formattedEndDate = formatToDDMMYYYY(endDate);
       
-      const params: Omit<UlasanParams, 'page' | 'sort_by'> = {
+      const exportParams: Omit<UlasanParams, 'page' | 'sort_by'> = {
         search: search || undefined,
         start_date: formattedStartDate,
         end_date: formattedEndDate,
         rating: rating !== 'all' ? Number(rating) : undefined,
         layanan_kode: jenisLayanan !== 'all' ? jenisLayanan : undefined,
       };
-      await ulasanService.exportUlasan(params);
+      await ulasanService.exportUlasan(exportParams);
     } catch (error) {
       handleApiError(error);
     }
-  };
+  }, [startDate, endDate, search, rating, jenisLayanan]);
 
   const renderStars = (ratingNum: number) => {
     const stars = [];
@@ -343,17 +329,20 @@ export default function DetailUlasanPage() {
               totalItems={totalItems}
               itemsPerPage={perPage}
               onPageChange={setCurrentPage}
+              onPageHover={handlePageHover}
             />
           </div>
 
         </div>
       </div>
       
-      <DetailUlasanModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        review={selectedReview}
-      />
+      {isModalOpen && (
+        <DetailUlasanModal 
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          review={selectedReview}
+        />
+      )}
     </div>
   );
 }

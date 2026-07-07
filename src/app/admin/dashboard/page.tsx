@@ -1,60 +1,41 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
+import React from 'react';
 import Link from 'next/link';
 import DashboardFilter from '@/components/Dashboard/DashboardFilter';
-import { dashboardService, DashboardFilterParams, KpiData, ChartTrendItem, TopWilayahItem } from '@/services/dashboard.service';
-import toast from 'react-hot-toast';
-import { handleApiError } from '@/lib/api-error';
+import { dashboardServiceServer, DashboardFilterParams, KpiData, ChartTrendItem, TopWilayahItem } from '@/services/dashboard.service';
+import DashboardChartClient from '@/components/Dashboard/DashboardChartClient';
 
-// Dynamically import ApexCharts to avoid SSR issues
-const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
+type Props = {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
 
-export default function Dashboard() {
-  const [mounted, setMounted] = useState(false);
-  const [filters, setFilters] = useState<DashboardFilterParams>({});
-  
-  const [kpiData, setKpiData] = useState<KpiData | null>(null);
-  const [chartData, setChartData] = useState<ChartTrendItem[]>([]);
-  const [topWilayahData, setTopWilayahData] = useState<TopWilayahItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+export default async function Dashboard({ searchParams }: Props) {
+  const resolvedSearchParams = await searchParams;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    // Only fetch if mounted to ensure we don't double fetch on SSR
-    if (mounted) {
-      fetchDashboardData(filters);
-    }
-  }, [filters, mounted]);
-
-  const fetchDashboardData = async (currentFilters: DashboardFilterParams) => {
-    setIsLoading(true);
-    try {
-      const [kpiRes, chartRes, wilayahRes] = await Promise.all([
-        dashboardService.getDashboardKpi(currentFilters),
-        dashboardService.getDashboardChartTrend(currentFilters),
-        dashboardService.getDashboardTopWilayah(currentFilters)
-      ]);
-
-      if (kpiRes.status) setKpiData(kpiRes.data);
-      if (chartRes.status) setChartData(chartRes.data);
-      if (wilayahRes.status) setTopWilayahData(wilayahRes.data);
-
-    } catch (error) {
-      console.error("Failed to fetch dashboard data", error);
-      handleApiError(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const filters: DashboardFilterParams = {
+    id_layanan: resolvedSearchParams.id_layanan ? Number(resolvedSearchParams.id_layanan) : undefined,
+    id_kecamatan: resolvedSearchParams.id_kecamatan ? Number(resolvedSearchParams.id_kecamatan) : undefined,
+    periode_bulan: resolvedSearchParams.periode_bulan ? Number(resolvedSearchParams.periode_bulan) : undefined,
+    start_date: resolvedSearchParams.start_date as string | undefined,
+    end_date: resolvedSearchParams.end_date as string | undefined,
   };
 
-  const handleFilterChange = (newFilters: DashboardFilterParams) => {
-    setFilters(newFilters);
-  };
+  let kpiData: KpiData | null = null;
+  let chartData: ChartTrendItem[] = [];
+  let topWilayahData: TopWilayahItem[] = [];
+
+  try {
+    const [kpiRes, chartRes, wilayahRes] = await Promise.all([
+      dashboardServiceServer.getDashboardKpi(filters),
+      dashboardServiceServer.getDashboardChartTrend(filters),
+      dashboardServiceServer.getDashboardTopWilayah(filters)
+    ]);
+
+    if (kpiRes.status) kpiData = kpiRes.data;
+    if (chartRes.status) chartData = chartRes.data;
+    if (wilayahRes.status) topWilayahData = wilayahRes.data;
+  } catch (error) {
+    console.error("Failed to fetch dashboard data", error);
+  }
 
   // Aggregate chartData by month for the current year
   const currentYear = new Date().getFullYear();
@@ -188,165 +169,127 @@ export default function Dashboard() {
     },
   ];
 
-  // Map distribution data with pct calculation
-  const totalPengajuan = kpiData?.total_pengajuan || 1; // avoid division by zero
+  const totalPengajuan = kpiData?.total_pengajuan || 1;
   const distributionData = topWilayahData.map((item, index) => {
     const pct = Math.round((item.total / totalPengajuan) * 100);
     return {
       rank: index + 1,
       name: item.nama_kecamatan,
       total: item.total,
-      pct: pct > 100 ? 100 : pct // Cap at 100 just in case
+      pct: pct > 100 ? 100 : pct
     };
   });
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Filter Card */}
-      <DashboardFilter onFilterChange={handleFilterChange} />
+      <DashboardFilter />
 
-      {/* Loading Overlay State for Content */}
-      <div className={`transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
-        
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {statCards.map((stat, i) => (
-            <div
-              key={i}
-              className="card shadow-sm border border-border p-5 flex flex-col gap-4 bg-surface justify-between"
-            >
-              {/* Top: label + icon */}
-              <div className="flex items-start justify-between gap-3">
-                <span className="text-[11px] font-bold text-text-secondary tracking-wider uppercase leading-snug pt-0.5">
-                  {stat.title}
-                </span>
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: stat.iconBg }}
-                >
-                  <i className={`${stat.icon} text-xl ${stat.iconColor}`}></i>
-                </div>
-              </div>
-
-              {/* Value + subtitle */}
-              <div>
-                <p className={`${stat.valueClass || 'text-3xl'} font-bold font-manrope text-text-primary leading-none`}>
-                  {stat.value}
-                </p>
-                <p className="text-[11px] text-text-secondary font-medium mt-1.5">{stat.sub}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        {statCards.map((stat, i) => (
+          <div
+            key={i}
+            className="card shadow-sm border border-border p-5 flex flex-col gap-4 bg-surface justify-between"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <span className="text-[11px] font-bold text-text-secondary tracking-wider uppercase leading-snug pt-0.5">
+                {stat.title}
+              </span>
+              <div
+                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: stat.iconBg }}
+              >
+                <i className={`${stat.icon} text-xl ${stat.iconColor}`}></i>
               </div>
             </div>
-          ))}
+
+            <div>
+              <p className={`${stat.valueClass || 'text-3xl'} font-bold font-manrope text-text-primary leading-none`}>
+                {stat.value}
+              </p>
+              <p className="text-[11px] text-text-secondary font-medium mt-1.5">{stat.sub}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="card bg-surface shadow-sm border border-border lg:col-span-8 flex flex-col p-0 overflow-hidden">
+          <div className="px-6 pt-5 pb-4 border-b border-border flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-text-primary">Total per Status Ajuan</h3>
+              <p className="text-[11px] text-text-secondary font-medium mt-0.5">
+                Pergerakan data berdasarkan tanggal pengajuan
+              </p>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <i className="ri-line-chart-line text-sm"></i>
+            </div>
+          </div>
+          <DashboardChartClient options={chartOptions} series={chartSeries} />
         </div>
 
-        {/* Main Row: Chart + Distribution */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          {/* Line Chart Card */}
-          <div className="card bg-surface shadow-sm border border-border lg:col-span-8 flex flex-col p-0 overflow-hidden">
-            {/* Card Header */}
-            <div className="px-6 pt-5 pb-4 border-b border-border flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-text-primary">Total per Status Ajuan</h3>
-                <p className="text-[11px] text-text-secondary font-medium mt-0.5">
-                  Pergerakan data berdasarkan tanggal pengajuan
-                </p>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <i className="ri-line-chart-line text-sm"></i>
-              </div>
+        <div className="card bg-surface shadow-sm border border-border lg:col-span-4 flex flex-col p-0 overflow-hidden min-h-[415px]">
+          <div className="px-6 pt-5 pb-4 border-b border-border flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-bold text-text-primary">Distribusi Wilayah</h3>
+              <p className="text-[11px] text-text-secondary font-medium mt-0.5">
+                Top wilayah pengajuan terbanyak
+              </p>
             </div>
-            {/* Chart */}
-            <div className="w-full relative px-2 pt-4 pb-2" style={{ height: 360 }}>
-              {mounted && chartData.length > 0 ? (
-                <Chart
-                  options={chartOptions}
-                  series={chartSeries}
-                  type="line"
-                  height={340}
-                  width="100%"
-                />
-              ) : mounted ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-text-secondary text-sm font-medium gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center">
-                    <i className="ri-line-chart-line text-xl text-gray-400"></i>
-                  </div>
-                  Belum ada data tersedia
-                </div>
-              ) : null}
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+              <i className="ri-map-pin-line text-sm"></i>
             </div>
           </div>
 
-          {/* Distribution Card */}
-          <div className="card bg-surface shadow-sm border border-border lg:col-span-4 flex flex-col p-0 overflow-hidden min-h-[415px]">
-            {/* Header */}
-            <div className="px-6 pt-5 pb-4 border-b border-border flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold text-text-primary">Distribusi Wilayah</h3>
-                <p className="text-[11px] text-text-secondary font-medium mt-0.5">
-                  Top wilayah pengajuan terbanyak
-                </p>
-              </div>
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <i className="ri-map-pin-line text-sm"></i>
-              </div>
-            </div>
-
-            {/* List */}
-            <div className="flex flex-col gap-1 px-4 py-3">
-              {distributionData.length > 0 ? distributionData.map((item, idx) => (
-                <div key={item.rank} className="p-3 rounded-2xl hover:bg-gray-50/80 transition-colors flex flex-col gap-3 group cursor-default">
-                  {/* Row: rank + name + count + pct badge */}
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-bold flex-shrink-0 transition-colors ${idx < 3 ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-text-secondary group-hover:bg-gray-200'}`}>
-                        {String(item.rank).padStart(2, '0')}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-[13px] font-bold text-text-primary line-clamp-1">{item.name}</span>
-                        <span className="text-[11px] font-medium text-text-secondary mt-0.5">
-                          {item.total.toLocaleString('id-ID')} Pengajuan
-                        </span>
-                      </div>
+          <div className="flex flex-col gap-1 px-4 py-3">
+            {distributionData.length > 0 ? distributionData.map((item, idx) => (
+              <div key={item.rank} className="p-3 rounded-2xl hover:bg-gray-50/80 transition-colors flex flex-col gap-3 group cursor-default">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-bold flex-shrink-0 transition-colors ${idx < 3 ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-text-secondary group-hover:bg-gray-200'}`}>
+                      {String(item.rank).padStart(2, '0')}
                     </div>
-                    <div className="flex items-center justify-end">
-                      <span className="text-[11px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg">
-                        {item.pct}%
+                    <div className="flex flex-col">
+                      <span className="text-[13px] font-bold text-text-primary line-clamp-1">{item.name}</span>
+                      <span className="text-[11px] font-medium text-text-secondary mt-0.5">
+                        {item.total.toLocaleString('id-ID')} Pengajuan
                       </span>
                     </div>
                   </div>
-                  {/* Progress bar */}
-                  <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
-                      style={{ width: `${item.pct}%` }}
-                    />
+                  <div className="flex items-center justify-end">
+                    <span className="text-[11px] font-bold text-primary bg-primary/5 px-2 py-1 rounded-lg">
+                      {item.pct}%
+                    </span>
                   </div>
                 </div>
-              )) : (
-                <div className="py-10 flex flex-col items-center justify-center text-text-secondary text-sm font-medium gap-3">
-                  <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center">
-                    <i className="ri-map-pin-line text-xl text-gray-400"></i>
-                  </div>
-                  Belum ada data distribusi wilayah
+                <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-primary transition-all duration-700 ease-out"
+                    style={{ width: `${item.pct}%` }}
+                  />
                 </div>
-              )}
-            </div>
-
-            {/* Footer: Selengkapnya */}
-            {distributionData.length > 0 && (
-              <div className="px-6 pb-6 pt-2 mt-auto">
-                <Link
-                  href="/admin/distribusi-wilayah"
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gray-50 text-text-primary text-xs font-bold transition-all duration-200 hover:bg-primary hover:text-white group"
-                >
-                  Lihat Selengkapnya
-                  <i className="ri-arrow-right-line text-sm transition-transform group-hover:translate-x-1"></i>
-                </Link>
+              </div>
+            )) : (
+              <div className="py-10 flex flex-col items-center justify-center text-text-secondary text-sm font-medium gap-3">
+                <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center">
+                  <i className="ri-map-pin-line text-xl text-gray-400"></i>
+                </div>
+                Belum ada data distribusi wilayah
               </div>
             )}
           </div>
 
+          {distributionData.length > 0 && (
+            <div className="px-6 pb-6 pt-2 mt-auto">
+              <Link
+                href="/admin/distribusi-wilayah"
+                className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gray-50 text-text-primary text-xs font-bold transition-all duration-200 hover:bg-primary hover:text-white group"
+              >
+                Lihat Selengkapnya
+                <i className="ri-arrow-right-line text-sm transition-transform group-hover:translate-x-1"></i>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

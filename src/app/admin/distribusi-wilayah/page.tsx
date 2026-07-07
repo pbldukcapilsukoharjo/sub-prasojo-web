@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
@@ -12,6 +12,7 @@ import Pagination from '@/components/Common/Pagination';
 import { useKecamatanOptions } from '@/hooks/useFilterOptions';
 import { wilayahService, DistribusiWilayahResponse, DistribusiWilayahParams } from '@/services/wilayah.service';
 import { handleApiError } from '@/lib/api-error';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 
 export default function DistribusiWilayahPage() {
   const [search, setSearch] = useState('');
@@ -23,20 +24,10 @@ export default function DistribusiWilayahPage() {
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
-  const [data, setData] = useState<DistribusiWilayahResponse | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [perPage, setPerPage] = useState(10);
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
 
   const formatToDDMMYYYY = (dateStr: string) => {
     if (!dateStr) return undefined;
@@ -48,36 +39,38 @@ export default function DistribusiWilayahPage() {
     return dateStr;
   };
 
-  const fetchData = async () => {
-    setIsLoading(true);
-    try {
-      const params: DistribusiWilayahParams = {
-        page: currentPage,
-        search: search || undefined,
-        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        sort_by: sortBy || undefined,
-        periode_bulan: periode ? Number(periode) : undefined,
-        start_date: formatToDDMMYYYY(startDate) || undefined,
-        end_date: formatToDDMMYYYY(endDate) || undefined,
-      };
-
-      const res = await wilayahService.getDistribusiWilayah(params);
-      if (res.status && res.data) {
-        setData(res);
-        if (res.meta) {
-          setTotalItems(res.meta.total);
-          setTotalPages(res.meta.total_page);
-          setPerPage(res.meta.per_page);
-        }
-      }
-    } catch (error) {
-      handleApiError(error);
-    } finally {
-      setIsLoading(false);
-    }
+  const params: DistribusiWilayahParams = {
+    page: currentPage,
+    search: search || undefined,
+    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+    sort_by: sortBy || undefined,
+    periode_bulan: periode ? Number(periode) : undefined,
+    start_date: formatToDDMMYYYY(startDate) || undefined,
+    end_date: formatToDDMMYYYY(endDate) || undefined,
   };
 
-  const handleReset = () => {
+  const queryClient = useQueryClient();
+
+  const handlePageHover = (page: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['wilayah', { ...params, page }],
+      queryFn: () => wilayahService.getDistribusiWilayah({ ...params, page }),
+    });
+  };
+
+  const { data: wilayahRes, isLoading: isQueryLoading, isFetching } = useQuery({
+    queryKey: ['wilayah', params],
+    queryFn: () => wilayahService.getDistribusiWilayah(params),
+    placeholderData: keepPreviousData,
+  });
+
+  const data = wilayahRes || null;
+  const totalItems = wilayahRes?.meta?.total || 0;
+  const totalPages = wilayahRes?.meta?.total_page || 1;
+  const perPage = wilayahRes?.meta?.per_page || 10;
+  const isLoading = isQueryLoading;
+
+  const handleReset = useCallback(() => {
     setSearch('');
     setKecamatan('all');
     setPeriode('');
@@ -85,22 +78,10 @@ export default function DistribusiWilayahPage() {
     setStartDate('');
     setEndDate('');
     setCurrentPage(1);
+  }, []);
 
-    setTimeout(() => {
-      fetchData();
-    }, 0);
-  };
-
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     try {
-      const params: DistribusiWilayahParams = {
-        search: search || undefined,
-        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        sort_by: sortBy || undefined,
-        periode_bulan: periode ? Number(periode) : undefined,
-        start_date: formatToDDMMYYYY(startDate) || undefined,
-        end_date: formatToDDMMYYYY(endDate) || undefined,
-      };
       await wilayahService.getExportDistribusiWilayah(params);
       import('react-hot-toast').then(({ toast }) => {
         toast.success('Berhasil memulai export data');
@@ -108,25 +89,21 @@ export default function DistribusiWilayahPage() {
     } catch (error) {
       handleApiError(error);
     }
-  };
+  }, [params]);
 
-  const handleFilter = () => {
-    if (currentPage === 1) {
-      fetchData();
-    } else {
-      setCurrentPage(1);
-    }
-  };
+  const handleFilter = useCallback(() => {
+    setCurrentPage(1);
+  }, []);
 
-  const mappedData = data?.data?.map((item) => ({
+  const mappedData = useMemo(() => data?.data?.map((item) => ({
     kecamatan: item.nama_kecamatan,
     id_kecamatan: item.id_kecamatan,
     totalAjuan: item.total_ajuan,
     rataWaktu: item.rata_rata_waktu,
     rasioSelesai: item.rasio_selesai_persen,
-  })) || [];
+  })) || [], [data]);
 
-  const columns = [
+  const columns = useMemo(() => [
     { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-medium text-text-primary">{String((currentPage - 1) * perPage + idx + 1).padStart(2, '0')}</span> },
     { key: 'kecamatan', header: 'Kecamatan', render: (row: any) => (
       <div className="flex flex-col">
@@ -137,7 +114,7 @@ export default function DistribusiWilayahPage() {
     { key: 'totalAjuan', header: 'Total Ajuan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.totalAjuan}</span> },
     { key: 'rataWaktu', header: 'Rata-Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rataWaktu}</span> },
     { key: 'rasioSelesai', header: 'Rasio Selesai', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rasioSelesai}%</span> }
-  ];
+  ], [currentPage, perPage]);
 
   const pageTotalAjuan = mappedData.reduce((acc, curr) => acc + curr.totalAjuan, 0);
   const pageRataAjuan = mappedData.length > 0 ? (pageTotalAjuan / mappedData.length).toFixed(1) : 0;
@@ -257,6 +234,7 @@ export default function DistribusiWilayahPage() {
             totalItems={totalItems}
             itemsPerPage={perPage}
             onPageChange={setCurrentPage}
+            onPageHover={handlePageHover}
           />
         </div>
       </div>

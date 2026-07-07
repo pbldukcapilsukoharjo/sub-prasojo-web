@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
@@ -15,6 +15,7 @@ import StatCard from '@/components/Common/StatCard';
 import { useKecamatanOptions } from '@/hooks/useFilterOptions';
 import { operatorService, KpiGlobalData, OperatorItem, OperatorKpiData, RiwayatItem } from '@/services/operator.service';
 import { handleApiError } from '@/lib/api-error';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 
 // Dynamically import ApexCharts to avoid SSR hydration issues
 const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -35,44 +36,17 @@ export default function PeringkatOperatorPage() {
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
   // List View Data States
-  const [kpiGlobal, setKpiGlobal] = useState<KpiGlobalData | null>(null);
-  const [rankingsData, setRankingsData] = useState<OperatorItem[]>([]);
   const [listCurrentPage, setListCurrentPage] = useState(1);
-  const [listTotalPages, setListTotalPages] = useState(1);
-  const [listTotalItems, setListTotalItems] = useState(0);
-  const [isListLoading, setIsListLoading] = useState(false);
   const listPerPage = 10;
 
-  // Detail page states
   const [activeTab, setActiveTab] = useState('semua');
   const [detailCurrentPage, setDetailCurrentPage] = useState(1);
-  const [operatorKpi, setOperatorKpi] = useState<OperatorKpiData | null>(null);
-  const [historyData, setHistoryData] = useState<RiwayatItem[]>([]);
-  const [detailTotalPages, setDetailTotalPages] = useState(1);
-  const [detailTotalItems, setDetailTotalItems] = useState(0);
-  const [isDetailLoading, setIsDetailLoading] = useState(false);
   const detailPerPage = 5;
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Effect for List View
-  useEffect(() => {
-    if (!selectedOperator) {
-      fetchListView();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOperator, listCurrentPage]);
-
-  // Effect for Detail View
-  useEffect(() => {
-    if (selectedOperator) {
-      fetchDetailView();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedOperator, activeTab, detailCurrentPage]);
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
@@ -87,97 +61,106 @@ export default function PeringkatOperatorPage() {
     return dateStr;
   };
 
-  const fetchListView = async () => {
-    setIsListLoading(true);
-    try {
-      const params = {
-        search: search || undefined,
-        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        periode_bulan: periode ? Number(periode) : undefined,
-        sort: sortBy,
-        start_date: formatToDDMMYYYY(startDate),
-        end_date: formatToDDMMYYYY(endDate),
-        id_operator: operatorFilter !== 'all' ? Number(operatorFilter) : undefined,
-      };
-
-      // Fetch KPI Global
-      const kpiRes = await operatorService.getKpiGlobal({
-        id_kecamatan: params.id_kecamatan,
-        periode_bulan: params.periode_bulan,
-        start_date: params.start_date,
-        end_date: params.end_date,
-        id_operator: params.id_operator
-      });
-      if (kpiRes.status && kpiRes.data) {
-        setKpiGlobal(kpiRes.data);
-      }
-
-      // Fetch Peringkat List
-      const listRes = await operatorService.getPeringkatOperator({
-        ...params,
-        page: listCurrentPage,
-        limit: listPerPage
-      });
-      if (listRes.status && listRes.data) {
-        setRankingsData(listRes.data.list || []);
-        if (listRes.data.meta) {
-          setListTotalItems(listRes.data.meta.total);
-          setListTotalPages(listRes.data.meta.total_page);
-        }
-      }
-    } catch (error) {
-      handleApiError(error);
-    } finally {
-      setIsListLoading(false);
-    }
+  // --- List View Queries ---
+  const listParams = {
+    search: search || undefined,
+    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+    periode_bulan: periode ? Number(periode) : undefined,
+    sort: sortBy,
+    start_date: formatToDDMMYYYY(startDate),
+    end_date: formatToDDMMYYYY(endDate),
+    id_operator: operatorFilter !== 'all' ? Number(operatorFilter) : undefined,
   };
 
-  const fetchDetailView = async () => {
-    if (!selectedOperator) return;
-    setIsDetailLoading(true);
-    try {
-      const id = selectedOperator.id;
-      
-      // We map activeTab to an integer if we know it, otherwise just send the string.
-      // Usually, 'kk' might be 1, 'ktp' is 2, etc. If backend accepts string, we pass string.
-      let id_layanan: string | undefined = undefined;
-      if (activeTab !== 'semua') {
-        id_layanan = activeTab;
-      }
+  const queryClient = useQueryClient();
 
-      // Fetch Operator KPI Detail
-      const kpiRes = await operatorService.getOperatorKpi(id, {
-        tahun: currentYear,
-        periode_bulan: periode ? Number(periode) : undefined,
-        id_layanan: id_layanan
-      });
-      if (kpiRes.status && kpiRes.data) {
-        setOperatorKpi(kpiRes.data);
-      }
+  const handleListPageHover = (page: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['peringkatOperatorList', { ...listParams, page, limit: listPerPage }],
+      queryFn: () => operatorService.getPeringkatOperator({ ...listParams, page, limit: listPerPage })
+    });
+  };
 
-      // Fetch Operator Riwayat
-      const riwayatRes = await operatorService.getOperatorRiwayat(id, {
+  const { data: kpiGlobalRes, isLoading: isKpiGlobalLoading } = useQuery({
+    queryKey: ['kpiGlobal', listParams],
+    queryFn: () => operatorService.getKpiGlobal({
+      id_kecamatan: listParams.id_kecamatan,
+      periode_bulan: listParams.periode_bulan,
+      start_date: listParams.start_date,
+      end_date: listParams.end_date,
+      id_operator: listParams.id_operator
+    }),
+    enabled: !selectedOperator,
+    placeholderData: keepPreviousData,
+  });
+
+  const { data: listRes, isLoading: isListQueryLoading, isFetching: isListFetching } = useQuery({
+    queryKey: ['peringkatOperatorList', { ...listParams, page: listCurrentPage, limit: listPerPage }],
+    queryFn: () => operatorService.getPeringkatOperator({
+      ...listParams,
+      page: listCurrentPage,
+      limit: listPerPage
+    }),
+    enabled: !selectedOperator,
+    placeholderData: keepPreviousData,
+  });
+
+  const kpiGlobal = kpiGlobalRes?.data || null;
+  const rankingsData = listRes?.data?.list || [];
+  const listTotalItems = listRes?.data?.meta?.total || 0;
+  const listTotalPages = listRes?.data?.meta?.total_page || 1;
+  const isListLoading = isListQueryLoading || isKpiGlobalLoading;
+
+  // --- Detail View Queries ---
+  let id_layanan: string | undefined = undefined;
+  if (activeTab !== 'semua') {
+    id_layanan = activeTab;
+  }
+
+  const handleDetailPageHover = (page: number) => {
+    queryClient.prefetchQuery({
+      queryKey: ['operatorRiwayat', selectedOperator?.id, currentYear, periode, id_layanan, page, detailPerPage],
+      queryFn: () => operatorService.getOperatorRiwayat(selectedOperator!.id, {
         tahun: currentYear,
         periode_bulan: periode ? Number(periode) : undefined,
         id_layanan: id_layanan,
-        page: detailCurrentPage,
+        page,
         limit: detailPerPage,
-      });
-      if (riwayatRes.status && riwayatRes.data) {
-        setHistoryData(riwayatRes.data.list || []);
-        if (riwayatRes.data.meta) {
-          setDetailTotalItems(riwayatRes.data.meta.total);
-          setDetailTotalPages(riwayatRes.data.meta.total_page);
-        }
-      }
-    } catch (error) {
-      handleApiError(error);
-    } finally {
-      setIsDetailLoading(false);
-    }
+      }),
+    });
   };
 
-  const handleReset = () => {
+  const { data: operatorKpiRes, isLoading: isOperatorKpiLoading } = useQuery({
+    queryKey: ['operatorKpi', selectedOperator?.id, currentYear, periode, id_layanan],
+    queryFn: () => operatorService.getOperatorKpi(selectedOperator!.id, {
+      tahun: currentYear,
+      periode_bulan: periode ? Number(periode) : undefined,
+      id_layanan: id_layanan
+    }),
+    enabled: !!selectedOperator,
+    placeholderData: keepPreviousData,
+  });
+
+  const { data: riwayatRes, isLoading: isRiwayatLoading, isFetching: isRiwayatFetching } = useQuery({
+    queryKey: ['operatorRiwayat', selectedOperator?.id, currentYear, periode, id_layanan, detailCurrentPage, detailPerPage],
+    queryFn: () => operatorService.getOperatorRiwayat(selectedOperator!.id, {
+      tahun: currentYear,
+      periode_bulan: periode ? Number(periode) : undefined,
+      id_layanan: id_layanan,
+      page: detailCurrentPage,
+      limit: detailPerPage,
+    }),
+    enabled: !!selectedOperator,
+    placeholderData: keepPreviousData,
+  });
+
+  const operatorKpi = operatorKpiRes?.data || null;
+  const historyData = riwayatRes?.data?.list || [];
+  const detailTotalItems = riwayatRes?.data?.meta?.total || 0;
+  const detailTotalPages = riwayatRes?.data?.meta?.total_page || 1;
+  const isDetailLoading = isOperatorKpiLoading || isRiwayatLoading;
+
+  const handleReset = useCallback(() => {
     setSearch('');
     setKecamatan('all');
     setPeriode('');
@@ -186,23 +169,15 @@ export default function PeringkatOperatorPage() {
     setEndDate('');
     setOperatorFilter('all');
     setListCurrentPage(1);
+  }, []);
 
-    setTimeout(() => {
-      fetchListView();
-    }, 0);
-  };
+  const handleFilter = useCallback(() => {
+    setListCurrentPage(1);
+  }, []);
 
-  const handleFilter = () => {
-    if (listCurrentPage === 1) {
-      fetchListView();
-    } else {
-      setListCurrentPage(1);
-    }
-  };
-
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     try {
-      const params = {
+      const exportParams = {
         search: search || undefined,
         id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
         periode_bulan: periode ? Number(periode) : undefined,
@@ -211,16 +186,16 @@ export default function PeringkatOperatorPage() {
         end_date: formatToDDMMYYYY(endDate),
         id_operator: operatorFilter !== 'all' ? Number(operatorFilter) : undefined,
       };
-      await operatorService.getExportPeringkat(params);
+      await operatorService.getExportPeringkat(exportParams);
       import('react-hot-toast').then(({ toast }) => {
         toast.success('Berhasil memulai export data');
       });
     } catch (error) {
       handleApiError(error);
     }
-  };
+  }, [search, kecamatan, periode, sortBy, startDate, endDate, operatorFilter]);
 
-  const leaderboardColumns = [
+  const leaderboardColumns = useMemo(() => [
     { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-secondary">{String(row.peringkat).padStart(2, '0')}</span> },
     { key: 'name', header: 'Nama Operator', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.operator}</span> },
     { key: 'desaKec', header: 'Desa/Kecamatan', render: (row: any) => (
@@ -243,14 +218,17 @@ export default function PeringkatOperatorPage() {
         Detail
       </button>
     ) }
-  ];
+  ], []);
 
   // Map detail chart data
   const monthKeys = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-  let chartDataValues = new Array(12).fill(0);
-  if (operatorKpi?.layanan_perbulan) {
-    chartDataValues = monthKeys.map(m => operatorKpi.layanan_perbulan[m] || 0);
-  }
+  const chartDataValues = useMemo(() => {
+    let values = new Array(12).fill(0);
+    if (operatorKpi?.layanan_perbulan) {
+      values = monthKeys.map(m => operatorKpi.layanan_perbulan[m] || 0);
+    }
+    return values;
+  }, [operatorKpi]);
 
   const barOptions: any = {
     chart: {
@@ -485,6 +463,7 @@ export default function PeringkatOperatorPage() {
                 totalItems={listTotalItems}
                 itemsPerPage={listPerPage}
                 onPageChange={setListCurrentPage}
+                onPageHover={handleListPageHover}
               />
             </div>
           </div>
@@ -587,6 +566,7 @@ export default function PeringkatOperatorPage() {
                   totalItems={detailTotalItems}
                   itemsPerPage={detailPerPage}
                   onPageChange={setDetailCurrentPage}
+                  onPageHover={handleDetailPageHover}
                 />
               </div>
             </div>
