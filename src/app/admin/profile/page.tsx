@@ -10,14 +10,17 @@ import { authService } from '@/services/auth.service';
 import { handleApiError } from '@/lib/api-error';
 
 interface UpdateProfileForm {
+  fullname: string;
   email: string;
   password?: string;
+  password_confirmation?: string;
 }
 
 export default function ProfilePage() {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
   const { user, logout } = useAuth();
   
   const displayName = user?.fullname || "Operator";
@@ -42,6 +45,7 @@ export default function ProfilePage() {
 
   const { register, handleSubmit, setError, formState: { errors } } = useForm<UpdateProfileForm>({
     defaultValues: {
+      fullname: user?.fullname || '',
       email: user?.email || '',
     },
   });
@@ -49,11 +53,24 @@ export default function ProfilePage() {
   const onSubmit = async (data: UpdateProfileForm) => {
     setIsSubmitting(true);
     try {
-      const payload: { email?: string; password?: string } = {};
-      if (data.email && data.email !== user?.email) payload.email = data.email;
-      if (data.password) payload.password = data.password;
+      const payload: { fullname?: string; email?: string; password?: string } = {
+        email: user?.email || '',
+      };
+      
+      if (data.fullname && data.fullname !== user?.fullname) {
+        payload.fullname = data.fullname;
+      }
 
-      if (Object.keys(payload).length === 0) {
+      if (data.password) {
+        if (data.password !== data.password_confirmation) {
+          toast.error("Konfirmasi kata sandi tidak cocok.");
+          setIsSubmitting(false);
+          return;
+        }
+        payload.password = data.password;
+      }
+
+      if (!payload.fullname && !payload.password) {
         toast.error("Tidak ada perubahan data.");
         setIsSubmitting(false);
         return;
@@ -102,13 +119,29 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Update Profile Form */}
-        <div className="card shadow-sm border border-border p-6 hidden">
+        <div className="card shadow-sm border border-border p-6">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-1 h-5 bg-primary rounded-full"></div>
             <h3 className="text-base font-bold text-text-primary">Perbarui Profil</h3>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+            {/* Fullname Field */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-text-secondary tracking-[0.12em] uppercase">
+                Nama Lengkap
+              </label>
+              <input
+                type="text"
+                {...register("fullname", {
+                  required: "Nama wajib diisi",
+                })}
+                placeholder="Nama Lengkap"
+                className="w-full bg-background text-text-primary text-sm font-medium rounded-xl border border-neutral h-11 px-4 focus:ring-2 focus:ring-primary/25 focus:border-primary focus:outline-none transition-all"
+              />
+              {errors.fullname && <span className="text-red-500 text-xs mt-1">{errors.fullname.message}</span>}
+            </div>
+
             {/* Email Field */}
             <div className="flex flex-col gap-1.5">
               <label className="text-[10px] font-bold text-text-secondary tracking-[0.12em] uppercase">
@@ -116,14 +149,11 @@ export default function ProfilePage() {
               </label>
               <input
                 type="email"
-                {...register("email", {
-                  required: "Email wajib diisi",
-                  pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Format email tidak valid" }
-                })}
+                {...register("email")}
+                disabled
                 placeholder="nama@email.com"
-                className="w-full bg-background text-text-primary text-sm font-medium rounded-xl border border-neutral h-11 px-4 focus:ring-2 focus:ring-primary/25 focus:border-primary focus:outline-none transition-all"
+                className="w-full bg-surface text-text-secondary text-sm font-medium rounded-xl border border-neutral h-11 px-4 focus:outline-none cursor-not-allowed opacity-70"
               />
-              {errors.email && <span className="text-red-500 text-xs mt-1">{errors.email.message}</span>}
             </div>
 
             {/* Password Field */}
@@ -149,6 +179,29 @@ export default function ProfilePage() {
                 </button>
               </div>
               {errors.password && <span className="text-red-500 text-xs mt-1">{errors.password.message}</span>}
+            </div>
+
+            {/* Password Confirmation Field */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-[10px] font-bold text-text-secondary tracking-[0.12em] uppercase">
+                Konfirmasi Kata Sandi Baru
+              </label>
+              <div className="relative">
+                <input
+                  type={showPasswordConfirm ? "text" : "password"}
+                  {...register("password_confirmation")}
+                  placeholder="Ketik ulang kata sandi baru"
+                  className="w-full bg-background text-text-primary text-sm font-medium rounded-xl border border-neutral h-11 pl-4 pr-11 focus:ring-2 focus:ring-primary/25 focus:border-primary focus:outline-none transition-all placeholder:text-text-secondary"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPasswordConfirm((v) => !v)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-secondary hover:text-text-secondary transition-colors cursor-pointer"
+                >
+                  <i className={showPasswordConfirm ? "ri-eye-off-line text-[17px]" : "ri-eye-line text-[17px]"} />
+                </button>
+              </div>
+              {errors.password_confirmation && <span className="text-red-500 text-xs mt-1">{errors.password_confirmation.message}</span>}
             </div>
 
             <button

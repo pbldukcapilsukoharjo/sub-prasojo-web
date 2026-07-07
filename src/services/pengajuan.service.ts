@@ -33,9 +33,9 @@ export interface AjuanListItem {
   no_regis: string;
   nama: string;
   nik: string;
-  jenis_layanan: string;
+  jenis_ajuan: string;
   kecamatan: string;
-  kode_ajuan: string;
+  kode_layanan: string;
   kode_produk: string | null;
   jalur: string;
   pelapor: string;

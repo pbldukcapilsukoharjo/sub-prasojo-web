@@ -80,7 +80,7 @@ export const authService = {
     return response.data;
   },
 
-  async updateProfile(payload: { email?: string; password?: string }): Promise<GeneralResponse> {
+  async updateProfile(payload: { fullname?: string; email?: string; password?: string }): Promise<GeneralResponse> {
     const response = await axiosInstance.put<GeneralResponse>("/auth/profile", payload);
     return response.data;
   },
