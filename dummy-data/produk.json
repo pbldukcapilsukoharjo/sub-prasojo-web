@@ -1,0 +1,79 @@
+{
+  "produk": [
+    {
+      "prod_id": 1,
+      "prod_ajuan_id": 7,
+      "prod_pelapor_id": 1,
+      "prod_ajuan_no_reg": "2024050007",
+      "prod_nama": "KTP Elektronik",
+      "prod_nomor": "3171010101900010",
+      "prod_from_layanan_kode": "KT1",
+      "prod_layanan_kode": "KT1",
+      "prod_status": "SIAP DIDOWNLOAD",
+      "prod_url": "https://example.com/produk/ktp/3171010101900010.pdf",
+      "prod_extra": "{\"qr_code\":\"https://example.com/qr/3171010101900010\",\"masa_berlaku\":\"2029-05-14\"}",
+      "prod_create_datetime": "2024-05-15 08:00:00",
+      "prod_update_datetime": "2024-05-15 08:00:00"
+    },
+    {
+      "prod_id": 2,
+      "prod_ajuan_id": 8,
+      "prod_pelapor_id": 2,
+      "prod_ajuan_no_reg": "2024050008",
+      "prod_nama": "Akta Kematian",
+      "prod_nomor": "2024/AK/001/05",
+      "prod_from_layanan_kode": "KA1",
+      "prod_layanan_kode": "KA1",
+      "prod_status": "SIAP DIDOWNLOAD",
+      "prod_url": "https://example.com/produk/akta_kematian/2024AK00105.pdf",
+      "prod_extra": "{\"qr_code\":\"https://example.com/qr/2024AK00105\"}",
+      "prod_create_datetime": "2024-05-16 09:00:00",
+      "prod_update_datetime": "2024-05-16 09:00:00"
+    },
+    {
+      "prod_id": 3,
+      "prod_ajuan_id": 5,
+      "prod_pelapor_id": 3,
+      "prod_ajuan_no_reg": "2024050005",
+      "prod_nama": "Akta Kelahiran",
+      "prod_nomor": "474/AK/2024/05",
+      "prod_from_layanan_kode": "AK1",
+      "prod_layanan_kode": "AK1",
+      "prod_status": "SIAP DIDOWNLOAD",
+      "prod_url": "https://example.com/produk/akta_kelahiran/474AK202405.pdf",
+      "prod_extra": "{\"qr_code\":\"https://example.com/qr/474AK202405\",\"no_akta\":\"474/IST/2024\"}",
+      "prod_create_datetime": "2024-05-10 10:00:00",
+      "prod_update_datetime": "2024-05-10 10:00:00"
+    },
+    {
+      "prod_id": 4,
+      "prod_ajuan_id": 6,
+      "prod_pelapor_id": 3,
+      "prod_ajuan_no_reg": "2024050006",
+      "prod_nama": "Kartu Keluarga",
+      "prod_nomor": "3171010101900004",
+      "prod_from_layanan_kode": "KK1",
+      "prod_layanan_kode": "KK1",
+      "prod_status": "SIAP DIDOWNLOAD",
+      "prod_url": "https://example.com/produk/kk/3171010101900004.pdf",
+      "prod_extra": "{\"qr_code\":\"https://example.com/qr/3171010101900004\",\"no_kk\":\"3171010101900004\"}",
+      "prod_create_datetime": "2024-05-12 11:00:00",
+      "prod_update_datetime": "2024-05-12 11:00:00"
+    },
+    {
+      "prod_id": 5,
+      "prod_ajuan_id": 3,
+      "prod_pelapor_id": 2,
+      "prod_ajuan_no_reg": "2024050003",
+      "prod_nama": "Akta Kelahiran",
+      "prod_nomor": "475/AK/2024/05",
+      "prod_from_layanan_kode": "AK1",
+      "prod_layanan_kode": "AK1",
+      "prod_status": "SIAP DIDOWNLOAD",
+      "prod_url": "https://example.com/produk/akta_kelahiran/475AK202405.pdf",
+      "prod_extra": "{\"qr_code\":\"https://example.com/qr/475AK202405\",\"no_akta\":\"475/IST/2024\"}",
+      "prod_create_datetime": "2024-05-08 09:00:00",
+      "prod_update_datetime": "2024-05-08 09:00:00"
+    }
+  ]
+}

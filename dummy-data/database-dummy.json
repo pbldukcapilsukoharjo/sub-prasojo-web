@@ -1,0 +1,647 @@
+{
+  "admin": [
+    {
+      "id": 1,
+      "username": "superadmin",
+      "fullname": "Super Administrator",
+      "nik": "3171010101900001",
+      "kk": "3171010101900001",
+      "email": "superadmin@example.com",
+      "phone": "081234567890",
+      "password": "$2y$10$hashedpasswordhere",
+      "image": "https://example.com/images/admin1.jpg",
+      "level": "administrator",
+      "role_id": 1,
+      "is_active": 1,
+      "is_verified": 1,
+      "is_verified_email": 1,
+      "is_verified_phone": 1,
+      "kecamatan_code": "317101",
+      "kecamatan_name": "Kecamatan A",
+      "kelurahan_code": "317101001",
+      "kelurahan_name": "Kelurahan B",
+      "dukuh": "Dukuh C",
+      "rt": "001",
+      "rw": "002",
+      "extra": null,
+      "fcm": "fcm_token_superadmin",
+      "create_datetime": "2024-01-01 08:00:00",
+      "update_datetime": "2024-01-15 10:30:00"
+    },
+    {
+      "id": 2,
+      "username": "admin1",
+      "fullname": "Admin Satu",
+      "nik": "3171010101900002",
+      "kk": "3171010101900001",
+      "email": "admin1@example.com",
+      "phone": "081234567891",
+      "password": "$2y$10$hashedpasswordhere",
+      "image": null,
+      "level": "admin",
+      "role_id": 2,
+      "is_active": 1,
+      "is_verified": 1,
+      "is_verified_email": 1,
+      "is_verified_phone": 0,
+      "kecamatan_code": "317101",
+      "kecamatan_name": "Kecamatan A",
+      "kelurahan_code": "317101001",
+      "kelurahan_name": "Kelurahan B",
+      "dukuh": null,
+      "rt": "001",
+      "rw": "002",
+      "extra": null,
+      "fcm": "fcm_token_admin1",
+      "create_datetime": "2024-01-05 09:00:00",
+      "update_datetime": "2024-01-20 11:00:00"
+    },
+    {
+      "id": 3,
+      "username": "operator1",
+      "fullname": "Operator Satu",
+      "nik": "3171010101900003",
+      "kk": "3171010101900001",
+      "email": "operator1@example.com",
+      "phone": "081234567892",
+      "password": "$2y$10$hashedpasswordhere",
+      "image": null,
+      "level": "operator",
+      "role_id": 3,
+      "is_active": 1,
+      "is_verified": 1,
+      "is_verified_email": 1,
+      "is_verified_phone": 1,
+      "kecamatan_code": "317101",
+      "kecamatan_name": "Kecamatan A",
+      "kelurahan_code": "317101001",
+      "kelurahan_name": "Kelurahan B",
+      "dukuh": null,
+      "rt": null,
+      "rw": null,
+      "extra": null,
+      "fcm": "fcm_token_operator1",
+      "create_datetime": "2024-01-10 08:30:00",
+      "update_datetime": "2024-01-25 14:00:00"
+    }
+  ],
+  "admin_role": [
+    {
+      "admin_role_id": 1,
+      "admin_role_name": "Super Administrator",
+      "admin_role_access": "all"
+    },
+    {
+      "admin_role_id": 2,
+      "admin_role_name": "Administrator",
+      "admin_role_access": "manage_users,manage_ajuan,manage_layanan"
+    },
+    {
+      "admin_role_id": 3,
+      "admin_role_name": "Operator",
+      "admin_role_access": "process_ajuan,view_reports"
+    }
+  ],
+  "user": [
+    {
+      "id": 1,
+      "username": "warga1",
+      "fullname": "Warga Satu",
+      "nik": "3171010101900010",
+      "kk": "3171010101900002",
+      "email": "warga1@example.com",
+      "phone": "081234567900",
+      "password": "$2y$10$hashedpasswordhere",
+      "image": "https://example.com/images/user1.jpg",
+      "swafoto": "https://example.com/swafoto/user1.jpg",
+      "level": "user",
+      "role_id": null,
+      "is_active": 1,
+      "is_verified": 1,
+      "is_verified_email": 1,
+      "is_verified_phone": 1,
+      "is_request_update": 0,
+      "kecamatan_code": "317101",
+      "kecamatan_name": "Kecamatan A",
+      "kelurahan_code": "317101001",
+      "kelurahan_name": "Kelurahan B",
+      "dukuh": "Dukuh C",
+      "rt": "001",
+      "rw": "002",
+      "extra": null,
+      "quota": "{\"akta\":5,\"ktp\":3}",
+      "fcm": "fcm_token_warga1",
+      "role_kabupaten_name": null,
+      "role_kabupaten_code": null,
+      "role_kecamatan_name": null,
+      "role_kecamatan_code": null,
+      "role_kelurahan_name": null,
+      "role_kelurahan_code": null,
+      "create_datetime": "2024-01-15 10:00:00",
+      "update_datetime": "2024-02-01 09:00:00"
+    },
+    {
+      "id": 2,
+      "username": "warga2",
+      "fullname": "Warga Dua",
+      "nik": "3171010101900011",
+      "kk": "3171010101900002",
+      "email": "warga2@example.com",
+      "phone": "081234567901",
+      "password": "$2y$10$hashedpasswordhere",
+      "image": null,
+      "swafoto": "https://example.com/swafoto/user2.jpg",
+      "level": "user",
+      "role_id": null,
+      "is_active": 1,
+      "is_verified": 0,
+      "is_verified_email": 1,
+      "is_verified_phone": 0,
+      "is_request_update": 1,
+      "kecamatan_code": "317101",
+      "kecamatan_name": "Kecamatan A",
+      "kelurahan_code": "317101002",
+      "kelurahan_name": "Kelurahan D",
+      "dukuh": null,
+      "rt": "003",
+      "rw": "004",
+      "extra": null,
+      "quota": "{\"akta\":2,\"kk\":2}",
+      "fcm": "fcm_token_warga2",
+      "role_kabupaten_name": null,
+      "role_kabupaten_code": null,
+      "role_kecamatan_name": null,
+      "role_kecamatan_code": null,
+      "role_kelurahan_name": null,
+      "role_kelurahan_code": null,
+      "create_datetime": "2024-01-20 14:30:00",
+      "update_datetime": "2024-02-05 16:00:00"
+    },
+    {
+      "id": 3,
+      "username": "perantara1",
+      "fullname": "Perantara Satu",
+      "nik": "3171010101900012",
+      "kk": "3171010101900003",
+      "email": "perantara1@example.com",
+      "phone": "081234567902",
+      "password": "$2y$10$hashedpasswordhere",
+      "image": null,
+      "swafoto": null,
+      "level": "perantara",
+      "role_id": null,
+      "is_active": 1,
+      "is_verified": 1,
+      "is_verified_email": 1,
+      "is_verified_phone": 1,
+      "is_request_update": 0,
+      "kecamatan_code": "317101",
+      "kecamatan_name": "Kecamatan A",
+      "kelurahan_code": "317101003",
+      "kelurahan_name": "Kelurahan E",
+      "dukuh": null,
+      "rt": "005",
+      "rw": "006",
+      "extra": null,
+      "quota": "{\"max_daily\":10}",
+      "fcm": "fcm_token_perantara1",
+      "role_kabupaten_name": "Kabupaten X",
+      "role_kabupaten_code": "3171",
+      "role_kecamatan_name": "Kecamatan A",
+      "role_kecamatan_code": "317101",
+      "role_kelurahan_name": "Kelurahan B",
+      "role_kelurahan_code": "317101001",
+      "create_datetime": "2024-01-25 08:00:00",
+      "update_datetime": "2024-02-10 10:00:00"
+    }
+  ],
+  "jenis_ajuan": [
+    {
+      "ja_id": 1,
+      "ja_judul": "Akta Kelahiran"
+    },
+    {
+      "ja_id": 2,
+      "ja_judul": "Akta Kematian"
+    },
+    {
+      "ja_id": 3,
+      "ja_judul": "Kartu Keluarga"
+    },
+    {
+      "ja_id": 4,
+      "ja_judul": "KTP Elektronik"
+    },
+    {
+      "ja_id": 5,
+      "ja_judul": "Kartu Identitas Anak"
+    },
+    {
+      "ja_id": 6,
+      "ja_judul": "Surat Pindah"
+    },
+    {
+      "ja_id": 7,
+      "ja_judul": "Surat Datang"
+    },
+    {
+      "ja_id": 8,
+      "ja_judul": "Rekam Jemput"
+    }
+  ],
+  "layanan": [
+    {
+      "layanan_id": 1,
+      "layanan_pos": 1,
+      "layanan_is_layanan": 1,
+      "layanan_is_produk": 0,
+      "layanan_nama": "Akta Kelahiran Online",
+      "layanan_desc": "Layanan pembuatan akta kelahiran secara online",
+      "layanan_kode": "AK1",
+      "layanan_image": "https://example.com/images/layanan/akta_kelahiran.jpg",
+      "layanan_extra": null,
+      "layanan_is_active": 1,
+      "layanan_jenis_ajuan_id_list": "1",
+      "layanan_create_datetime": "2024-01-01 00:00:00",
+      "layanan_update_datetime": "2024-01-01 00:00:00"
+    },
+    {
+      "layanan_id": 2,
+      "layanan_pos": 2,
+      "layanan_is_layanan": 1,
+      "layanan_is_produk": 0,
+      "layanan_nama": "Kartu Keluarga Online",
+      "layanan_desc": "Layanan pembuatan Kartu Keluarga secara online",
+      "layanan_kode": "KK1",
+      "layanan_image": "https://example.com/images/layanan/kk.jpg",
+      "layanan_extra": null,
+      "layanan_is_active": 1,
+      "layanan_jenis_ajuan_id_list": "3",
+      "layanan_create_datetime": "2024-01-01 00:00:00",
+      "layanan_update_datetime": "2024-01-01 00:00:00"
+    }
+  ],
+  "ajuan": [
+    {
+      "ajuan_id": 1,
+      "ajuan_no_reg": "2024010001",
+      "ajuan_layanan_kode": "AK1",
+      "ajuan_jenis_ajuan_id": 1,
+      "ajuan_pelapor_id": 1,
+      "ajuan_pelapor_nik": "3171010101900010",
+      "ajuan_pelapor_kk": "3171010101900002",
+      "ajuan_pelapor_role_id": null,
+      "ajuan_pelapor_role_name": null,
+      "ajuan_is_online": 1,
+      "ajuan_is_mandiri": 1,
+      "ajuan_status": "DIPROSES",
+      "ajuan_kecamatan_code": "317101",
+      "ajuan_kecamatan_name": "Kecamatan A",
+      "ajuan_kelurahan_code": "317101001",
+      "ajuan_kelurahan_name": "Kelurahan B",
+      "ajuan_keterangan": "Pengajuan akta kelahiran untuk bayi baru lahir",
+      "ajuan_extra": null,
+      "ajuan_data_ajuan": "{\"nama_bayi\":\"Bayi Satu\",\"tempat_lahir\":\"Jakarta\"}",
+      "ajuan_create_datetime": "2024-01-20 09:00:00",
+      "ajuan_update_datetime": "2024-01-21 14:30:00"
+    },
+    {
+      "ajuan_id": 2,
+      "ajuan_no_reg": "2024010002",
+      "ajuan_layanan_kode": "KK1",
+      "ajuan_jenis_ajuan_id": 3,
+      "ajuan_pelapor_id": 1,
+      "ajuan_pelapor_nik": "3171010101900010",
+      "ajuan_pelapor_kk": "3171010101900002",
+      "ajuan_pelapor_role_id": null,
+      "ajuan_pelapor_role_name": null,
+      "ajuan_is_online": 1,
+      "ajuan_is_mandiri": 0,
+      "ajuan_status": "SELESAI",
+      "ajuan_kecamatan_code": "317101",
+      "ajuan_kecamatan_name": "Kecamatan A",
+      "ajuan_kelurahan_code": "317101001",
+      "ajuan_kelurahan_name": "Kelurahan B",
+      "ajuan_keterangan": "Perubahan KK karena ada anggota baru",
+      "ajuan_extra": null,
+      "ajuan_data_ajuan": "{\"kk_lama\":\"3171010101900002\",\"anggota_baru\":\"Bayi Satu\"}",
+      "ajuan_create_datetime": "2024-01-25 10:30:00",
+      "ajuan_update_datetime": "2024-02-01 08:00:00"
+    },
+    {
+      "ajuan_id": 3,
+      "ajuan_no_reg": "2024020001",
+      "ajuan_layanan_kode": "AK1",
+      "ajuan_jenis_ajuan_id": 1,
+      "ajuan_pelapor_id": 2,
+      "ajuan_pelapor_nik": "3171010101900011",
+      "ajuan_pelapor_kk": "3171010101900002",
+      "ajuan_pelapor_role_id": null,
+      "ajuan_pelapor_role_name": null,
+      "ajuan_is_online": 0,
+      "ajuan_is_mandiri": 1,
+      "ajuan_status": "PENGAJUAN",
+      "ajuan_kecamatan_code": "317101",
+      "ajuan_kecamatan_name": "Kecamatan A",
+      "ajuan_kelurahan_code": "317101002",
+      "ajuan_kelurahan_name": "Kelurahan D",
+      "ajuan_keterangan": "Akta kelahiran untuk anak kedua",
+      "ajuan_extra": null,
+      "ajuan_data_ajuan": "{\"nama_bayi\":\"Bayi Dua\"}",
+      "ajuan_create_datetime": "2024-02-05 13:00:00",
+      "ajuan_update_datetime": "2024-02-05 13:00:00"
+    }
+  ],
+  "ajuan_akta_kelahiran": [
+    {
+      "ajakel_id": 1,
+      "ajakel_ajuan_id": 1,
+      "ajakel_jenis_id": 1,
+      "ajakel_nik": "3171010101900010",
+      "ajakel_nama_bayi": "Bayi Satu",
+      "ajakel_jenis_kelamin": "LAKI-LAKI",
+      "ajakel_tempat_lahir": "Jakarta",
+      "ajakel_tgl_lahir": "2024-01-15",
+      "ajakel_tgl_kawin": "2020-05-20",
+      "ajakel_anak_ke": 1,
+      "ajakel_nama_ibu": "Ibu Satu",
+      "ajakel_nama_ayah": "Ayah Satu",
+      "ajakel_dokumen": "{\"kk\":\"kk_document.pdf\",\"akta_perkawinan\":\"akta_perkawinan.pdf\"}"
+    }
+  ],
+  "produk": [
+    {
+      "prod_id": 1,
+      "prod_ajuan_id": 2,
+      "prod_pelapor_id": 1,
+      "prod_ajuan_no_reg": "2024010002",
+      "prod_nama": "Kartu Keluarga Baru",
+      "prod_nomor": "3171010101900003",
+      "prod_from_layanan_kode": "KK1",
+      "prod_layanan_kode": "KK1",
+      "prod_status": "TERBIT",
+      "prod_url": "https://example.com/produk/kk/3171010101900003.pdf",
+      "prod_extra": null,
+      "prod_create_datetime": "2024-01-30 09:00:00",
+      "prod_update_datetime": "2024-02-01 08:00:00"
+    }
+  ],
+  "delivery": [
+    {
+      "delivery_id": 1,
+      "delivery_pelapor_id": 1,
+      "delivery_ajuan_id": 2,
+      "delivery_ajuan_no_reg": "2024010002",
+      "delivery_kode": "DEL2024020001",
+      "delivery_resi": "JNE1234567890",
+      "delivery_proses_kode": "PROSES001",
+      "delivery_sender": "{\"name\":\"Dinas Kependudukan\",\"address\":\"Jakarta\"}",
+      "delivery_receiver": "{\"name\":\"Warga Satu\",\"address\":\"Jl. Contoh No. 123\"}",
+      "delivery_receiver_name": "Warga Satu",
+      "delivery_receiver_phone": "081234567900",
+      "delivery_service": "JNE REG",
+      "delivery_status": "SELESAI",
+      "delivery_log": "[{\"status\":\"REQUEST\",\"datetime\":\"2024-02-01 08:00:00\"},{\"status\":\"SELESAI\",\"datetime\":\"2024-02-03 10:00:00\"}]",
+      "delivery_proses_datetime": "2024-02-01 10:00:00",
+      "delivery_create_datetime": "2024-02-01 08:00:00",
+      "delivery_update_datetime": "2024-02-03 10:00:00"
+    }
+  ],
+  "announcement": [
+    {
+      "announcement_id": 1,
+      "announcement_title": "Pembukaan Layanan Online Akta Kelahiran",
+      "announcement_author_id": 1,
+      "announcement_author_fullname": "Super Administrator",
+      "announcement_type": "user",
+      "announcement_content": "<p>Kami dengan gembira mengumumkan bahwa layanan pembuatan akta kelahiran secara online telah resmi dibuka. Masyarakat dapat mengajukan permohonan melalui website resmi kami.</p>",
+      "announcement_status": "publish",
+      "announcement_extra": null,
+      "announcement_create_datetime": "2024-01-15 08:00:00"
+    },
+    {
+      "announcement_id": 2,
+      "announcement_title": "Pemeliharaan Server",
+      "announcement_author_id": 2,
+      "announcement_author_fullname": "Admin Satu",
+      "announcement_type": "admin",
+      "announcement_content": "<p>Akan dilakukan pemeliharaan server pada tanggal 20 Februari 2024 pukul 22.00 - 02.00 WIB. Layanan akan terganggu selama proses pemeliharaan.</p>",
+      "announcement_status": "publish",
+      "announcement_extra": null,
+      "announcement_create_datetime": "2024-02-10 09:00:00"
+    }
+  ],
+  "category": [
+    {
+      "cat_id": 1,
+      "cat_pos": 1,
+      "cat_title": "Berita Desa",
+      "cat_slug": "berita-desa",
+      "cat_content": "Kategori untuk berita-berita seputar desa",
+      "cat_type": "blog",
+      "cat_image": null,
+      "cat_extra": null,
+      "cat_is_active": 1
+    },
+    {
+      "cat_id": 2,
+      "cat_pos": 2,
+      "cat_title": "Informasi Penting",
+      "cat_slug": "informasi-penting",
+      "cat_content": "Kategori untuk informasi penting dan pengumuman",
+      "cat_type": "blog",
+      "cat_image": null,
+      "cat_extra": null,
+      "cat_is_active": 1
+    },
+    {
+      "cat_id": 3,
+      "cat_pos": 3,
+      "cat_title": "Laporan Masyarakat",
+      "cat_slug": "laporan-masyarakat",
+      "cat_content": "Kategori untuk laporan dari masyarakat",
+      "cat_type": "report",
+      "cat_image": null,
+      "cat_extra": null,
+      "cat_is_active": 1
+    }
+  ],
+  "notification": [
+    {
+      "notification_id": 1,
+      "notification_user_id": 1,
+      "notification_title": "Pengajuan Anda Sedang Diproses",
+      "notification_type": "ajuan",
+      "notification_is_read": 0,
+      "notification_extra": "{\"ajuan_id\":1,\"status\":\"DIPROSES\"}",
+      "notification_create_datetime": "2024-01-21 14:30:00"
+    },
+    {
+      "notification_id": 2,
+      "notification_user_id": 1,
+      "notification_title": "Dokumen Siap Dikirim",
+      "notification_type": "ajuan",
+      "notification_is_read": 1,
+      "notification_extra": "{\"ajuan_id\":2,\"delivery_resi\":\"JNE1234567890\"}",
+      "notification_create_datetime": "2024-02-01 10:00:00"
+    }
+  ],
+  "config": [
+    {
+      "config_id": 1,
+      "config_name": "site_name",
+      "config_value": "Sistem Layanan Administrasi Kependudukan",
+      "config_autoload": 1
+    },
+    {
+      "config_id": 2,
+      "config_name": "admin_email",
+      "config_value": "admin@example.com",
+      "config_autoload": 1
+    },
+    {
+      "config_id": 3,
+      "config_name": "max_upload_size",
+      "config_value": "5242880",
+      "config_autoload": 1
+    }
+  ],
+  "ilokasi_provinsi": [
+    {
+      "provinsi_id": 1,
+      "provinsi_name": "DKI Jakarta",
+      "provinsi_code": "31",
+      "provinsi_code_bps": "31"
+    },
+    {
+      "provinsi_id": 2,
+      "provinsi_name": "Jawa Barat",
+      "provinsi_code": "32",
+      "provinsi_code_bps": "32"
+    }
+  ],
+  "ilokasi_kabupaten": [
+    {
+      "kabupaten_id": 1,
+      "kabupaten_provinsi_id": 1,
+      "kabupaten_provinsi_name": "DKI Jakarta",
+      "kabupaten_provinsi_code": "31",
+      "kabupaten_name": "Jakarta Timur",
+      "kabupaten_code": "3171",
+      "kabupaten_code_bps": "3171"
+    },
+    {
+      "kabupaten_id": 2,
+      "kabupaten_provinsi_id": 2,
+      "kabupaten_provinsi_name": "Jawa Barat",
+      "kabupaten_provinsi_code": "32",
+      "kabupaten_name": "Bekasi",
+      "kabupaten_code": "3216",
+      "kabupaten_code_bps": "3216"
+    }
+  ],
+  "ilokasi_kecamatan": [
+    {
+      "kecamatan_id": 1,
+      "kecamatan_kabupaten_id": 1,
+      "kecamatan_kabupaten_name": "Jakarta Timur",
+      "kecamatan_kabupaten_code": "3171",
+      "kecamatan_name": "Cakung",
+      "kecamatan_code": "317108",
+      "kecamatan_code_bps": "317108"
+    },
+    {
+      "kecamatan_id": 2,
+      "kecamatan_kabupaten_id": 1,
+      "kecamatan_kabupaten_name": "Jakarta Timur",
+      "kecamatan_kabupaten_code": "3171",
+      "kecamatan_name": "Duren Sawit",
+      "kecamatan_code": "317107",
+      "kecamatan_code_bps": "317107"
+    }
+  ],
+  "ilokasi_desa": [
+    {
+      "desa_id": 1,
+      "desa_kecamatan_id": 1,
+      "desa_kecamatan_name": "Cakung",
+      "desa_kecamatan_code": "317108",
+      "desa_name": "Cakung Timur",
+      "desa_code": "317108001",
+      "desa_code_bps": "317108001"
+    },
+    {
+      "desa_id": 2,
+      "desa_kecamatan_id": 1,
+      "desa_kecamatan_name": "Cakung",
+      "desa_kecamatan_code": "317108",
+      "desa_name": "Ujung Menteng",
+      "desa_code": "317108002",
+      "desa_code_bps": "317108002"
+    }
+  ],
+  "ajuan_review": [
+    {
+      "review_id": 1,
+      "review_ajuan_id": 2,
+      "review_pelapor_id": 1,
+      "review_rating": 5,
+      "review_content": "Pelayanan sangat memuaskan, proses cepat dan dokumen sampai dengan selamat",
+      "review_create_datetime": "2024-02-05 14:00:00"
+    }
+  ],
+  "post": [
+    {
+      "post_id": 1,
+      "post_author_id": 1,
+      "post_author_fullname": "Super Administrator",
+      "post_cat_id": 1,
+      "post_cat_title": "Berita Desa",
+      "post_title": "Peningkatan Layanan Administrasi Kependudukan",
+      "post_slug": "peningkatan-layanan-administrasi-kependudukan",
+      "post_type": "blog",
+      "post_status": "publish",
+      "post_content": "<p>Pemerintah desa terus berupaya meningkatkan kualitas layanan administrasi kependudukan...</p>",
+      "post_image": "https://example.com/images/posts/layanan.jpg",
+      "post_extra": null,
+      "post_create_datetime": "2024-01-10 10:00:00",
+      "post_update_datetime": "2024-01-12 15:00:00"
+    }
+  ],
+  "bpp": [
+    {
+      "bpp_id": 1,
+      "bpp_no_reg": "BPP2024010001",
+      "bpp_nik": "3171010101900020",
+      "bpp_nama": "Almarhum Satu",
+      "bpp_tempat_lahir": "Jakarta",
+      "bpp_tanggal_lahir": "1960-05-10",
+      "bpp_tempat_meninggal": "Jakarta",
+      "bpp_tanggal_meninggal": "2024-01-15",
+      "bpp_alamat": "Jl. Contoh No. 45",
+      "bpp_rt": 2,
+      "bpp_rw": 3,
+      "bpp_kecamatan_code": "317108",
+      "bpp_kecamatan_name": "Cakung",
+      "bpp_desa_code": "317108001",
+      "bpp_desa_name": "Cakung Timur",
+      "bpp_tanggal_pemakaman": "2024-01-16",
+      "bpp_makam_kecamatan_code": "317108",
+      "bpp_makam_kecamatan_name": "Cakung",
+      "bpp_makam_desa_code": "317108001",
+      "bpp_makam_desa_name": "Cakung Timur",
+      "bpp_makam_nama": "TPU Cakung",
+      "bpp_makam_kode": "TPU001",
+      "bpp_pelapor_id": 1,
+      "bpp_pelapor_nik": "3171010101900010",
+      "bpp_pelapor_nama": "Warga Satu",
+      "bpp_keluarga_telp_nama": "Keluarga Almarhum",
+      "bpp_keluarga_telp_no": "081234567800",
+      "bpp_note": null,
+      "bpp_status": "DIVERIFIKASI",
+      "bpp_extra": null,
+      "bpp_create_datetime": "2024-01-15 15:00:00",
+      "bpp_update_datetime": "2024-01-16 09:00:00"
+    }
+  ]
+}
