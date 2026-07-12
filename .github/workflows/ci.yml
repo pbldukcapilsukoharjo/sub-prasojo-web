@@ -31,43 +31,6 @@ jobs:
         env:
           NODE_ENV: production
 
-  build-and-push:
-    name: Build and Push Docker Image
-    runs-on: ubuntu-latest
-    needs: lint-and-test
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/sub-prasojo-web
-          tags: |
-            type=ref,event=pr
-            type=sha,prefix=${{ github.base_ref }}-
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
   deploy-vercel:
     name: Deploy to Vercel
     runs-on: ubuntu-latest
@@ -120,12 +83,12 @@ jobs:
   notify:
     name: Send Notifications
     runs-on: ubuntu-latest
-    needs: [build-and-push, deploy-vercel]
+    needs: [lint-and-test, deploy-vercel]
     if: always()
 
     steps:
       - name: Send success notification to Telegram
-        if: needs.build-and-push.result == 'success' && needs.deploy-vercel.result == 'success'
+        if: needs.lint-and-test.result == 'success' && needs.deploy-vercel.result == 'success'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -139,17 +102,13 @@ jobs:
 
             Author: ${{ github.actor }}
             
-            Docker Image Tags:
-            - ${{ secrets.DOCKERHUB_USERNAME }}/sub-prasojo-web:pr-${{ github.event.pull_request.number }}
-            - ${{ secrets.DOCKERHUB_USERNAME }}/sub-prasojo-web:${{ github.base_ref }}-${{ github.sha }}
-            
             Vercel Environment: ${{ github.base_ref == 'main' && 'Production' || 'Preview' }}
             Vercel URL: Check Actions output for deployment URL
 
             View PR: ${{ github.event.pull_request.html_url }}
 
       - name: Send failure notification to Telegram
-        if: needs.build-and-push.result == 'failure' || needs.deploy-vercel.result == 'failure'
+        if: needs.lint-and-test.result == 'failure' || needs.deploy-vercel.result == 'failure'
         uses: appleboy/telegram-action@master
         with:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -163,7 +122,6 @@ jobs:
 
             Author: ${{ github.actor }}
             
-            Docker Build: ${{ needs.build-and-push.result }}
             Vercel Deploy: ${{ needs.deploy-vercel.result }}
 
             View PR: ${{ github.event.pull_request.html_url }}
