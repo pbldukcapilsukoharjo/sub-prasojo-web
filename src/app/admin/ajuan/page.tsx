@@ -15,7 +15,7 @@ import dynamic from "next/dynamic";
 
 const DetailModal = dynamic(() => import("@/components/Common/DetailModal"), { ssr: false });
 import AjuanCharts from "@/components/Dashboard/AjuanCharts";
-import { usePelaporOptions, useKecamatanOptions, useStatusOptions, useLayananOptions } from "@/hooks/useFilterOptions";
+import { useKecamatanOptions, usePelaporOptions, useStatusOptions, useLayananOptions, useJenisAjuanOptions } from "@/hooks/useFilterOptions";
 import { pengajuanService, AjuanListItem, PengajuanAjuanParams, ChartDataItem, ChartAjuanParams } from "@/services/pengajuan.service";
 import { handleApiError } from "@/lib/api-error";
 import { useQuery, keepPreviousData, useQueryClient } from "@tanstack/react-query";
@@ -35,6 +35,8 @@ export default function Ajuan() {
   const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState("newest");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [jalur, setJalur] = useState("all");
+  const [jenisAjuan, setJenisAjuan] = useState("all");
 
   const [appliedFilters, setAppliedFilters] = useState({
     search: "",
@@ -45,12 +47,15 @@ export default function Ajuan() {
     periode: "" as string | number,
     sortBy: "newest",
     filterStatus: "all",
+    jalur: "all",
+    jenisAjuan: "all",
   });
 
   const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: "Semua Pelapor" });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: "Seluruh Kecamatan" });
   const { data: statusOptions = [] } = useStatusOptions({ addAllOption: true, allOptionLabel: "Semua Status" });
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: "SEMUA", allOptionValue: "semua" });
+  const { data: jenisAjuanOptions = [] } = useJenisAjuanOptions({ addAllOption: true, allOptionLabel: "Semua Jenis Ajuan" });
 
   const [perPage, setPerPage] = useState(10);
 
@@ -88,6 +93,8 @@ export default function Ajuan() {
     id_kecamatan: appliedFilters.kecamatan !== "all" ? Number(appliedFilters.kecamatan) : undefined,
     id_layanan: activeTab !== "semua" ? activeTab : undefined,
     id_pelapor: appliedFilters.pelapor !== "all" ? appliedFilters.pelapor : undefined,
+    jalur: appliedFilters.jalur !== "all" ? appliedFilters.jalur : undefined,
+    id_jenis_ajuan: appliedFilters.jenisAjuan !== "all" ? Number(appliedFilters.jenisAjuan) : undefined,
   };
 
   const queryClient = useQueryClient();
@@ -132,6 +139,8 @@ export default function Ajuan() {
     setPeriode("");
     setSortBy("newest");
     setFilterStatus("all");
+    setJalur("all");
+    setJenisAjuan("all");
     setAppliedFilters({
       search: "",
       pelapor: "all",
@@ -141,6 +150,8 @@ export default function Ajuan() {
       periode: "" as string | number,
       sortBy: "newest",
       filterStatus: "all",
+      jalur: "all",
+      jenisAjuan: "all",
     });
     setCurrentPage(1);
   }, []);
@@ -155,9 +166,11 @@ export default function Ajuan() {
       periode,
       sortBy,
       filterStatus,
+      jalur,
+      jenisAjuan,
     });
     setCurrentPage(1);
-  }, [search, pelapor, kecamatan, startDate, endDate, periode, sortBy, filterStatus]);
+  }, [search, pelapor, kecamatan, startDate, endDate, periode, sortBy, filterStatus, jalur, jenisAjuan]);
 
   const tabs = useMemo(
     () =>
@@ -231,7 +244,8 @@ export default function Ajuan() {
           kodeLayanan: ajuan.kode_layanan || "-",
           jenisAjuan: ajuan.jenis_ajuan || "-",
           jalur: ajuan.jalur || "-",
-          pelapor: ajuan.nama || ajuan.pelapor || "-",
+          nama: ajuan.nama || "-",
+          pelapor: ajuan.pelapor || "-",
           nik: ajuan.nik || "-",
           kecamatan: ajuan.kecamatan || "-",
           tanggal,
@@ -247,7 +261,7 @@ export default function Ajuan() {
     setSelectedData({
       id: row.id,
       noRegis: row.noRegis,
-      namaLengkap: row.pelapor,
+      namaLengkap: row.nama,
       nik: row.nik,
       jenisLayanan: row.kodeLayanan || row.jenisAjuan,
       kecamatan: row.kecamatan,
@@ -315,6 +329,12 @@ export default function Ajuan() {
           ]}
         />
         <CustomSelect label="Status Ajuan" value={filterStatus} onChange={(val) => setFilterStatus(String(val))} options={statusOptions} />
+        <CustomSelect label="Jalur" value={jalur} onChange={(val) => setJalur(String(val))} options={[
+          { label: "Semua Jalur", value: "all" },
+          { label: "Online", value: "online" },
+          { label: "Offline", value: "offline" }
+        ]} />
+        <CustomSelect label="Jenis Ajuan" value={jenisAjuan} onChange={(val) => setJenisAjuan(String(val))} options={jenisAjuanOptions} />
       </FilterCard>
 
       <AjuanCharts chartStatus={chartStatus} chartLayanan={chartLayanan} />

@@ -159,6 +159,26 @@ export interface PengajuanDetailData {
   timeline: TimelineDetail[];
 }
 
+export interface ProdukDetailData {
+  id: number;
+  no_regis: string;
+  nama: string;
+  nik: string;
+  jenis_layanan: string;
+  kecamatan: string;
+  tanggal_ajuan: string;
+  tanggal_ajuan_parse: string;
+  kode_ajuan: string;
+  nomor: string;
+  nama_identitas: string;
+  nama_identitas_produk: string;
+  status: string;
+  tanggal: string;
+  tanggal_parse: string;
+  data_ajuan: Record<string, string>;
+  timeline: TimelineDetail[];
+}
+
 const buildQueryParams = (params?: Record<string, any>) => {
   const query: Record<string, any> = {};
   if (!params) return query;
@@ -218,6 +238,11 @@ export const pengajuanService = {
 
   async getPengajuanDetail(ajuan_id: number): Promise<ApiBaseResponse<PengajuanDetailData>> {
     const response = await axiosInstance.get<ApiBaseResponse<PengajuanDetailData>>(`/pengajuan/${ajuan_id}/detail`);
+    return response.data;
+  },
+
+  async getProdukDetail(id: number): Promise<ApiBaseResponse<ProdukDetailData>> {
+    const response = await axiosInstance.get<ApiBaseResponse<ProdukDetailData>>(`/pengajuan/produk/${id}/detail`);
     return response.data;
   },
 

@@ -13,7 +13,7 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import dynamic from 'next/dynamic';
 
-const DetailModal = dynamic(() => import('@/components/Common/DetailModal'), { ssr: false });
+const DetailProdukModal = dynamic(() => import('@/components/Common/DetailProdukModal'), { ssr: false });
 import { useKecamatanOptions, useLayananOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, ProdukItem, PengajuanProdukParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
@@ -312,13 +312,7 @@ export default function Produk() {
         </div>
       </div>
 
-      {isModalOpen && (
-        <DetailModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          data={selectedData}
-        />
-      )}
+      {isModalOpen && <DetailProdukModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} data={selectedData} />}
     </div>
   );
 }
