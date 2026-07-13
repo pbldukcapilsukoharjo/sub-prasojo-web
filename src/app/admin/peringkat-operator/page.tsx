@@ -27,7 +27,7 @@ export default function PeringkatOperatorPage() {
   // Listing page filter states
   const [search, setSearch] = useState('');
   const [kecamatan, setKecamatan] = useState('all');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState('newest');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -36,7 +36,7 @@ export default function PeringkatOperatorPage() {
   const [appliedFilters, setAppliedFilters] = useState({
     search: '',
     kecamatan: 'all',
-    periode: '',
+    periode: '' as string | number,
     sortBy: 'newest',
     startDate: '',
     endDate: '',
@@ -182,7 +182,7 @@ export default function PeringkatOperatorPage() {
     setAppliedFilters({
       search: '',
       kecamatan: 'all',
-      periode: '',
+      periode: '' as string | number,
       sortBy: 'newest',
       startDate: '',
       endDate: '',
@@ -382,7 +382,7 @@ export default function PeringkatOperatorPage() {
             <CustomSelect
               label="Periode"
               value={periode}
-              onChange={(val) => setPeriode(String(val))}
+              onChange={(val) => setPeriode(val)}
               disabled={isPeriodeDisabled}
               placeholder="Pilih Periode"
               options={[

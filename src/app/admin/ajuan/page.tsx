@@ -32,7 +32,7 @@ export default function Ajuan() {
   const [kecamatan, setKecamatan] = useState("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [periode, setPeriode] = useState("");
+  const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState("newest");
   const [filterStatus, setFilterStatus] = useState("all");
 
@@ -42,7 +42,7 @@ export default function Ajuan() {
     kecamatan: "all",
     startDate: "",
     endDate: "",
-    periode: "",
+    periode: "" as string | number,
     sortBy: "newest",
     filterStatus: "all",
   });
@@ -138,7 +138,7 @@ export default function Ajuan() {
       kecamatan: "all",
       startDate: "",
       endDate: "",
-      periode: "",
+      periode: "" as string | number,
       sortBy: "newest",
       filterStatus: "all",
     });
@@ -287,7 +287,7 @@ export default function Ajuan() {
         <CustomSelect
           label="Periode"
           value={periode}
-          onChange={(val) => setPeriode(String(val))}
+          onChange={(val) => setPeriode(val)}
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[

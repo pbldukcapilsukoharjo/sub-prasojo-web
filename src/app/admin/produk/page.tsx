@@ -29,7 +29,7 @@ export default function Produk() {
   const [search, setSearch] = useState('');
   const [namaIdentitas, setNamaIdentitas] = useState('');
   const [kecamatan, setKecamatan] = useState('all');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('newest');
@@ -38,7 +38,7 @@ export default function Produk() {
     search: '',
     namaIdentitas: '',
     kecamatan: 'all',
-    periode: '',
+    periode: '' as string | number,
     startDate: '',
     endDate: '',
     sortBy: 'newest'
@@ -105,7 +105,7 @@ export default function Produk() {
       search: '',
       namaIdentitas: '',
       kecamatan: 'all',
-      periode: '',
+      periode: '' as string | number,
       startDate: '',
       endDate: '',
       sortBy: 'newest'
@@ -236,7 +236,7 @@ export default function Produk() {
         <CustomSelect
           label="Periode"
           value={periode}
-          onChange={(val) => setPeriode(String(val))}
+          onChange={(val) => setPeriode(val)}
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[

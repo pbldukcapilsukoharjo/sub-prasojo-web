@@ -27,7 +27,7 @@ export default function LembarKerja() {
   const [kecamatan, setKecamatan] = useState('all');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState('newest');
 
   const [appliedFilters, setAppliedFilters] = useState({
@@ -36,7 +36,7 @@ export default function LembarKerja() {
     kecamatan: 'all',
     startDate: '',
     endDate: '',
-    periode: '',
+    periode: '' as string | number,
     sortBy: 'newest'
   });
 
@@ -105,7 +105,7 @@ export default function LembarKerja() {
       kecamatan: 'all',
       startDate: '',
       endDate: '',
-      periode: '',
+      periode: '' as string | number,
       sortBy: 'newest'
     });
     setCurrentPage(1);
@@ -231,7 +231,7 @@ export default function LembarKerja() {
         <CustomSelect
           label="Periode"
           value={periode}
-          onChange={(val) => setPeriode(String(val))}
+          onChange={(val) => setPeriode(val)}
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[

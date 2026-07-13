@@ -17,7 +17,7 @@ import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-quer
 
 export default function SlaMonitoringPage() {
   const [search, setSearch] = useState('');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState('newest');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -28,7 +28,7 @@ export default function SlaMonitoringPage() {
 
   const [appliedFilters, setAppliedFilters] = useState({
     search: '',
-    periode: '',
+    periode: '' as string | number,
     sortBy: 'newest',
     startDate: '',
     endDate: '',
@@ -114,7 +114,7 @@ export default function SlaMonitoringPage() {
     setLayanan('all');
     setAppliedFilters({
       search: '',
-      periode: '',
+      periode: '' as string | number,
       sortBy: 'newest',
       startDate: '',
       endDate: '',
@@ -194,7 +194,7 @@ export default function SlaMonitoringPage() {
         <CustomSelect
           label="Periode"
           value={periode}
-          onChange={(val) => setPeriode(String(val))}
+          onChange={(val) => setPeriode(val)}
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[

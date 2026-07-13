@@ -20,7 +20,7 @@ export default function DetailUlasanPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [rating, setRating] = useState('all');
   const [jenisLayanan, setJenisLayanan] = useState('all');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
@@ -29,7 +29,7 @@ export default function DetailUlasanPage() {
     sortBy: 'newest',
     rating: 'all',
     jenisLayanan: 'all',
-    periode: '',
+    periode: '' as string | number,
     startDate: '',
     endDate: '',
   });
@@ -116,7 +116,7 @@ export default function DetailUlasanPage() {
       sortBy: 'newest',
       rating: 'all',
       jenisLayanan: 'all',
-      periode: '',
+      periode: '' as string | number,
       startDate: '',
       endDate: '',
     });
@@ -201,7 +201,7 @@ export default function DetailUlasanPage() {
         <CustomSelect
           label="Periode"
           value={periode}
-          onChange={(val) => setPeriode(String(val))}
+          onChange={(val) => setPeriode(val)}
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[
