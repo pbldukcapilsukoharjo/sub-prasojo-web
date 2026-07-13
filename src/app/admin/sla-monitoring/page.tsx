@@ -186,12 +186,6 @@ export default function SlaMonitoringPage() {
           options={kecamatanOptions}
         />
         <CustomSelect
-          label="Layanan"
-          value={layanan}
-          onChange={(val) => setLayanan(String(val))}
-          options={layananOptions}
-        />
-        <CustomSelect
           label="Periode"
           value={periode}
           onChange={(val) => setPeriode(val)}
@@ -219,15 +213,6 @@ export default function SlaMonitoringPage() {
           onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
           disabled={isRentangTanggalDisabled}
           placeholder="Pilih Rentang Tanggal"
-        />
-        <CustomSelect
-          label="Urutkan Dari"
-          value={sortBy}
-          onChange={(val) => setSortBy(String(val))}
-          options={[
-            { label: 'Terbaru', value: 'newest' },
-            { label: 'Terlama', value: 'oldest' },
-          ]}
         />
       </FilterCard>
 

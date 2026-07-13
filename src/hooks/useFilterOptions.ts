@@ -60,3 +60,7 @@ export const useJenisAjuanOptions = (options?: UseFilterOptionsArgs) => {
 export const useJalurOptions = (options?: UseFilterOptionsArgs) => {
   return useGenericFilterOptions('filter-jalur', filterService.getJalur, options);
 };
+
+export const useOperatorOptions = (options?: UseFilterOptionsArgs) => {
+  return useGenericFilterOptions('filter-operator', filterService.getOperator, options);
+};

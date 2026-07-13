@@ -37,5 +37,10 @@ export const filterService = {
   async getJalur(): Promise<FilterResponse> {
     const response = await axiosInstance.get<FilterResponse>("/filter/jalur");
     return response.data;
+  },
+
+  async getOperator(): Promise<FilterResponse> {
+    const response = await axiosInstance.get<FilterResponse>("/filter/operator");
+    return response.data;
   }
 };

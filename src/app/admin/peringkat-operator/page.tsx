@@ -12,7 +12,7 @@ import Tabs from '@/components/Common/Tabs';
 import Pagination from '@/components/Common/Pagination';
 import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
-import { useKecamatanOptions, useLayananOptions } from '@/hooks/useFilterOptions';
+import { useKecamatanOptions, useLayananOptions, useOperatorOptions } from '@/hooks/useFilterOptions';
 import { operatorService, KpiGlobalData, OperatorItem, OperatorKpiData, RiwayatItem } from '@/services/operator.service';
 import { handleApiError } from '@/lib/api-error';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
@@ -45,6 +45,7 @@ export default function PeringkatOperatorPage() {
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'SEMUA', allOptionValue: 'semua' });
+  const { data: operatorOptions = [] } = useOperatorOptions({ addAllOption: true, allOptionLabel: 'Semua Operator' });
 
   // List View Data States
   const [listCurrentPage, setListCurrentPage] = useState(1);
@@ -408,25 +409,6 @@ export default function PeringkatOperatorPage() {
               disabled={isRentangTanggalDisabled}
               placeholder="Pilih Rentang Tanggal"
             />
-            <CustomSelect
-              label="Urutkan Dari"
-              value={sortBy}
-              onChange={(val) => setSortBy(String(val))}
-              options={[
-                { label: 'Terbaru', value: 'newest' },
-                { label: 'Terlama', value: 'oldest' },
-              ]}
-            />
-            {/* <CustomSelect
-              label="Operator"
-              value={operatorFilter}
-              onChange={(val) => setOperatorFilter(String(val))}
-              options={[
-                { label: 'Semua Operator', value: 'all' },
-                { label: 'Operator 1', value: '1' },
-                { label: 'Operator 2', value: '2' },
-              ]}
-            /> */}
           </FilterCard>
 
           {/* Metric Summary Cards */}

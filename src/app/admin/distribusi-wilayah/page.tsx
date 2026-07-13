@@ -164,15 +164,6 @@ export default function DistribusiWilayahPage() {
           disabled={isRentangTanggalDisabled}
           placeholder="Pilih Rentang Tanggal"
         />
-        <CustomSelect
-          label="Urutkan Dari"
-          value={sortBy}
-          onChange={(val) => setSortBy(String(val))}
-          options={[
-            { label: 'Terbaru', value: 'newest' },
-            { label: 'Terlama', value: 'oldest' },
-          ]}
-        />
       </FilterCard>
 
       {/* 2. Metric Cards (Middle) */}
