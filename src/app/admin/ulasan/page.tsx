@@ -23,6 +23,16 @@ export default function DetailUlasanPage() {
   const [periode, setPeriode] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: '',
+    sortBy: 'newest',
+    rating: 'all',
+    jenisLayanan: 'all',
+    periode: '',
+    startDate: '',
+    endDate: '',
+  });
   
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Jenis Layanan' });
 
@@ -44,17 +54,17 @@ export default function DetailUlasanPage() {
     return dateStr;
   };
 
-  const formattedStartDate = formatToDDMMYYYY(startDate);
-  const formattedEndDate = formatToDDMMYYYY(endDate);
+  const formattedStartDate = formatToDDMMYYYY(appliedFilters.startDate);
+  const formattedEndDate = formatToDDMMYYYY(appliedFilters.endDate);
 
   const params: UlasanParams = {
     page: currentPage,
-    search: search || undefined,
-    sort_by: sortBy,
+    search: appliedFilters.search || undefined,
+    sort_by: appliedFilters.sortBy,
     start_date: formattedStartDate,
     end_date: formattedEndDate,
-    rating: rating !== 'all' ? Number(rating) : undefined,
-    layanan_kode: jenisLayanan !== 'all' ? jenisLayanan : undefined,
+    rating: appliedFilters.rating !== 'all' ? Number(appliedFilters.rating) : undefined,
+    layanan_kode: appliedFilters.jenisLayanan !== 'all' ? appliedFilters.jenisLayanan : undefined,
   };
 
   const kpiParams = {
@@ -101,12 +111,30 @@ export default function DetailUlasanPage() {
     setPeriode('');
     setStartDate('');
     setEndDate('');
+    setAppliedFilters({
+      search: '',
+      sortBy: 'newest',
+      rating: 'all',
+      jenisLayanan: 'all',
+      periode: '',
+      startDate: '',
+      endDate: '',
+    });
     setCurrentPage(1);
   }, []);
 
   const handleFilter = useCallback(() => {
+    setAppliedFilters({
+      search,
+      sortBy,
+      rating,
+      jenisLayanan,
+      periode,
+      startDate,
+      endDate
+    });
     setCurrentPage(1);
-  }, []);
+  }, [search, sortBy, rating, jenisLayanan, periode, startDate, endDate]);
 
   const handleExport = useCallback(async () => {
     try {

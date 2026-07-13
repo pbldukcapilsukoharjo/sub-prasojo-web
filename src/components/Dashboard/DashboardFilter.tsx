@@ -23,7 +23,7 @@ export default function DashboardFilter() {
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
 
-  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Jenis Layanan' });
+  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Seluruh Jenis Layanan' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
   const handleReset = () => {

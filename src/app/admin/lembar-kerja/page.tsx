@@ -12,9 +12,7 @@ import Table from '@/components/Common/Table';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import dynamic from 'next/dynamic';
-
-const DetailModal = dynamic(() => import('@/components/Common/DetailModal'), { ssr: false });
-import { usePelaporOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
+import { usePelaporOptions, useKecamatanOptions, useLayananOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, LembarKerjaItem, PengajuanLembarKerjaParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
@@ -23,8 +21,6 @@ export default function LembarKerja() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('semua');
   const [currentPage, setCurrentPage] = useState(1);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedData, setSelectedData] = useState<any>(null);
 
   const [search, setSearch] = useState('');
   const [pelapor, setPelapor] = useState('all');
@@ -34,8 +30,19 @@ export default function LembarKerja() {
   const [periode, setPeriode] = useState('');
   const [sortBy, setSortBy] = useState('newest');
 
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: '',
+    pelapor: 'all',
+    kecamatan: 'all',
+    startDate: '',
+    endDate: '',
+    periode: '',
+    sortBy: 'newest'
+  });
+
   const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
+  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'SEMUA', allOptionValue: 'semua' });
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
@@ -52,14 +59,14 @@ export default function LembarKerja() {
   };
 
   const params: PengajuanLembarKerjaParams = {
-    search: search || undefined,
-    kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
-    pelapor: pelapor !== 'all' ? pelapor : undefined,
-    start_date: formatToDDMMYYYY(startDate),
-    end_date: formatToDDMMYYYY(endDate),
-    periode: periode ? Number(periode) : undefined,
+    search: appliedFilters.search || undefined,
+    kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
+    pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
+    start_date: formatToDDMMYYYY(appliedFilters.startDate),
+    end_date: formatToDDMMYYYY(appliedFilters.endDate),
+    periode: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     layanan: activeTab !== 'semua' ? activeTab : undefined,
-    sort: sortBy,
+    sort: appliedFilters.sortBy,
     page: currentPage,
     per_page: perPage,
   };
@@ -92,23 +99,35 @@ export default function LembarKerja() {
     setEndDate('');
     setPeriode('');
     setSortBy('newest');
+    setAppliedFilters({
+      search: '',
+      pelapor: 'all',
+      kecamatan: 'all',
+      startDate: '',
+      endDate: '',
+      periode: '',
+      sortBy: 'newest'
+    });
     setCurrentPage(1);
   }, []);
 
   const handleFilter = useCallback(() => {
+    setAppliedFilters({
+      search,
+      pelapor,
+      kecamatan,
+      startDate,
+      endDate,
+      periode,
+      sortBy
+    });
     setCurrentPage(1);
-  }, []);
+  }, [search, pelapor, kecamatan, startDate, endDate, periode, sortBy]);
 
-  const tabs = useMemo(() => [
-    { id: 'semua', label: 'SEMUA' },
-    { id: 'kk', label: 'KARTU KELUARGA' },
-    { id: 'ktp', label: 'KTP-EL' },
-    { id: 'kia', label: 'KIA' },
-    { id: 'akta_kelahiran', label: 'AKTA KELAHIRAN' },
-    { id: 'akta_kematian', label: 'AKTA KEMATIAN' },
-    { id: 'perpindahan', label: 'PERPINDAHAN' },
-    { id: 'surket', label: 'SURKET KTP' },
-  ], []);
+  const tabs = useMemo(() => layananOptions.map((option: any) => ({
+    id: String(option.value),
+    label: String(option.label).toUpperCase()
+  })), [layananOptions]);
 
   const tableColumns = useMemo(() => [
     { key: 'no', header: 'No' },
@@ -170,21 +189,6 @@ export default function LembarKerja() {
     };
   }), [data, currentPage, perPage]);
 
-  const handleRowClick = (row: any) => {
-    setSelectedData({
-      id: row.id,
-      noRegis: row.noRegis,
-      namaLengkap: row.pelapor,
-      nik: row.nik,
-      jenisLayanan: row.layanan || row.kodeAjuan,
-      kecamatan: row.kecamatan,
-      status: row.status,
-      tanggal: row.tanggal,
-      waktu: row.waktu,
-    });
-    setIsModalOpen(true);
-  };
-
   const handleExport = async () => {
     try {
       await pengajuanService.exportPengajuan('lembar_kerja');
@@ -199,7 +203,7 @@ export default function LembarKerja() {
       <FilterCard onReset={handleReset} onApply={handleFilter}>
         <Input
           label="Pencarian Cepat"
-          placeholder="No. Regis, NIK, dll"
+          placeholder="No. Regis, dll"
           icon="ri-search-line"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -274,7 +278,6 @@ export default function LembarKerja() {
             <Table 
               columns={tableColumns} 
               data={mappedData} 
-              onRowClick={handleRowClick}
             />
           ) : (
             <div className="flex items-center justify-center h-full text-sm text-text-secondary py-12">
@@ -294,14 +297,6 @@ export default function LembarKerja() {
           />
         </div>
       </div>
-
-      {isModalOpen && (
-        <DetailModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          data={selectedData}
-        />
-      )}
     </div>
   );
 }

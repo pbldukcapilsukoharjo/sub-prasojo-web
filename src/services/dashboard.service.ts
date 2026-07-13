@@ -3,7 +3,7 @@ import axiosServerInstance from "@/lib/axios-server";
 import { ApiBaseResponse } from "./auth.service";
 
 export interface DashboardFilterParams {
-  id_layanan?: number;
+  id_layanan?: string;
   id_kecamatan?: number;
   periode_bulan?: number;
   start_date?: string;

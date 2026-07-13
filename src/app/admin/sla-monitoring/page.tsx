@@ -26,6 +26,16 @@ export default function SlaMonitoringPage() {
   const [kecamatan, setKecamatan] = useState('all');
   const [layanan, setLayanan] = useState('all');
 
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: '',
+    periode: '',
+    sortBy: 'newest',
+    startDate: '',
+    endDate: '',
+    kecamatan: 'all',
+    layanan: 'all',
+  });
+
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Layanan' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Semua Kecamatan' });
 
@@ -44,24 +54,24 @@ export default function SlaMonitoringPage() {
     return dateStr;
   };
 
-  const formattedStartDate = formatToDDMMYYYY(startDate);
-  const formattedEndDate = formatToDDMMYYYY(endDate);
+  const formattedStartDate = formatToDDMMYYYY(appliedFilters.startDate);
+  const formattedEndDate = formatToDDMMYYYY(appliedFilters.endDate);
 
-  const kpiParams: SlaKpiParams = {
-    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-    id_layanan: layanan !== 'all' ? Number(layanan) : undefined,
-    periode_bulan: periode ? Number(periode) : undefined,
+  const listParams: SlaParams = {
+    page: currentPage,
+    search: appliedFilters.search || undefined,
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+    sort_by: appliedFilters.sortBy,
+    id_layanan: appliedFilters.layanan !== 'all' ? String(appliedFilters.layanan) : undefined,
+    periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     start_date: formattedStartDate,
     end_date: formattedEndDate,
   };
 
-  const listParams: SlaParams = {
-    page: currentPage,
-    search: search || undefined,
-    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-    sort_by: sortBy,
-    id_layanan: layanan !== 'all' ? Number(layanan) : undefined,
-    periode_bulan: periode ? Number(periode) : undefined,
+  const kpiParams: SlaKpiParams = {
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+    id_layanan: appliedFilters.layanan !== 'all' ? String(appliedFilters.layanan) : undefined,
+    periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     start_date: formattedStartDate,
     end_date: formattedEndDate,
   };
@@ -96,18 +106,36 @@ export default function SlaMonitoringPage() {
 
   const handleReset = useCallback(() => {
     setSearch('');
-    setKecamatan('all');
-    setLayanan('all');
     setPeriode('');
     setSortBy('newest');
     setStartDate('');
     setEndDate('');
+    setKecamatan('all');
+    setLayanan('all');
+    setAppliedFilters({
+      search: '',
+      periode: '',
+      sortBy: 'newest',
+      startDate: '',
+      endDate: '',
+      kecamatan: 'all',
+      layanan: 'all',
+    });
     setCurrentPage(1);
   }, []);
 
   const handleFilter = useCallback(() => {
+    setAppliedFilters({
+      search,
+      periode,
+      sortBy,
+      startDate,
+      endDate,
+      kecamatan,
+      layanan
+    });
     setCurrentPage(1);
-  }, []);
+  }, [search, periode, sortBy, startDate, endDate, kecamatan, layanan]);
 
   const handleExport = useCallback(async () => {
     try {
