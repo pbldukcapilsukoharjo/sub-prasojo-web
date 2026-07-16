@@ -17,7 +17,7 @@ import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-quer
 
 export default function SlaMonitoringPage() {
   const [search, setSearch] = useState('');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState('newest');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -25,6 +25,16 @@ export default function SlaMonitoringPage() {
   // Custom API states
   const [kecamatan, setKecamatan] = useState('all');
   const [layanan, setLayanan] = useState('all');
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: '',
+    periode: '' as string | number,
+    sortBy: 'newest',
+    startDate: '',
+    endDate: '',
+    kecamatan: 'all',
+    layanan: 'all',
+  });
 
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Layanan' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Semua Kecamatan' });
@@ -44,24 +54,24 @@ export default function SlaMonitoringPage() {
     return dateStr;
   };
 
-  const formattedStartDate = formatToDDMMYYYY(startDate);
-  const formattedEndDate = formatToDDMMYYYY(endDate);
+  const formattedStartDate = formatToDDMMYYYY(appliedFilters.startDate);
+  const formattedEndDate = formatToDDMMYYYY(appliedFilters.endDate);
 
-  const kpiParams: SlaKpiParams = {
-    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-    id_layanan: layanan !== 'all' ? Number(layanan) : undefined,
-    periode_bulan: periode ? Number(periode) : undefined,
+  const listParams: SlaParams = {
+    page: currentPage,
+    search: appliedFilters.search || undefined,
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+    sort_by: appliedFilters.sortBy,
+    id_layanan: appliedFilters.layanan !== 'all' ? String(appliedFilters.layanan) : undefined,
+    periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     start_date: formattedStartDate,
     end_date: formattedEndDate,
   };
 
-  const listParams: SlaParams = {
-    page: currentPage,
-    search: search || undefined,
-    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-    sort_by: sortBy,
-    id_layanan: layanan !== 'all' ? Number(layanan) : undefined,
-    periode_bulan: periode ? Number(periode) : undefined,
+  const kpiParams: SlaKpiParams = {
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+    id_layanan: appliedFilters.layanan !== 'all' ? String(appliedFilters.layanan) : undefined,
+    periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     start_date: formattedStartDate,
     end_date: formattedEndDate,
   };
@@ -96,18 +106,36 @@ export default function SlaMonitoringPage() {
 
   const handleReset = useCallback(() => {
     setSearch('');
-    setKecamatan('all');
-    setLayanan('all');
     setPeriode('');
     setSortBy('newest');
     setStartDate('');
     setEndDate('');
+    setKecamatan('all');
+    setLayanan('all');
+    setAppliedFilters({
+      search: '',
+      periode: '' as string | number,
+      sortBy: 'newest',
+      startDate: '',
+      endDate: '',
+      kecamatan: 'all',
+      layanan: 'all',
+    });
     setCurrentPage(1);
   }, []);
 
   const handleFilter = useCallback(() => {
+    setAppliedFilters({
+      search,
+      periode,
+      sortBy,
+      startDate,
+      endDate,
+      kecamatan,
+      layanan
+    });
     setCurrentPage(1);
-  }, []);
+  }, [search, periode, sortBy, startDate, endDate, kecamatan, layanan]);
 
   const handleExport = useCallback(async () => {
     try {
@@ -158,15 +186,9 @@ export default function SlaMonitoringPage() {
           options={kecamatanOptions}
         />
         <CustomSelect
-          label="Layanan"
-          value={layanan}
-          onChange={(val) => setLayanan(String(val))}
-          options={layananOptions}
-        />
-        <CustomSelect
           label="Periode"
           value={periode}
-          onChange={(val) => setPeriode(String(val))}
+          onChange={(val) => setPeriode(val)}
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[
@@ -191,15 +213,6 @@ export default function SlaMonitoringPage() {
           onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
           disabled={isRentangTanggalDisabled}
           placeholder="Pilih Rentang Tanggal"
-        />
-        <CustomSelect
-          label="Urutkan Dari"
-          value={sortBy}
-          onChange={(val) => setSortBy(String(val))}
-          options={[
-            { label: 'Terbaru', value: 'newest' },
-            { label: 'Terlama', value: 'oldest' },
-          ]}
         />
       </FilterCard>
 

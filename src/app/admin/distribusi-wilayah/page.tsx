@@ -17,7 +17,7 @@ import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-quer
 export default function DistribusiWilayahPage() {
   const [search, setSearch] = useState('');
   const [kecamatan, setKecamatan] = useState('all');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -138,7 +138,7 @@ export default function DistribusiWilayahPage() {
         <CustomSelect
           label="Periode"
           value={periode}
-          onChange={(val) => setPeriode(String(val))}
+          onChange={(val) => setPeriode(val)}
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[
@@ -163,15 +163,6 @@ export default function DistribusiWilayahPage() {
           onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
           disabled={isRentangTanggalDisabled}
           placeholder="Pilih Rentang Tanggal"
-        />
-        <CustomSelect
-          label="Urutkan Dari"
-          value={sortBy}
-          onChange={(val) => setSortBy(String(val))}
-          options={[
-            { label: 'Terbaru', value: 'newest' },
-            { label: 'Terlama', value: 'oldest' },
-          ]}
         />
       </FilterCard>
 

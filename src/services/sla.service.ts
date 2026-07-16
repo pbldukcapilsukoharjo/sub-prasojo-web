@@ -6,7 +6,7 @@ export interface SlaParams {
   search?: string;
   id_kecamatan?: number;
   sort_by?: string;
-  id_layanan?: number;
+  id_layanan?: string;
   periode_bulan?: number;
   start_date?: string;
   end_date?: string;
@@ -14,7 +14,7 @@ export interface SlaParams {
 
 export interface SlaKpiParams {
   id_kecamatan?: number;
-  id_layanan?: number;
+  id_layanan?: string;
   periode_bulan?: number;
   start_date?: string;
   end_date?: string;

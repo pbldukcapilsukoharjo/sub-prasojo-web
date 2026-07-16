@@ -172,8 +172,8 @@ export default function LoginPage() {
             </div>
 
             {/* Remember Me + Lupa Kata Sandi */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-text-secondary font-medium">
+            <div className="flex items-center justify-end">
+              {/* <label className="flex items-center gap-2 cursor-pointer select-none text-[13px] text-text-secondary font-medium">
                 <input
                   id="login-remember"
                   type="checkbox"
@@ -182,7 +182,7 @@ export default function LoginPage() {
                   className="w-4 h-4 rounded border-gray-300 accent-[#8B0000]"
                 />
                 Ingat saya
-              </label>
+              </label> */}
               <Link
                 href="/lupa-kata-sandi"
                 className="text-[13px] font-semibold text-[#8B0000] hover:underline transition-all"

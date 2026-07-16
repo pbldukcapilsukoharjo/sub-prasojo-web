@@ -13,8 +13,8 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import dynamic from 'next/dynamic';
 
-const DetailModal = dynamic(() => import('@/components/Common/DetailModal'), { ssr: false });
-import { useKecamatanOptions } from '@/hooks/useFilterOptions';
+const DetailProdukModal = dynamic(() => import('@/components/Common/DetailProdukModal'), { ssr: false });
+import { useKecamatanOptions, useLayananOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, ProdukItem, PengajuanProdukParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
@@ -29,12 +29,23 @@ export default function Produk() {
   const [search, setSearch] = useState('');
   const [namaIdentitas, setNamaIdentitas] = useState('');
   const [kecamatan, setKecamatan] = useState('all');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('newest');
 
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: '',
+    namaIdentitas: '',
+    kecamatan: 'all',
+    periode: '' as string | number,
+    startDate: '',
+    endDate: '',
+    sortBy: 'newest'
+  });
+
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
+  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'SEMUA', allOptionValue: 'semua' });
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
   const perPage = 10;
@@ -50,14 +61,14 @@ export default function Produk() {
   };
 
   const params: PengajuanProdukParams = {
-    search: search || undefined,
-    kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
-    nama_identitas_produk: namaIdentitas || undefined,
-    start_date: formatToDDMMYYYY(startDate),
-    end_date: formatToDDMMYYYY(endDate),
-    periode: periode ? Number(periode) : undefined,
+    search: appliedFilters.search || undefined,
+    kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
+    nama_identitas_produk: appliedFilters.namaIdentitas || undefined,
+    start_date: formatToDDMMYYYY(appliedFilters.startDate),
+    end_date: formatToDDMMYYYY(appliedFilters.endDate),
+    periode: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     layanan: activeTab !== 'semua' ? activeTab : undefined,
-    sort: sortBy,
+    sort: appliedFilters.sortBy,
     page: currentPage,
     per_page: perPage,
   };
@@ -90,23 +101,35 @@ export default function Produk() {
     setPeriode('');
     setSortBy('newest');
     setNamaIdentitas('');
+    setAppliedFilters({
+      search: '',
+      namaIdentitas: '',
+      kecamatan: 'all',
+      periode: '' as string | number,
+      startDate: '',
+      endDate: '',
+      sortBy: 'newest'
+    });
     setCurrentPage(1);
   }, []);
 
   const handleFilter = useCallback(() => {
+    setAppliedFilters({
+      search,
+      namaIdentitas,
+      kecamatan,
+      periode,
+      startDate,
+      endDate,
+      sortBy
+    });
     setCurrentPage(1);
-  }, []);
+  }, [search, namaIdentitas, kecamatan, periode, startDate, endDate, sortBy]);
 
-  const tabs = useMemo(() => [
-    { id: 'semua', label: 'SEMUA' },
-    { id: 'kk', label: 'KARTU KELUARGA' },
-    { id: 'ktp', label: 'KTP-EL' },
-    { id: 'kia', label: 'KIA' },
-    { id: 'akta_kelahiran', label: 'AKTA KELAHIRAN' },
-    { id: 'akta_kematian', label: 'AKTA KEMATIAN' },
-    { id: 'perpindahan', label: 'PERPINDAHAN' },
-    { id: 'surket', label: 'SURKET KTP' },
-  ], []);
+  const tabs = useMemo(() => layananOptions.map((option: any) => ({
+    id: String(option.value),
+    label: String(option.label).toUpperCase()
+  })), [layananOptions]);
 
   const tableColumns = useMemo(() => [
     { key: 'no', header: 'No' },
@@ -213,7 +236,7 @@ export default function Produk() {
         <CustomSelect
           label="Periode"
           value={periode}
-          onChange={(val) => setPeriode(String(val))}
+          onChange={(val) => setPeriode(val)}
           disabled={isPeriodeDisabled}
           placeholder="Pilih Periode"
           options={[
@@ -289,13 +312,7 @@ export default function Produk() {
         </div>
       </div>
 
-      {isModalOpen && (
-        <DetailModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          data={selectedData}
-        />
-      )}
+      {isModalOpen && <DetailProdukModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} data={selectedData} />}
     </div>
   );
 }

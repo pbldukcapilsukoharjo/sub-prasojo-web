@@ -20,9 +20,19 @@ export default function DetailUlasanPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [rating, setRating] = useState('all');
   const [jenisLayanan, setJenisLayanan] = useState('all');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: '',
+    sortBy: 'newest',
+    rating: 'all',
+    jenisLayanan: 'all',
+    periode: '' as string | number,
+    startDate: '',
+    endDate: '',
+  });
   
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Jenis Layanan' });
 
@@ -44,17 +54,17 @@ export default function DetailUlasanPage() {
     return dateStr;
   };
 
-  const formattedStartDate = formatToDDMMYYYY(startDate);
-  const formattedEndDate = formatToDDMMYYYY(endDate);
+  const formattedStartDate = formatToDDMMYYYY(appliedFilters.startDate);
+  const formattedEndDate = formatToDDMMYYYY(appliedFilters.endDate);
 
   const params: UlasanParams = {
     page: currentPage,
-    search: search || undefined,
-    sort_by: sortBy,
+    search: appliedFilters.search || undefined,
+    sort_by: appliedFilters.sortBy,
     start_date: formattedStartDate,
     end_date: formattedEndDate,
-    rating: rating !== 'all' ? Number(rating) : undefined,
-    layanan_kode: jenisLayanan !== 'all' ? jenisLayanan : undefined,
+    rating: appliedFilters.rating !== 'all' ? Number(appliedFilters.rating) : undefined,
+    layanan_kode: appliedFilters.jenisLayanan !== 'all' ? appliedFilters.jenisLayanan : undefined,
   };
 
   const kpiParams = {
@@ -101,12 +111,30 @@ export default function DetailUlasanPage() {
     setPeriode('');
     setStartDate('');
     setEndDate('');
+    setAppliedFilters({
+      search: '',
+      sortBy: 'newest',
+      rating: 'all',
+      jenisLayanan: 'all',
+      periode: '' as string | number,
+      startDate: '',
+      endDate: '',
+    });
     setCurrentPage(1);
   }, []);
 
   const handleFilter = useCallback(() => {
+    setAppliedFilters({
+      search,
+      sortBy,
+      rating,
+      jenisLayanan,
+      periode,
+      startDate,
+      endDate
+    });
     setCurrentPage(1);
-  }, []);
+  }, [search, sortBy, rating, jenisLayanan, periode, startDate, endDate]);
 
   const handleExport = useCallback(async () => {
     try {
@@ -169,27 +197,6 @@ export default function DetailUlasanPage() {
           placeholder="Isi ulasan / nama..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-        />
-        <CustomSelect
-          label="Periode"
-          value={periode}
-          onChange={(val) => setPeriode(String(val))}
-          disabled={isPeriodeDisabled}
-          placeholder="Pilih Periode"
-          options={[
-            { label: 'Januari', value: 1 },
-            { label: 'Februari', value: 2 },
-            { label: 'Maret', value: 3 },
-            { label: 'April', value: 4 },
-            { label: 'Mei', value: 5 },
-            { label: 'Juni', value: 6 },
-            { label: 'Juli', value: 7 },
-            { label: 'Agustus', value: 8 },
-            { label: 'September', value: 9 },
-            { label: 'Oktober', value: 10 },
-            { label: 'November', value: 11 },
-            { label: 'Desember', value: 12 },
-          ]}
         />
         <CustomDateRangePicker
           label="Rentang Tanggal"

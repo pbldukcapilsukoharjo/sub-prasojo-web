@@ -12,7 +12,7 @@ import Tabs from '@/components/Common/Tabs';
 import Pagination from '@/components/Common/Pagination';
 import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
-import { useKecamatanOptions } from '@/hooks/useFilterOptions';
+import { useKecamatanOptions, useLayananOptions, useOperatorOptions } from '@/hooks/useFilterOptions';
 import { operatorService, KpiGlobalData, OperatorItem, OperatorKpiData, RiwayatItem } from '@/services/operator.service';
 import { handleApiError } from '@/lib/api-error';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
@@ -27,13 +27,25 @@ export default function PeringkatOperatorPage() {
   // Listing page filter states
   const [search, setSearch] = useState('');
   const [kecamatan, setKecamatan] = useState('all');
-  const [periode, setPeriode] = useState('');
+  const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState('newest');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [operatorFilter, setOperatorFilter] = useState('all');
 
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: '',
+    kecamatan: 'all',
+    periode: '' as string | number,
+    sortBy: 'newest',
+    startDate: '',
+    endDate: '',
+    operatorFilter: 'all',
+  });
+
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
+  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'SEMUA', allOptionValue: 'semua' });
+  const { data: operatorOptions = [] } = useOperatorOptions({ addAllOption: true, allOptionLabel: 'Semua Operator' });
 
   // List View Data States
   const [listCurrentPage, setListCurrentPage] = useState(1);
@@ -63,13 +75,13 @@ export default function PeringkatOperatorPage() {
 
   // --- List View Queries ---
   const listParams = {
-    search: search || undefined,
-    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-    periode_bulan: periode ? Number(periode) : undefined,
-    sort: sortBy,
-    start_date: formatToDDMMYYYY(startDate),
-    end_date: formatToDDMMYYYY(endDate),
-    id_operator: operatorFilter !== 'all' ? Number(operatorFilter) : undefined,
+    search: appliedFilters.search || undefined,
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+    periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
+    sort: appliedFilters.sortBy,
+    start_date: formatToDDMMYYYY(appliedFilters.startDate),
+    end_date: formatToDDMMYYYY(appliedFilters.endDate),
+    id_operator: appliedFilters.operatorFilter !== 'all' ? Number(appliedFilters.operatorFilter) : undefined,
   };
 
   const queryClient = useQueryClient();
@@ -168,23 +180,41 @@ export default function PeringkatOperatorPage() {
     setStartDate('');
     setEndDate('');
     setOperatorFilter('all');
+    setAppliedFilters({
+      search: '',
+      kecamatan: 'all',
+      periode: '' as string | number,
+      sortBy: 'newest',
+      startDate: '',
+      endDate: '',
+      operatorFilter: 'all',
+    });
     setListCurrentPage(1);
   }, []);
 
   const handleFilter = useCallback(() => {
+    setAppliedFilters({
+      search,
+      kecamatan,
+      periode,
+      sortBy,
+      startDate,
+      endDate,
+      operatorFilter
+    });
     setListCurrentPage(1);
-  }, []);
+  }, [search, kecamatan, periode, sortBy, startDate, endDate, operatorFilter]);
 
   const handleExport = useCallback(async () => {
     try {
       const exportParams = {
-        search: search || undefined,
-        id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
-        periode_bulan: periode ? Number(periode) : undefined,
-        sort: sortBy,
-        start_date: formatToDDMMYYYY(startDate),
-        end_date: formatToDDMMYYYY(endDate),
-        id_operator: operatorFilter !== 'all' ? Number(operatorFilter) : undefined,
+        search: appliedFilters.search || undefined,
+        id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+        periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
+        sort: appliedFilters.sortBy,
+        start_date: formatToDDMMYYYY(appliedFilters.startDate),
+        end_date: formatToDDMMYYYY(appliedFilters.endDate),
+        id_operator: appliedFilters.operatorFilter !== 'all' ? Number(appliedFilters.operatorFilter) : undefined,
       };
       await operatorService.getExportPeringkat(exportParams);
       import('react-hot-toast').then(({ toast }) => {
@@ -302,16 +332,10 @@ export default function PeringkatOperatorPage() {
     },
   ];
 
-  const detailTabs = [
-    { id: 'semua', label: 'SEMUA' },
-    { id: 'kk', label: 'KK' },
-    { id: 'ktp', label: 'KTP-EL' },
-    { id: 'kia', label: 'KIA' },
-    { id: 'akta-kel', label: 'AKTA-KEL' },
-    { id: 'akta-kem', label: 'AKTA-KEM' },
-    { id: 'perpindahan', label: 'PERPINDAHAN' },
-    { id: 'surket', label: 'SURKET KTP' },
-  ];
+  const detailTabs = useMemo(() => layananOptions.map((option: any) => ({
+    id: String(option.value),
+    label: String(option.label).toUpperCase()
+  })), [layananOptions]);
 
   const historyColumns = [
     { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-bold text-text-secondary">{String((detailCurrentPage - 1) * detailPerPage + idx + 1).padStart(2, '0')}</span> },
@@ -359,7 +383,7 @@ export default function PeringkatOperatorPage() {
             <CustomSelect
               label="Periode"
               value={periode}
-              onChange={(val) => setPeriode(String(val))}
+              onChange={(val) => setPeriode(val)}
               disabled={isPeriodeDisabled}
               placeholder="Pilih Periode"
               options={[
@@ -385,25 +409,6 @@ export default function PeringkatOperatorPage() {
               disabled={isRentangTanggalDisabled}
               placeholder="Pilih Rentang Tanggal"
             />
-            <CustomSelect
-              label="Urutkan Dari"
-              value={sortBy}
-              onChange={(val) => setSortBy(String(val))}
-              options={[
-                { label: 'Terbaru', value: 'newest' },
-                { label: 'Terlama', value: 'oldest' },
-              ]}
-            />
-            {/* <CustomSelect
-              label="Operator"
-              value={operatorFilter}
-              onChange={(val) => setOperatorFilter(String(val))}
-              options={[
-                { label: 'Semua Operator', value: 'all' },
-                { label: 'Operator 1', value: '1' },
-                { label: 'Operator 2', value: '2' },
-              ]}
-            /> */}
           </FilterCard>
 
           {/* Metric Summary Cards */}

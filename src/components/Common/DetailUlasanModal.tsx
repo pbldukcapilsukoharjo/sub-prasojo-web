@@ -67,11 +67,6 @@ export default function DetailUlasanModal({ isOpen, onClose, review }: DetailUla
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Jenis Layanan</p>
               <p className="text-sm font-bold text-slate-900">{displayJenisLayanan}</p>
             </div>
-            {/* Kecamatan */}
-            <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Kecamatan</p>
-              <p className="text-sm font-bold text-slate-900">{displayKecamatan}</p>
-            </div>
             {/* Waktu Pengiriman Ulasan */}
             <div>
               <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Waktu Pengiriman Ulasan</p>

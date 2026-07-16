@@ -12,7 +12,7 @@ export default async function Dashboard({ searchParams }: Props) {
   const resolvedSearchParams = await searchParams;
 
   const filters: DashboardFilterParams = {
-    id_layanan: resolvedSearchParams.id_layanan ? Number(resolvedSearchParams.id_layanan) : undefined,
+    id_layanan: resolvedSearchParams.id_layanan ? String(resolvedSearchParams.id_layanan) : undefined,
     id_kecamatan: resolvedSearchParams.id_kecamatan ? Number(resolvedSearchParams.id_kecamatan) : undefined,
     periode_bulan: resolvedSearchParams.periode_bulan ? Number(resolvedSearchParams.periode_bulan) : undefined,
     start_date: resolvedSearchParams.start_date as string | undefined,
