@@ -54,8 +54,8 @@ export default function CustomSelect({
         )}
         <div
           className={`w-full text-sm rounded-[30px] border h-[44px] flex items-center justify-between transition-all select-none
-            ${disabled ? 'bg-gray-100 border-neutral text-text-secondary cursor-not-allowed' : 'bg-[var(--surface-secondary)] border-[#E5E7EB] text-text-primary cursor-pointer hover:border-gray-300'}
-            ${isOpen ? 'ring-2 ring-primary border-primary' : ''}
+            ${disabled ? 'bg-gray-100 text-text-secondary cursor-not-allowed' : 'bg-[var(--surface-secondary)] text-text-primary cursor-pointer hover:border-gray-300'}
+            ${isOpen || (value !== undefined && value !== null && value !== '' && value !== 'all' && value !== 'semua') ? 'ring-2 ring-primary border-primary' : (disabled ? 'border-neutral' : 'border-[#E5E7EB]')}
             ${icon ? 'pl-11' : 'pl-5'} pr-4 ${className}`}
           onClick={() => !disabled && setIsOpen(!isOpen)}
         >

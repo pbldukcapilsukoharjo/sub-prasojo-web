@@ -2,7 +2,7 @@ import axiosInstance from "@/lib/axios";
 import { ApiBaseResponse } from "./auth.service";
 
 export interface KpiGlobalParams {
-  id_kecamatan?: number;
+  id_kecamatan?: string;
   periode_bulan?: number;
   start_date?: string;
   end_date?: string;
@@ -20,7 +20,7 @@ export interface OperatorPeringkatParams {
   page?: number;
   limit?: number;
   search?: string;
-  id_kecamatan?: number;
+  id_kecamatan?: string;
   periode_bulan?: number;
   sort?: string;
   start_date?: string;
