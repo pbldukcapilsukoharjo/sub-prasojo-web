@@ -22,6 +22,7 @@ export default function DetailProdukModal({ isOpen, onClose, data }: DetailProdu
   const [timelineData, setTimelineData] = useState<TimelineDetail[]>([]);
   const [detailData, setDetailData] = useState<ProdukDetailData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSelengkapnya, setShowSelengkapnya] = useState(false);
 
   useEffect(() => {
     if (isOpen && data?.id) {
@@ -29,6 +30,7 @@ export default function DetailProdukModal({ isOpen, onClose, data }: DetailProdu
     } else {
       setTimelineData([]);
       setDetailData(null);
+      setShowSelengkapnya(false);
     }
   }, [isOpen, data?.id]);
 
@@ -99,23 +101,90 @@ export default function DetailProdukModal({ isOpen, onClose, data }: DetailProdu
           </div>
         </div>
 
+        {/* Toggle Button for Data Ajuan & Dokumen */}
+        {(detailData?.data_ajuan && Object.keys(detailData.data_ajuan).length > 0) && (
+          <div className="flex justify-center mb-6">
+            <button
+              onClick={() => setShowSelengkapnya(!showSelengkapnya)}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-full transition-colors uppercase tracking-wider"
+            >
+              <span>{showSelengkapnya ? 'Sembunyikan Detail' : 'Lihat Selengkapnya'}</span>
+              <i className={`ri-arrow-${showSelengkapnya ? 'up' : 'down'}-s-line text-lg`}></i>
+            </button>
+          </div>
+        )}
+
         {/* Data Ajuan Dinamis */}
-        {detailData?.data_ajuan && Object.keys(detailData.data_ajuan).length > 0 && (
-          <div className="border border-border rounded-[16px] p-6 mb-8 bg-slate-50/50 shadow-xs">
+        {showSelengkapnya && detailData?.data_ajuan && Object.keys(detailData.data_ajuan).length > 0 && (
+          <div className="border border-border rounded-[16px] p-6 mb-8 bg-slate-50/50 shadow-xs animate-in fade-in slide-in-from-top-2 duration-300">
              <div className="flex items-center gap-2 mb-4">
               <i className="ri-database-2-line text-slate-500"></i>
               <h3 className="text-xs font-bold text-slate-950 uppercase tracking-wider">Data Pengajuan</h3>
             </div>
             <div className="grid grid-cols-1 gap-y-4 gap-x-4">
               {Object.entries(detailData.data_ajuan).map(([key, value]) => {
-                 const formattedKey = key.replace(/^ajkk_/, '').replace(/_/g, ' ');
+                 if (typeof value === 'object' && value !== null) return null;
+                 
+                 const formattedKey = key.replace(/^([a-z]+)_/, '').replace(/_/g, ' ');
+                 
+                 let displayValue = value;
+                 if (typeof value === 'string' && value.includes('T00:00:00.000000Z')) {
+                    try {
+                        const d = new Date(value);
+                        displayValue = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                    } catch(e){}
+                 }
+
                  return (
                   <div key={key} className="flex flex-col border-b border-border pb-3 last:border-0 last:pb-0">
                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1">{formattedKey}</p>
-                    <p className="text-sm font-semibold text-slate-800 break-words">{value || '-'}</p>
+                    <p className="text-sm font-semibold text-slate-800 break-words">{String(displayValue) || '-'}</p>
                   </div>
                  )
               })}
+            </div>
+          </div>
+        )}
+
+        {/* Dokumen Ajuan */}
+        {showSelengkapnya && detailData?.data_ajuan && Object.entries(detailData.data_ajuan).some(([key, val]) => key.endsWith('_dokumen') && Array.isArray(val)) && (
+          <div className="border border-border rounded-[16px] p-6 mb-8 bg-surface shadow-xs animate-in fade-in slide-in-from-top-2 duration-300">
+             <div className="flex items-center gap-2 mb-4">
+              <i className="ri-folder-2-line text-slate-500"></i>
+              <h3 className="text-xs font-bold text-slate-950 uppercase tracking-wider">Dokumen Pengajuan</h3>
+            </div>
+            <div className="flex flex-col gap-6">
+              {Object.entries(detailData.data_ajuan)
+                .filter(([key, val]) => key.endsWith('_dokumen') && Array.isArray(val))
+                .map(([key, docs]) => (
+                  <div key={key} className="flex flex-col gap-4">
+                    {(docs as any[]).map((doc, idx) => (
+                      <div key={idx} className="flex flex-col gap-2 border-b border-border pb-4 last:border-0 last:pb-0">
+                        <p className="text-sm font-bold text-slate-800">{doc.name} {doc.require === 1 && <span className="text-red-500">*</span>}</p>
+                        {doc.file && doc.file.length > 0 ? (
+                          <div className="flex flex-wrap gap-3">
+                            {doc.file.map((f: any, fIdx: number) => (
+                               <a key={fIdx} href={f.url} target="_blank" rel="noopener noreferrer" className="relative group block w-24 h-24 rounded-lg overflow-hidden border border-border">
+                                  {f.type === 'image' ? (
+                                    <img src={f.url} alt={`file-${fIdx}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform" />
+                                  ) : (
+                                    <div className="w-full h-full bg-slate-50 flex items-center justify-center">
+                                      <i className="ri-file-text-line text-2xl text-slate-400"></i>
+                                    </div>
+                                  )}
+                                  <div className="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/20 transition-colors flex items-center justify-center">
+                                     <i className="ri-external-link-line text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                                  </div>
+                               </a>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-slate-500 italic">Belum ada file diunggah</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
             </div>
           </div>
         )}
