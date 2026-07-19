@@ -10,6 +10,8 @@ import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
 import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
+import dynamic from 'next/dynamic';
+const SlaConfigModal = dynamic(() => import('@/components/Common/SlaConfigModal'), { ssr: false });
 import { slaService, SlaData, SlaKpiData, SlaParams, SlaKpiParams } from '@/services/sla.service';
 import { handleApiError } from '@/lib/api-error';
 import { useLayananOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
@@ -21,6 +23,8 @@ export default function SlaMonitoringPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  
+  const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
   
   // Custom API states
   const [kecamatan, setKecamatan] = useState('all');
@@ -58,19 +62,21 @@ export default function SlaMonitoringPage() {
   const formattedEndDate = formatToDDMMYYYY(appliedFilters.endDate);
 
   const listParams: SlaParams = {
+    max_sla_minutes: 1,
     page: currentPage,
     search: appliedFilters.search || undefined,
-    id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
     sort_by: appliedFilters.sortBy,
-    id_layanan: appliedFilters.layanan !== 'all' ? String(appliedFilters.layanan) : undefined,
+    id_layanan: appliedFilters.layanan !== 'all' ? appliedFilters.layanan : undefined,
     periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     start_date: formattedStartDate,
     end_date: formattedEndDate,
   };
 
   const kpiParams: SlaKpiParams = {
-    id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
-    id_layanan: appliedFilters.layanan !== 'all' ? String(appliedFilters.layanan) : undefined,
+    max_sla_minutes: 1,
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
+    id_layanan: appliedFilters.layanan !== 'all' ? appliedFilters.layanan : undefined,
     periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     start_date: formattedStartDate,
     end_date: formattedEndDate,
@@ -98,11 +104,11 @@ export default function SlaMonitoringPage() {
   });
 
   const kpiData = kpiRes?.data || null;
-  const listData = listRes?.data || null;
-  const totalItems = listData?.daftar_rincian?.meta?.total || 0;
-  const totalPages = listData?.daftar_rincian?.meta?.total_page || 1;
+  const listData = listRes?.data || [];
+  const totalItems = listRes?.meta?.total || 0;
+  const totalPages = listRes?.meta?.total_page || 1;
   const isLoading = isKpiLoading || isListLoading;
-  const perPage = listData?.daftar_rincian?.meta?.per_page || 10;
+  const perPage = listRes?.meta?.per_page || 10;
 
   const handleReset = useCallback(() => {
     setSearch('');
@@ -139,7 +145,7 @@ export default function SlaMonitoringPage() {
 
   const handleExport = useCallback(async () => {
     try {
-      await slaService.exportSla();
+      await slaService.exportSla({ max_sla_minutes: 1 });
     } catch (error) {
       handleApiError(error);
     }
@@ -152,14 +158,14 @@ export default function SlaMonitoringPage() {
     return 'OVER SLA';
   };
 
-  const mappedData = useMemo(() => listData?.daftar_rincian?.list?.map((item, idx) => {
+  const mappedData = useMemo(() => Array.isArray(listData) ? listData.map((item, idx) => {
     return {
       rank: String((currentPage - 1) * perPage + idx + 1).padStart(2, '0'),
       service: item.jenis_layanan,
       count: item.jumlah_ajuan,
-      avgTime: `${item.rata_rata_waktu} jam`
+      avgTime: item.rata_rata_waktu
     };
-  }) || [], [listData, currentPage, perPage]);
+  }) : [], [listData, currentPage, perPage]);
 
   const columns = useMemo(() => [
     { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-medium text-text-primary">{row.rank}</span> },
@@ -217,17 +223,14 @@ export default function SlaMonitoringPage() {
       </FilterCard>
 
       {/* 2. Metric Cards (Middle) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title="RATA - RATA WAKTU PROSES"
           value={
             <>
               <span className="text-3xl lg:text-4xl font-bold font-manrope text-text-primary leading-tight">
-                {kpiData?.rata_rata_global_text || listData?.rata_rata_waktu_proses || '0'}
+                {kpiData?.rata_rata_global_text || '0'}
               </span>
-              {typeof (kpiData?.rata_rata_global_text || listData?.rata_rata_waktu_proses) === 'number' && (
-                <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">Jam</span>
-              )}
             </>
           }
         />
@@ -235,7 +238,7 @@ export default function SlaMonitoringPage() {
           title="PENCAPAIAN SLA"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">{kpiData?.capaian_sla_persen || listData?.pencapaian_sla || 0}%</span>
+              <span className="text-4xl font-bold font-manrope text-text-primary">{kpiData?.capaian_sla_persen || 0}%</span>
               <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">(Persen)</span>
             </>
           }
@@ -244,17 +247,25 @@ export default function SlaMonitoringPage() {
           title="TARGET SLA"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || listData?.target_sla || 0}</span>
+              <span className="text-4xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || 0}</span>
               <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">jam</span>
             </>
           }
-          subtitle={
-            <div className="flex items-center gap-1.5 text-xs text-text-secondary font-semibold mt-1">
-              <i className="ri-time-line"></i>
-              <span>Standar Layanan Nasional</span>
-            </div>
-          }
         />
+        
+        {/* Configuration Card */}
+        <div className="card shadow-sm border border-border p-5 flex flex-col justify-between gap-4 bg-surface h-full">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 text-text-primary font-bold mb-1">
+              <i className="ri-settings-4-line text-lg text-primary"></i>
+              <span>Konfigurasi SLA</span>
+            </div>
+            <span className="text-xs text-text-secondary leading-relaxed">Atur jam operasional, hari libur, dan target waktu SLA.</span>
+          </div>
+          <Button variant="outline" className="w-full text-xs font-semibold py-2 h-9 border-border text-text-secondary hover:text-primary hover:border-primary hover:bg-primary/5 transition-colors" onClick={() => setIsConfigModalOpen(true)}>
+            BUKA KONFIGURASI
+          </Button>
+        </div>
       </div>
 
       {/* 3. Data Table (Bottom) */}
@@ -289,6 +300,12 @@ export default function SlaMonitoringPage() {
           />
         </div>
       </div>
+
+      <SlaConfigModal 
+        isOpen={isConfigModalOpen} 
+        onClose={() => setIsConfigModalOpen(false)} 
+        currentSlaTarget={kpiData?.target_sla || 6}
+      />
     </div>
   );
 }
