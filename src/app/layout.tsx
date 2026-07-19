@@ -14,6 +14,25 @@ export const metadata: Metadata = {
     shortcut: "/dukcapil-skh.png",
     apple: "/dukcapil-skh.png",
   },
+  openGraph: {
+    title: "PRASOJO - Sistem Monitoring Disdukcapil Sukoharjo",
+    description: "Sistem Monitoring Layanan Disdukcapil Sukoharjo Berbasis PRASOJO",
+    images: [
+      {
+        url: "/dukcapil-skh.png",
+        width: 800,
+        height: 600,
+        alt: "Logo PRASOJO Disdukcapil Sukoharjo",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PRASOJO - Sistem Monitoring Disdukcapil Sukoharjo",
+    description: "Sistem Monitoring Layanan Disdukcapil Sukoharjo Berbasis PRASOJO",
+    images: ["/dukcapil-skh.png"],
+  },
 };
 
 import { Toaster } from "react-hot-toast";
