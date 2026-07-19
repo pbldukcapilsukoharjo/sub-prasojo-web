@@ -42,7 +42,7 @@ export default function DistribusiWilayahPage() {
   const params: DistribusiWilayahParams = {
     page: currentPage,
     search: search || undefined,
-    id_kecamatan: kecamatan !== 'all' ? Number(kecamatan) : undefined,
+    id_kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
     sort_by: sortBy || undefined,
     periode_bulan: periode ? Number(periode) : undefined,
     start_date: formatToDDMMYYYY(startDate) || undefined,

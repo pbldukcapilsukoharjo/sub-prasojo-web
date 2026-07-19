@@ -4,7 +4,7 @@ import { ApiBaseResponse } from "./auth.service";
 
 export interface DashboardFilterParams {
   id_layanan?: string;
-  id_kecamatan?: number;
+  id_kecamatan?: string;
   periode_bulan?: number;
   start_date?: string;
   end_date?: string;
@@ -49,7 +49,7 @@ const buildQueryParams = (params?: DashboardFilterParams) => {
   if (!params) return query;
 
   if (params.id_layanan !== undefined) query.id_layanan = params.id_layanan;
-  if (params.id_kecamatan !== undefined) query.id_kecamatan = params.id_kecamatan;
+  if (params.id_kecamatan !== undefined && params.id_kecamatan !== 'all') query.id_kecamatan = params.id_kecamatan;
   if (params.periode_bulan !== undefined) query.periode_bulan = params.periode_bulan;
   if (params.start_date !== undefined) query.start_date = params.start_date;
   if (params.end_date !== undefined) query.end_date = params.end_date;

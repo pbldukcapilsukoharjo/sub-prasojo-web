@@ -76,7 +76,7 @@ export default function PeringkatOperatorPage() {
   // --- List View Queries ---
   const listParams = {
     search: appliedFilters.search || undefined,
-    id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
     periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     sort: appliedFilters.sortBy,
     start_date: formatToDDMMYYYY(appliedFilters.startDate),
@@ -142,18 +142,18 @@ export default function PeringkatOperatorPage() {
     });
   };
 
-  const { data: operatorKpiRes, isLoading: isOperatorKpiLoading } = useQuery({
+  const { data: kpiRes, isLoading: isDetailKpiLoading } = useQuery({
     queryKey: ['operatorKpi', selectedOperator?.id, currentYear, periode, id_layanan],
     queryFn: () => operatorService.getOperatorKpi(selectedOperator!.id, {
       tahun: currentYear,
       periode_bulan: periode ? Number(periode) : undefined,
-      id_layanan: id_layanan
+      id_layanan: id_layanan,
     }),
     enabled: !!selectedOperator,
     placeholderData: keepPreviousData,
   });
 
-  const { data: riwayatRes, isLoading: isRiwayatLoading, isFetching: isRiwayatFetching } = useQuery({
+  const { data: riwayatRes, isLoading: isDetailRiwayatLoading, isFetching: isDetailRiwayatFetching } = useQuery({
     queryKey: ['operatorRiwayat', selectedOperator?.id, currentYear, periode, id_layanan, detailCurrentPage, detailPerPage],
     queryFn: () => operatorService.getOperatorRiwayat(selectedOperator!.id, {
       tahun: currentYear,
@@ -166,11 +166,11 @@ export default function PeringkatOperatorPage() {
     placeholderData: keepPreviousData,
   });
 
-  const operatorKpi = operatorKpiRes?.data || null;
-  const historyData = riwayatRes?.data?.list || [];
+  const operatorKpi = kpiRes?.data || null;
+  const riwayatData = riwayatRes?.data?.list || [];
   const detailTotalItems = riwayatRes?.data?.meta?.total || 0;
   const detailTotalPages = riwayatRes?.data?.meta?.total_page || 1;
-  const isDetailLoading = isOperatorKpiLoading || isRiwayatLoading;
+  const isDetailLoading = isDetailKpiLoading || isDetailRiwayatLoading;
 
   const handleReset = useCallback(() => {
     setSearch('');
@@ -187,7 +187,7 @@ export default function PeringkatOperatorPage() {
       sortBy: 'newest',
       startDate: '',
       endDate: '',
-      operatorFilter: 'all',
+      operatorFilter: 'all'
     });
     setListCurrentPage(1);
   }, []);
@@ -209,7 +209,7 @@ export default function PeringkatOperatorPage() {
     try {
       const exportParams = {
         search: appliedFilters.search || undefined,
-        id_kecamatan: appliedFilters.kecamatan !== 'all' ? Number(appliedFilters.kecamatan) : undefined,
+        id_kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
         periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
         sort: appliedFilters.sortBy,
         start_date: formatToDDMMYYYY(appliedFilters.startDate),

@@ -4,7 +4,7 @@ import { ApiBaseResponse } from "./auth.service";
 export interface DistribusiWilayahParams {
   page?: number;
   search?: string;
-  id_kecamatan?: number;
+  id_kecamatan?: string;
   sort_by?: string;
   periode_bulan?: number;
   start_date?: string;
