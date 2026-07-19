@@ -73,7 +73,9 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
     } else {
       document.body.style.overflow = 'unset';
     }
-    return () => document.body.style.overflow = 'unset';
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;

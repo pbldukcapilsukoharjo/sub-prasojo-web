@@ -552,10 +552,10 @@ export default function PeringkatOperatorPage() {
               }} className="mb-2" />
 
               <div className="w-full border border-border rounded-xl overflow-hidden min-h-[200px]">
-                {historyData.length > 0 ? (
+                {riwayatData.length > 0 ? (
                   <Table 
                     columns={historyColumns} 
-                    data={historyData} 
+                    data={riwayatData} 
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-sm text-text-secondary py-10">

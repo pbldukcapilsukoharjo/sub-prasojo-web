@@ -12,7 +12,7 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import dynamic from 'next/dynamic';
 const SlaConfigModal = dynamic(() => import('@/components/Common/SlaConfigModal'), { ssr: false });
-import { slaService, SlaData, SlaKpiData, SlaParams, SlaKpiParams } from '@/services/sla.service';
+import { slaService, SlaRincianItem, SlaKpiData, SlaParams, SlaKpiParams } from '@/services/sla.service';
 import { handleApiError } from '@/lib/api-error';
 import { useLayananOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';

@@ -158,7 +158,7 @@ export default function DetailProdukModal({ isOpen, onClose, data }: DetailProdu
                 .filter(([key, val]) => key.endsWith('_dokumen') && Array.isArray(val))
                 .map(([key, docs]) => (
                   <div key={key} className="flex flex-col gap-4">
-                    {(docs as any[]).map((doc, idx) => (
+                    {((docs as unknown) as any[]).map((doc, idx) => (
                       <div key={idx} className="flex flex-col gap-2 border-b border-border pb-4 last:border-0 last:pb-0">
                         <p className="text-sm font-bold text-slate-800">{doc.name} {doc.require === 1 && <span className="text-red-500">*</span>}</p>
                         {doc.file && doc.file.length > 0 ? (
