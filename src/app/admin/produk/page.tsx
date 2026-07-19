@@ -21,7 +21,7 @@ import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-quer
 
 export default function Produk() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('');
+  const [activeTab, setActiveTab] = useState('semua');
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
@@ -45,13 +45,7 @@ export default function Produk() {
   });
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
-  const { data: layananOptions = [] } = useLayananOptions();
-
-  useEffect(() => {
-    if (layananOptions.length > 0 && !activeTab) {
-      setActiveTab(String(layananOptions[0].value));
-    }
-  }, [layananOptions, activeTab]);
+  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'SEMUA', allOptionValue: 'semua' });
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
@@ -74,7 +68,7 @@ export default function Produk() {
     start_date: formatToDDMMYYYY(appliedFilters.startDate),
     end_date: formatToDDMMYYYY(appliedFilters.endDate),
     periode: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
-    layanan: activeTab || undefined,
+    layanan: activeTab !== 'semua' ? activeTab : undefined,
     sort: appliedFilters.sortBy,
     page: currentPage,
     per_page: perPage,
@@ -83,7 +77,6 @@ export default function Produk() {
   const queryClient = useQueryClient();
 
   const handlePageHover = (page: number) => {
-    if (!activeTab) return;
     queryClient.prefetchQuery({
       queryKey: ['produk', { ...params, page }],
       queryFn: () => pengajuanService.getProduk({ ...params, page }),
@@ -94,7 +87,6 @@ export default function Produk() {
     queryKey: ['produk', params],
     queryFn: () => pengajuanService.getProduk(params),
     placeholderData: keepPreviousData,
-    enabled: !!activeTab,
   });
 
   const data = produkRes?.data || [];
@@ -146,7 +138,7 @@ export default function Produk() {
   }, [layananOptions, activeTab]);
 
   const dynamicNomorHeader = useMemo(() => {
-    if (!activeTabLabel) return 'NOMOR (KK, KTP-EL, KIA, DLL)';
+    if (!activeTabLabel || activeTabLabel === 'SEMUA') return 'NOMOR (KK, KTP-EL, KIA, DLL)';
     return `NOMOR ${activeTabLabel}`;
   }, [activeTabLabel]);
 
