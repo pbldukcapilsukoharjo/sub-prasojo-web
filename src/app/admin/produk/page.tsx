@@ -21,7 +21,7 @@ import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-quer
 
 export default function Produk() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('semua');
+  const [activeTab, setActiveTab] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
@@ -45,7 +45,14 @@ export default function Produk() {
   });
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
-  const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'SEMUA', allOptionValue: 'semua' });
+  const { data: layananOptions = [] } = useLayananOptions();
+
+  useEffect(() => {
+    if (layananOptions.length > 0 && !activeTab) {
+      setActiveTab(String(layananOptions[0].value));
+    }
+  }, [layananOptions, activeTab]);
+
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
   const perPage = 10;
@@ -67,7 +74,7 @@ export default function Produk() {
     start_date: formatToDDMMYYYY(appliedFilters.startDate),
     end_date: formatToDDMMYYYY(appliedFilters.endDate),
     periode: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
-    layanan: activeTab !== 'semua' ? activeTab : undefined,
+    layanan: activeTab || undefined,
     sort: appliedFilters.sortBy,
     page: currentPage,
     per_page: perPage,
@@ -76,6 +83,7 @@ export default function Produk() {
   const queryClient = useQueryClient();
 
   const handlePageHover = (page: number) => {
+    if (!activeTab) return;
     queryClient.prefetchQuery({
       queryKey: ['produk', { ...params, page }],
       queryFn: () => pengajuanService.getProduk({ ...params, page }),
@@ -86,6 +94,7 @@ export default function Produk() {
     queryKey: ['produk', params],
     queryFn: () => pengajuanService.getProduk(params),
     placeholderData: keepPreviousData,
+    enabled: !!activeTab,
   });
 
   const data = produkRes?.data || [];
@@ -131,11 +140,21 @@ export default function Produk() {
     label: String(option.label).toUpperCase()
   })), [layananOptions]);
 
+  const activeTabLabel = useMemo(() => {
+    const option = layananOptions.find((opt: any) => String(opt.value) === activeTab);
+    return option ? String(option.label).toUpperCase() : '';
+  }, [layananOptions, activeTab]);
+
+  const dynamicNomorHeader = useMemo(() => {
+    if (!activeTabLabel) return 'NOMOR (KK, KTP-EL, KIA, DLL)';
+    return `NOMOR ${activeTabLabel}`;
+  }, [activeTabLabel]);
+
   const tableColumns = useMemo(() => [
     { key: 'no', header: 'No' },
     { key: 'noRegis', header: 'NO. REG' },
     { key: 'kodeAjuan', header: 'KODE AJUAN' },
-    { key: 'nomor', header: 'NOMOR (KK, KTP-EL, KIA, DLL)' },
+    { key: 'nomor', header: dynamicNomorHeader },
     { key: 'namaIdentitas', header: 'NAMA IDENTITAS PRODUK' },
     { 
       key: 'status', 
@@ -157,7 +176,7 @@ export default function Produk() {
       )
     },
     { key: 'kecamatan', header: 'KECAMATAN' },
-  ], []);
+  ], [dynamicNomorHeader]);
 
   const mappedData = useMemo(() => data.map((ajuan, index) => {
     let tanggal = '-';
