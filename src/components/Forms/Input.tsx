@@ -17,9 +17,13 @@ export default function Input({ label, icon, wrapperClassName = '', className = 
           </div>
         )}
         <input
-          className={`w-full bg-[var(--surface-secondary)] text-text-primary text-sm rounded-[30px] border border-[#E5E7EB] h-[44px] focus:ring-2 focus:ring-primary focus:outline-none transition-all ${
+          className={`w-full bg-[var(--surface-secondary)] text-text-primary text-sm rounded-[30px] border h-[44px] focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all ${
             icon ? 'pl-11' : 'pl-5'
-          } pr-5 ${className}`}
+          } pr-5 ${
+            props.value !== undefined && props.value !== null && props.value !== '' 
+              ? 'ring-2 ring-primary border-primary' 
+              : 'border-[#E5E7EB]'
+          } ${className}`}
           {...props}
         />
       </div>

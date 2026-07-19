@@ -186,8 +186,9 @@ export default function CustomDateRangePicker({
       <div className="relative">
         <div
           className={`w-full text-sm rounded-[30px] border h-[44px] flex items-center justify-between transition-all select-none
-            ${disabled ? 'bg-gray-100 border-neutral text-text-secondary cursor-not-allowed' : 'bg-[var(--surface-secondary)] border-[#E5E7EB] text-text-primary cursor-pointer hover:border-gray-300'}
-            ${isOpen ? 'ring-2 ring-primary border-primary bg-surface' : ''}
+            ${disabled ? 'bg-gray-100 text-text-secondary cursor-not-allowed' : 'bg-[var(--surface-secondary)] text-text-primary cursor-pointer hover:border-gray-300'}
+            ${isOpen ? 'bg-surface' : ''}
+            ${isOpen || startDate || endDate ? 'ring-2 ring-primary border-primary' : (disabled ? 'border-neutral' : 'border-[#E5E7EB]')}
             pl-11 pr-4`}
           onClick={() => !disabled && setIsOpen(!isOpen)}
         >
