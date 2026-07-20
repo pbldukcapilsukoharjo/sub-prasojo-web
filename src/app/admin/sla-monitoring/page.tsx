@@ -226,6 +226,10 @@ export default function SlaMonitoringPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           title="RATA - RATA WAKTU PROSES"
+          icon="ri-time-line"
+          iconBg="#eff6ff"
+          iconColor="text-blue-600"
+          className="hover:border-blue-200 hover:shadow-md transition-all duration-300"
           value={
             <>
               <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary leading-snug">
@@ -236,6 +240,10 @@ export default function SlaMonitoringPage() {
         />
         <StatCard 
           title="PENCAPAIAN SLA"
+          icon="ri-pie-chart-2-line"
+          iconBg="#ecfdf5"
+          iconColor="text-emerald-600"
+          className="hover:border-emerald-200 hover:shadow-md transition-all duration-300"
           value={
             <>
               <span className="text-3xl lg:text-4xl font-bold font-manrope text-text-primary">{kpiData?.capaian_sla_persen || 0}%</span>
@@ -245,6 +253,10 @@ export default function SlaMonitoringPage() {
         />
         <StatCard 
           title="TARGET SLA"
+          icon="ri-focus-2-line"
+          iconBg="#fef2f2"
+          iconColor="text-rose-600"
+          className="hover:border-rose-200 hover:shadow-md transition-all duration-300"
           value={
             <>
               <span className="text-3xl lg:text-4xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || 0}</span>
@@ -254,15 +266,18 @@ export default function SlaMonitoringPage() {
         />
         
         {/* Configuration Card */}
-        <div className="card shadow-sm border border-border p-5 flex flex-col justify-between gap-4 bg-surface h-full">
-          <div className="flex flex-col gap-1">
+        <div className="card shadow-sm border border-primary/20 p-5 flex flex-col justify-between gap-4 bg-gradient-to-br from-primary/5 to-surface h-full hover:shadow-md transition-all duration-300 relative overflow-hidden group">
+          <div className="absolute -right-6 -top-6 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors duration-500"></div>
+          <div className="flex flex-col gap-1 relative z-10">
             <div className="flex items-center gap-2 text-text-primary font-bold mb-1">
-              <i className="ri-settings-4-line text-lg text-primary"></i>
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <i className="ri-settings-4-line text-lg"></i>
+              </div>
               <span>Konfigurasi SLA</span>
             </div>
-            <span className="text-xs text-text-secondary leading-relaxed">Atur jam operasional, hari libur, dan target waktu SLA.</span>
+            <span className="text-xs text-text-secondary leading-relaxed mt-1">Atur jam operasional, hari libur, dan target waktu SLA.</span>
           </div>
-          <Button variant="outline" className="w-full text-xs font-semibold py-2 h-9 border-border text-text-secondary hover:text-primary hover:border-primary hover:bg-primary/5 transition-colors" onClick={() => setIsConfigModalOpen(true)}>
+          <Button variant="outline" className="w-full text-xs font-semibold py-2 h-9 border-primary/30 text-primary hover:text-white hover:bg-primary transition-colors relative z-10" onClick={() => setIsConfigModalOpen(true)}>
             BUKA KONFIGURASI
           </Button>
         </div>
