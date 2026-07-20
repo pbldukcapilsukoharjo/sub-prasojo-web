@@ -225,41 +225,43 @@ export default function SlaMonitoringPage() {
       {/* 2. Metric Cards (Middle) */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
-          title="RATA - RATA WAKTU PROSES"
+          title="Rata-Rata Waktu Proses"
           icon="ri-time-line"
           iconBg="#eff6ff"
           iconColor="text-blue-600"
+          subtitle="Waktu pelayanan rata-rata"
           className="hover:border-blue-200 hover:shadow-md transition-all duration-300"
           value={
             <>
-              <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary leading-snug">
+              <span className="text-xl lg:text-2xl font-bold font-manrope text-text-primary leading-snug">
                 {kpiData?.rata_rata_global_text || '0'}
               </span>
             </>
           }
         />
         <StatCard 
-          title="PENCAPAIAN SLA"
+          title="Pencapaian SLA"
           icon="ri-pie-chart-2-line"
           iconBg="#ecfdf5"
           iconColor="text-emerald-600"
+          subtitle="Persentase tepat waktu"
           className="hover:border-emerald-200 hover:shadow-md transition-all duration-300"
           value={
             <>
-              <span className="text-3xl lg:text-4xl font-bold font-manrope text-text-primary">{kpiData?.capaian_sla_persen || 0}%</span>
-              <span className="text-sm font-semibold text-text-secondary">(Persen)</span>
+              <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{kpiData?.capaian_sla_persen || 0}%</span>
             </>
           }
         />
         <StatCard 
-          title="TARGET SLA"
+          title="Target SLA"
           icon="ri-focus-2-line"
           iconBg="#fef2f2"
           iconColor="text-rose-600"
+          subtitle="Batas maksimal pelayanan"
           className="hover:border-rose-200 hover:shadow-md transition-all duration-300"
           value={
             <>
-              <span className="text-3xl lg:text-4xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || 0}</span>
+              <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || 0}</span>
               <span className="text-sm font-semibold text-text-secondary">jam</span>
             </>
           }

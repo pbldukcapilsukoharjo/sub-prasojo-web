@@ -170,28 +170,43 @@ export default function DistribusiWilayahPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard 
           title="TOTAL KECAMATAN"
+          icon="ri-map-pin-line"
+          iconBg="#eff6ff"
+          iconColor="text-blue-600"
+          subtitle="Seluruh wilayah tercatat"
+          className="hover:border-blue-200 hover:shadow-md transition-all duration-300"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">{totalItems}</span>
-              <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">Kecamatan</span>
+              <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{totalItems}</span>
+              <span className="text-sm font-semibold text-text-secondary">Kecamatan</span>
             </>
           }
         />
         <StatCard 
           title="TOTAL AJUAN (HALAMAN INI)"
+          icon="ri-file-list-3-line"
+          iconBg="#fef2f2"
+          iconColor="text-rose-600"
+          subtitle="Pengajuan dokumen"
+          className="hover:border-rose-200 hover:shadow-md transition-all duration-300"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">{pageTotalAjuan.toLocaleString('id-ID')}</span>
-              <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">Dokumen</span>
+              <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{pageTotalAjuan.toLocaleString('id-ID')}</span>
+              <span className="text-sm font-semibold text-text-secondary">Dokumen</span>
             </>
           }
         />
         <StatCard 
           title="RATA-RATA AJUAN (HALAMAN INI)"
+          icon="ri-bar-chart-box-line"
+          iconBg="#ecfdf5"
+          iconColor="text-emerald-600"
+          subtitle="Persebaran dokumen"
+          className="hover:border-emerald-200 hover:shadow-md transition-all duration-300"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">{pageRataAjuan}</span>
-              <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">per Wilayah</span>
+              <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{pageRataAjuan}</span>
+              <span className="text-sm font-semibold text-text-secondary">per Wilayah</span>
             </>
           }
         />

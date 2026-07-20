@@ -415,29 +415,35 @@ export default function PeringkatOperatorPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard 
               title="TOTAL AJUAN"
-              value={kpiGlobal?.total_ajuan?.toLocaleString('id-ID') || '0'}
+              value={<span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{kpiGlobal?.total_ajuan?.toLocaleString('id-ID') || '0'}</span>}
               icon="ri-file-list-3-line"
               iconBg="#fdf2f2"
               iconColor="text-primary"
+              subtitle="Keseluruhan dokumen"
+              className="hover:border-primary/20 hover:shadow-md transition-all duration-300"
             />
             <StatCard 
               title="RATA-RATA DURASI"
               value={
                 <>
-                  <span className="text-4xl font-bold font-manrope text-text-primary leading-none">{kpiGlobal?.rata_rata_durasi || '0'}</span>
+                  <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary leading-none">{kpiGlobal?.rata_rata_durasi || '0'}</span>
                   <span className="text-xs font-semibold text-text-secondary pb-0.5">menit</span>
                 </>
               }
               icon="ri-time-line"
               iconBg="#eff6ff"
               iconColor="text-blue-500"
+              subtitle="Waktu pelayanan"
+              className="hover:border-blue-200 hover:shadow-md transition-all duration-300"
             />
             <StatCard 
               title="TINGKAT SELESAI"
-              value={`${kpiGlobal?.tingkat_selesai || 0}%`}
+              value={<span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{`${kpiGlobal?.tingkat_selesai || 0}%`}</span>}
               icon="ri-checkbox-circle-line"
               iconBg="#ecfdf5"
               iconColor="text-emerald-500"
+              subtitle="Rasio penyelesaian"
+              className="hover:border-emerald-200 hover:shadow-md transition-all duration-300"
             />
           </div>
 
@@ -513,15 +519,30 @@ export default function PeringkatOperatorPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <StatCard 
                 title="TOTAL AJUAN"
-                value={operatorKpi?.total_ajuan?.toLocaleString('id-ID') || '0'}
+                value={<span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{operatorKpi?.total_ajuan?.toLocaleString('id-ID') || '0'}</span>}
+                icon="ri-file-list-3-line"
+                iconBg="#fdf2f2"
+                iconColor="text-primary"
+                subtitle="Ajuan operator"
+                className="hover:border-primary/20 hover:shadow-md transition-all duration-300"
               />
               <StatCard 
                 title="TOTAL SELESAI"
-                value={operatorKpi?.total_selesai?.toLocaleString('id-ID') || '0'}
+                value={<span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{operatorKpi?.total_selesai?.toLocaleString('id-ID') || '0'}</span>}
+                icon="ri-check-double-line"
+                iconBg="#eff6ff"
+                iconColor="text-blue-500"
+                subtitle="Dokumen selesai"
+                className="hover:border-blue-200 hover:shadow-md transition-all duration-300"
               />
               <StatCard 
                 title="TINGKAT SELESAI"
-                value={`${operatorKpi?.tingkat_selesai || 0}%`}
+                value={<span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{`${operatorKpi?.tingkat_selesai || 0}%`}</span>}
+                icon="ri-checkbox-circle-line"
+                iconBg="#ecfdf5"
+                iconColor="text-emerald-500"
+                subtitle="Persentase selesai"
+                className="hover:border-emerald-200 hover:shadow-md transition-all duration-300"
               />
             </div>
 

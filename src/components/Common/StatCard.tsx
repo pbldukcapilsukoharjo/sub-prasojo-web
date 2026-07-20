@@ -22,7 +22,7 @@ export default function StatCard({
   children
 }: StatCardProps) {
   return (
-    <div className={`card shadow-sm border border-border p-5 flex flex-col gap-4 bg-surface ${className}`}>
+    <div className={`card shadow-sm border border-border p-5 flex flex-col justify-between gap-4 bg-surface h-full ${className}`}>
       {/* Top: label + icon */}
       <div className="flex items-start justify-between gap-3">
         <span className="text-[11px] font-bold text-text-secondary tracking-wider uppercase leading-snug pt-0.5">
