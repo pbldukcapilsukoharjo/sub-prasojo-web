@@ -40,7 +40,7 @@ export default function StatCard({
 
       {/* Value + subtitle */}
       <div className="flex flex-col gap-1.5">
-        <div className="flex items-end gap-2">
+        <div className="flex items-baseline gap-2 flex-wrap">
           {typeof value === 'string' || typeof value === 'number' ? (
              <p className="text-3xl font-bold font-manrope text-text-primary leading-none">
                {value}

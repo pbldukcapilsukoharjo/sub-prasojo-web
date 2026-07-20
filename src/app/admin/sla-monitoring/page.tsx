@@ -228,7 +228,7 @@ export default function SlaMonitoringPage() {
           title="RATA - RATA WAKTU PROSES"
           value={
             <>
-              <span className="text-3xl lg:text-4xl font-bold font-manrope text-text-primary leading-tight">
+              <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary leading-snug">
                 {kpiData?.rata_rata_global_text || '0'}
               </span>
             </>
@@ -238,8 +238,8 @@ export default function SlaMonitoringPage() {
           title="PENCAPAIAN SLA"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">{kpiData?.capaian_sla_persen || 0}%</span>
-              <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">(Persen)</span>
+              <span className="text-3xl lg:text-4xl font-bold font-manrope text-text-primary">{kpiData?.capaian_sla_persen || 0}%</span>
+              <span className="text-sm font-semibold text-text-secondary">(Persen)</span>
             </>
           }
         />
@@ -247,8 +247,8 @@ export default function SlaMonitoringPage() {
           title="TARGET SLA"
           value={
             <>
-              <span className="text-4xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || 0}</span>
-              <span className="text-sm font-semibold text-text-secondary mb-1 ml-1">jam</span>
+              <span className="text-3xl lg:text-4xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || 0}</span>
+              <span className="text-sm font-semibold text-text-secondary">jam</span>
             </>
           }
         />
