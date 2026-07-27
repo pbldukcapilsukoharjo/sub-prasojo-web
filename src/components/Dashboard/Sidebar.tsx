@@ -86,10 +86,10 @@ export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; o
               href={item.path}
               onClick={onClose}
               onMouseEnter={() => handlePrefetch(item.path)}
-              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] font-semibold text-xs transition-colors ${
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] font-semibold text-xs transition-all duration-200 ${
                 isActive 
-                  ? 'bg-surface text-primary dark:bg-primary dark:text-white' 
-                  : 'text-white hover:bg-surface/10 dark:text-text-secondary dark:hover:bg-neutral/50 dark:hover:text-text-primary'
+                  ? 'bg-gradient-to-br from-white to-gray-50 text-primary shadow-[0_6px_16px_rgba(0,0,0,0.15)] ring-1 ring-black/5 dark:from-primary dark:to-[#5a0000] dark:text-white dark:ring-white/10 dark:shadow-[0_6px_16px_rgba(0,0,0,0.25)]' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white dark:text-text-secondary dark:hover:bg-neutral/50 dark:hover:text-text-primary'
               }`}
             >
               <i className={`${item.icon} text-base font-normal`}></i>
