@@ -77,7 +77,7 @@ export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; o
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto sidebar-scrollbar">
         {menuItems.map((item) => {
           const isActive = pathname.startsWith(item.path);
           return (
