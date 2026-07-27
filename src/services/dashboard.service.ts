@@ -1,5 +1,4 @@
 import axiosInstance from "@/lib/axios";
-import axiosServerInstance from "@/lib/axios-server";
 import { ApiBaseResponse } from "./auth.service";
 
 export interface DashboardFilterParams {
@@ -80,25 +79,4 @@ export const dashboardService = {
   },
 };
 
-export const dashboardServiceServer = {
-  async getDashboardKpi(params?: DashboardFilterParams): Promise<DashboardKpiResponse> {
-    const response = await axiosServerInstance.get<DashboardKpiResponse>("/dashboard/kpi", {
-      params: buildQueryParams(params)
-    });
-    return response.data;
-  },
 
-  async getDashboardChartTrend(params?: DashboardFilterParams): Promise<DashboardChartTrendResponse> {
-    const response = await axiosServerInstance.get<DashboardChartTrendResponse>("/dashboard/chart-trend", {
-      params: buildQueryParams(params)
-    });
-    return response.data;
-  },
-
-  async getDashboardTopWilayah(params?: DashboardFilterParams): Promise<DashboardTopWilayahResponse> {
-    const response = await axiosServerInstance.get<DashboardTopWilayahResponse>("/dashboard/top-wilayah", {
-      params: buildQueryParams(params)
-    });
-    return response.data;
-  },
-};
