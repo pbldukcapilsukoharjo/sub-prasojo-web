@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { pengajuanService } from '@/services/pengajuan.service';
@@ -56,9 +57,19 @@ export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; o
     <aside className="w-[260px] flex-shrink-0 bg-primary dark:bg-surface text-white dark:text-text-primary flex flex-col h-full shadow-xl lg:shadow-none">
       {/* Logo Area */}
       <div className="p-6 pb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wider leading-tight">PRASOJO</h1>
-          <p className="text-[10px] font-semibold tracking-widest text-white/80 dark:text-text-secondary">MONITORING SYSTEM</p>
+        <div className="flex items-center gap-3">
+          <Image
+            src="/dukcapil-skh.png"
+            alt="Logo Dukcapil"
+            width={52}
+            height={52}
+            className="object-contain brightness-0 invert opacity-90 dark:opacity-80"
+            priority
+          />
+          <div>
+            <h1 className="text-xl font-bold tracking-wider leading-tight">PRASOJO</h1>
+            <p className="text-[9px] font-semibold tracking-widest text-white/80 dark:text-text-secondary">MONITORING SYSTEM</p>
+          </div>
         </div>
         <button onClick={onClose} className="lg:hidden text-white/80 hover:text-white dark:text-text-secondary dark:hover:text-text-primary p-1">
           <i className="ri-close-line text-2xl"></i>
@@ -66,7 +77,7 @@ export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; o
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto">
+      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto sidebar-scrollbar">
         {menuItems.map((item) => {
           const isActive = pathname.startsWith(item.path);
           return (
@@ -75,10 +86,10 @@ export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; o
               href={item.path}
               onClick={onClose}
               onMouseEnter={() => handlePrefetch(item.path)}
-              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] font-semibold text-xs transition-colors ${
+              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-[12px] font-semibold text-xs transition-all duration-200 ${
                 isActive 
-                  ? 'bg-surface text-primary dark:bg-primary dark:text-white' 
-                  : 'text-white hover:bg-surface/10 dark:text-text-secondary dark:hover:bg-neutral/50 dark:hover:text-text-primary'
+                  ? 'bg-gradient-to-br from-white to-gray-50 text-primary shadow-[0_6px_16px_rgba(0,0,0,0.15)] ring-1 ring-black/5 dark:from-primary dark:to-[#5a0000] dark:text-white dark:ring-white/10 dark:shadow-[0_6px_16px_rgba(0,0,0,0.25)]' 
+                  : 'text-white/80 hover:bg-white/10 hover:text-white dark:text-text-secondary dark:hover:bg-neutral/50 dark:hover:text-text-primary'
               }`}
             >
               <i className={`${item.icon} text-base font-normal`}></i>

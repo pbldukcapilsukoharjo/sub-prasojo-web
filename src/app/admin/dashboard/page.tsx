@@ -1,41 +1,53 @@
-import React from 'react';
+'use client';
+
+import React, { useMemo, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import DashboardFilter from '@/components/Dashboard/DashboardFilter';
-import { dashboardServiceServer, DashboardFilterParams, KpiData, ChartTrendItem, TopWilayahItem } from '@/services/dashboard.service';
+import { dashboardService, DashboardFilterParams, KpiData, ChartTrendItem, TopWilayahItem } from '@/services/dashboard.service';
 import DashboardChartClient from '@/components/Dashboard/DashboardChartClient';
 
-type Props = {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+export default function Dashboard() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat dasbor...</div>}>
+      <DashboardContent />
+    </Suspense>
+  );
 }
 
-export default async function Dashboard({ searchParams }: Props) {
-  const resolvedSearchParams = await searchParams;
+function DashboardContent() {
+  const searchParams = useSearchParams();
 
-  const filters: DashboardFilterParams = {
-    id_layanan: resolvedSearchParams.id_layanan ? String(resolvedSearchParams.id_layanan) : undefined,
-    id_kecamatan: resolvedSearchParams.id_kecamatan ? String(resolvedSearchParams.id_kecamatan) : undefined,
-    periode_bulan: resolvedSearchParams.periode_bulan ? Number(resolvedSearchParams.periode_bulan) : undefined,
-    start_date: resolvedSearchParams.start_date as string | undefined,
-    end_date: resolvedSearchParams.end_date as string | undefined,
-  };
+  const filters: DashboardFilterParams = useMemo(() => ({
+    id_layanan: searchParams.get('id_layanan') || undefined,
+    id_kecamatan: searchParams.get('id_kecamatan') || undefined,
+    periode_bulan: searchParams.get('periode_bulan') ? Number(searchParams.get('periode_bulan')) : undefined,
+    start_date: searchParams.get('start_date') || undefined,
+    end_date: searchParams.get('end_date') || undefined,
+  }), [searchParams]);
 
-  let kpiData: KpiData | null = null;
-  let chartData: ChartTrendItem[] = [];
-  let topWilayahData: TopWilayahItem[] = [];
+  const { data: kpiRes, isLoading: isKpiLoading } = useQuery({
+    queryKey: ['dashboardKpi', filters],
+    queryFn: () => dashboardService.getDashboardKpi(filters),
+  });
 
-  try {
-    const [kpiRes, chartRes, wilayahRes] = await Promise.all([
-      dashboardServiceServer.getDashboardKpi(filters),
-      dashboardServiceServer.getDashboardChartTrend(filters),
-      dashboardServiceServer.getDashboardTopWilayah(filters)
-    ]);
+  const { data: chartRes, isLoading: isChartLoading } = useQuery({
+    queryKey: ['dashboardChart', filters],
+    queryFn: () => dashboardService.getDashboardChartTrend(filters),
+  });
 
-    if (kpiRes.status) kpiData = kpiRes.data;
-    if (chartRes.status) chartData = chartRes.data;
-    if (wilayahRes.status) topWilayahData = wilayahRes.data;
-  } catch (error) {
-    console.error("Failed to fetch dashboard data", error);
-  }
+  const { data: wilayahRes, isLoading: isWilayahLoading } = useQuery({
+    queryKey: ['dashboardWilayah', filters],
+    queryFn: () => dashboardService.getDashboardTopWilayah(filters),
+  });
+
+  const isLoading = isKpiLoading || isChartLoading || isWilayahLoading;
+  const loadingClass = isLoading ? "opacity-60 pointer-events-none" : "opacity-100";
+
+  const kpiData = kpiRes?.data;
+  const chartData = chartRes?.data || [];
+  const topWilayahData = wilayahRes?.data || [];
 
   // Aggregate chartData by month for the current year
   const currentYear = new Date().getFullYear();
@@ -184,7 +196,7 @@ export default async function Dashboard({ searchParams }: Props) {
     <div className="flex flex-col gap-6">
       <DashboardFilter />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 transition-opacity duration-300 ${loadingClass}`}>
         {statCards.map((stat, i) => (
           <div
             key={i}
@@ -212,7 +224,7 @@ export default async function Dashboard({ searchParams }: Props) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 items-start transition-opacity duration-300 ${loadingClass}`}>
         <div className="card bg-surface shadow-sm border border-border lg:col-span-8 flex flex-col p-0 overflow-hidden">
           <div className="px-6 pt-5 pb-4 border-b border-border flex items-center justify-between">
             <div>
