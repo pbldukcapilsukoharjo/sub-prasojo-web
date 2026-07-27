@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { pengajuanService } from '@/services/pengajuan.service';
@@ -56,9 +57,19 @@ export default function Sidebar({ onClose, onLogout }: { onClose?: () => void; o
     <aside className="w-[260px] flex-shrink-0 bg-primary dark:bg-surface text-white dark:text-text-primary flex flex-col h-full shadow-xl lg:shadow-none">
       {/* Logo Area */}
       <div className="p-6 pb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-wider leading-tight">PRASOJO</h1>
-          <p className="text-[10px] font-semibold tracking-widest text-white/80 dark:text-text-secondary">MONITORING SYSTEM</p>
+        <div className="flex items-center gap-3">
+          <Image
+            src="/dukcapil-skh.png"
+            alt="Logo Dukcapil"
+            width={52}
+            height={52}
+            className="object-contain brightness-0 invert opacity-90 dark:opacity-80"
+            priority
+          />
+          <div>
+            <h1 className="text-xl font-bold tracking-wider leading-tight">PRASOJO</h1>
+            <p className="text-[9px] font-semibold tracking-widest text-white/80 dark:text-text-secondary">MONITORING SYSTEM</p>
+          </div>
         </div>
         <button onClick={onClose} className="lg:hidden text-white/80 hover:text-white dark:text-text-secondary dark:hover:text-text-primary p-1">
           <i className="ri-close-line text-2xl"></i>
