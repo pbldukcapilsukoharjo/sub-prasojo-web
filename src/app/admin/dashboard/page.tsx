@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
@@ -9,6 +9,14 @@ import { dashboardService, DashboardFilterParams, KpiData, ChartTrendItem, TopWi
 import DashboardChartClient from '@/components/Dashboard/DashboardChartClient';
 
 export default function Dashboard() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-text-secondary">Memuat dasbor...</div>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
   const searchParams = useSearchParams();
 
   const filters: DashboardFilterParams = useMemo(() => ({
