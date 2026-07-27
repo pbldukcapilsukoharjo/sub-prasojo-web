@@ -30,21 +30,17 @@ export function parseApiError(error: any): { message: string; fieldErrors?: Reco
 export function handleApiError(error: any, setError?: (field: any, error: { type: string; message: string }) => void) {
   const { message, fieldErrors } = parseApiError(error);
 
+  if (message) {
+    toast.error(message);
+  }
+
   if (fieldErrors && setError) {
-    let firstFieldErrorHandled = false;
     Object.entries(fieldErrors).forEach(([field, messages]) => {
-      if (messages && messages.length > 0) {
+      if (Array.isArray(messages) && messages.length > 0) {
         setError(field, { type: "server", message: messages[0] });
-        if (!firstFieldErrorHandled) {
-          toast.error(messages[0]);
-          firstFieldErrorHandled = true;
-        }
+      } else if (typeof messages === "string") {
+        setError(field, { type: "server", message: messages as string });
       }
     });
-    if (!firstFieldErrorHandled && message) {
-      toast.error(message);
-    }
-  } else {
-    toast.error(message);
   }
 }
