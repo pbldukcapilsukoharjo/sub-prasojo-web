@@ -59,12 +59,25 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
     }
   }, [opHoursRes]);
 
-  // Sync target SLA prop
+  // Fetch SLA Target
+  const { data: slaTargetRes, isLoading: isSlaTargetLoading, isSuccess: isSlaTargetSuccess } = useQuery({
+    queryKey: ['slaTarget'],
+    queryFn: () => slaService.getSlaTarget(),
+    enabled: isOpen,
+    staleTime: Infinity,
+  });
+
+  // Sync target SLA
   useEffect(() => {
     if (isOpen) {
-      setTargetSla(currentSlaTarget);
+      if (isSlaTargetSuccess && slaTargetRes?.data) {
+        setTargetSla(slaTargetRes.data.sla_target_value);
+        setTargetSlaUnit(slaTargetRes.data.sla_target_unit);
+      } else if (!isSlaTargetSuccess) {
+        setTargetSla(currentSlaTarget);
+      }
     }
-  }, [isOpen, currentSlaTarget]);
+  }, [isOpen, currentSlaTarget, isSlaTargetSuccess, slaTargetRes]);
 
   // Stop body scroll when modal is open
   useEffect(() => {
@@ -173,6 +186,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
       queryClient.invalidateQueries({ queryKey: ['operationalHours'] });
       queryClient.invalidateQueries({ queryKey: ['slaKpi'] });
       queryClient.invalidateQueries({ queryKey: ['slaList'] });
+      queryClient.invalidateQueries({ queryKey: ['slaTarget'] });
 
       onClose();
     } catch (error) {
@@ -226,7 +240,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 relative">
-          {isOpHoursLoading && activeTab !== 'target_sla' ? (
+          {((isOpHoursLoading && activeTab !== 'target_sla') || (isSlaTargetLoading && activeTab === 'target_sla')) ? (
             <div className="flex items-center justify-center py-10">
               <i className="ri-loader-4-line animate-spin text-3xl text-primary"></i>
             </div>
@@ -402,7 +416,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
           <Button variant="secondary" onClick={onClose} disabled={isSaving}>
             Batal
           </Button>
-          <Button variant="primary" onClick={handleSave} disabled={isSaving || isOpHoursLoading}>
+          <Button variant="primary" onClick={handleSave} disabled={isSaving || isOpHoursLoading || isSlaTargetLoading}>
             {isSaving ? <i className="ri-loader-4-line animate-spin"></i> : 'Simpan Konfigurasi'}
           </Button>
         </div>

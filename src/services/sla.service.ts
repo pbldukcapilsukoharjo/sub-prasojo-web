@@ -109,6 +109,11 @@ export const slaService = {
     return response.data;
   },
 
+  async getSlaTarget(): Promise<ApiBaseResponse<{ sla_target_value: number, sla_target_unit: string }>> {
+    const response = await axiosInstance.get("/sla/target");
+    return response.data;
+  },
+
   async recalculateSla(): Promise<ApiBaseResponse<any>> {
     const response = await axiosInstance.post("/sla/recalculate");
     return response.data;
