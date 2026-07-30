@@ -5,6 +5,7 @@ import CustomSelect from '@/components/Forms/CustomSelect';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { slaService, OperationalHour } from '@/services/sla.service';
 import { handleApiError } from '@/lib/api-error';
+import toast from 'react-hot-toast';
 
 interface SlaConfigModalProps {
   isOpen: boolean;
@@ -30,8 +31,12 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
   const [targetSlaUnit, setTargetSlaUnit] = useState('jam');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Holiday Add State
-  const [newHolidayCode, setNewHolidayCode] = useState('');
+  // Custom Holiday State (UI Only for now)
+  const [customHolidays, setCustomHolidays] = useState<{ id: string, date: string, description: string }[]>([
+    { id: '1', date: '2026-08-17', description: 'Hari Kemerdekaan RI' }
+  ]);
+  const [newHolidayDate, setNewHolidayDate] = useState('');
+  const [newHolidayDesc, setNewHolidayDesc] = useState('');
 
   // Fetch Operational Hours
   const { data: opHoursRes, isLoading: isOpHoursLoading } = useQuery({
@@ -122,35 +127,22 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
     setJamKerja(newJamKerja);
   };
 
-  const handleAddHoliday = () => {
-    if (!newHolidayCode) return;
-    const index = jamKerja.findIndex(jk => jk.hari_kode === Number(newHolidayCode));
-    if (index !== -1) {
-      const newJamKerja = [...jamKerja];
-      newJamKerja[index].isActive = false; // Mark as holiday
-      setJamKerja(newJamKerja);
-      setNewHolidayCode('');
-    }
-  };
 
-  const handleRemoveHoliday = (hari_kode: number) => {
-    const index = jamKerja.findIndex(jk => jk.hari_kode === hari_kode);
-    if (index !== -1) {
-      const newJamKerja = [...jamKerja];
-      newJamKerja[index].isActive = true; // Mark as working day
-      setJamKerja(newJamKerja);
-    }
-  };
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
+      let successMessage = 'Konfigurasi berhasil disimpan.';
       
       // Update Target SLA
-      await slaService.updateSlaTarget({
+      const targetRes = await slaService.updateSlaTarget({
         sla_target_value: targetSla,
         sla_target_unit: targetSlaUnit
       });
+      
+      if (targetRes && (targetRes as any).message) {
+        successMessage = (targetRes as any).message;
+      }
 
       // Update Operational Hours (only those that changed)
       if (opHoursRes?.data) {
@@ -167,11 +159,25 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
               originalOpen !== current.open || 
               originalClose !== current.close
             ) {
+              const formatTime = (timeStr: string) => {
+                if (!timeStr) return "00:00:00";
+                const parts = timeStr.split(':');
+                const h = (parts[0] || '00').padStart(2, '0');
+                const m = (parts[1] || '00').padStart(2, '0');
+                const s = (parts[2] || '00').padStart(2, '0');
+                return `${h}:${m}:${s}`;
+              };
+
               promises.push(
                 slaService.updateOperationalHour(current.id, {
-                  is_working_day: current.isActive,
-                  start_time: current.open,
-                  end_time: current.close
+                  is_libur: !current.isActive,
+                  jam_buka: formatTime(current.open),
+                  jam_tutup: formatTime(current.close)
+                }).then(res => {
+                  if (res && (res as any).message) {
+                    successMessage = (res as any).message;
+                  }
+                  return res;
                 })
               );
             }
@@ -188,6 +194,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
       queryClient.invalidateQueries({ queryKey: ['slaList'] });
       queryClient.invalidateQueries({ queryKey: ['slaTarget'] });
 
+      toast.success(successMessage);
       onClose();
     } catch (error) {
       handleApiError(error);
@@ -196,8 +203,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
     }
   };
 
-  const availableHolidays = jamKerja.filter(jk => jk.isActive);
-  const currentHolidays = jamKerja.filter(jk => !jk.isActive);
+
 
   return (
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
@@ -303,36 +309,63 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                     <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Tetapkan Hari Libur</span>
                     <div className="flex gap-3 items-end">
                       <div className="flex-1">
-                        <CustomSelect 
-                          label="Pilih Hari Kerja"
-                          value={newHolidayCode}
-                          onChange={(val) => setNewHolidayCode(String(val))}
-                          options={[
-                            { label: 'Pilih hari...', value: '' },
-                            ...availableHolidays.map(h => ({ label: h.day, value: String(h.hari_kode) }))
-                          ]}
+                        <Input
+                          label="Tanggal"
+                          type="date"
+                          value={newHolidayDate}
+                          onChange={(e) => setNewHolidayDate(e.target.value)}
                         />
                       </div>
-                      <Button variant="primary" className="!h-[46px]" icon="ri-add-line" iconPosition="left" onClick={handleAddHoliday} disabled={!newHolidayCode}>
+                      <div className="flex-[2]">
+                        <Input
+                          label="Keterangan"
+                          type="text"
+                          placeholder="Contoh: Libur Nasional"
+                          value={newHolidayDesc}
+                          onChange={(e) => setNewHolidayDesc(e.target.value)}
+                        />
+                      </div>
+                      <Button 
+                        variant="primary" 
+                        className="!h-[46px]" 
+                        icon="ri-add-line" 
+                        iconPosition="left" 
+                        onClick={() => {
+                          if (newHolidayDate && newHolidayDesc) {
+                            setCustomHolidays([...customHolidays, { id: Date.now().toString(), date: newHolidayDate, description: newHolidayDesc }]);
+                            setNewHolidayDate('');
+                            setNewHolidayDesc('');
+                          }
+                        }} 
+                        disabled={!newHolidayDate || !newHolidayDesc}
+                      >
                         Tambah
                       </Button>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-3 mt-2">
-                    {currentHolidays.length > 0 ? (
-                      currentHolidays.map((holiday) => (
+                    {customHolidays.length > 0 ? (
+                      customHolidays.map((holiday) => (
                         <div key={holiday.id} className="flex items-center justify-between p-4 rounded-xl border border-border bg-white hover:border-gray-300 transition-colors group">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-danger/10 text-danger flex items-center justify-center">
-                              <i className="ri-calendar-close-line text-lg"></i>
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-danger/10 text-danger flex flex-col items-center justify-center">
+                              <span className="text-sm font-bold leading-none">{new Date(holiday.date).getDate()}</span>
+                              <span className="text-[10px] uppercase font-semibold mt-0.5">{new Date(holiday.date).toLocaleString('id-ID', { month: 'short' })}</span>
                             </div>
-                            <span className="font-bold text-text-primary text-lg">{holiday.day}</span>
+                            <div>
+                              <div className="font-bold text-text-primary text-base">{holiday.description}</div>
+                              <div className="text-xs text-text-secondary mt-0.5">
+                                {new Date(holiday.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                              </div>
+                            </div>
                           </div>
                           <button 
-                            onClick={() => handleRemoveHoliday(holiday.hari_kode)}
+                            onClick={() => {
+                              setCustomHolidays(customHolidays.filter(h => h.id !== holiday.id));
+                            }}
                             className="w-9 h-9 rounded flex items-center justify-center text-gray-400 hover:text-danger hover:bg-danger/10 transition-colors opacity-0 group-hover:opacity-100"
-                            title="Kembalikan sebagai hari kerja"
+                            title="Hapus hari libur"
                           >
                             <i className="ri-delete-bin-line text-lg"></i>
                           </button>
@@ -340,7 +373,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                       ))
                     ) : (
                       <div className="text-center py-8 text-text-secondary text-sm border border-dashed border-border rounded-xl">
-                        Belum ada hari libur mingguan yang ditetapkan
+                        Belum ada hari libur yang ditetapkan
                       </div>
                     )}
                   </div>
