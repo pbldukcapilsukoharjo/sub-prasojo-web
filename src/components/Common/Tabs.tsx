@@ -27,7 +27,7 @@ export default function Tabs({ tabs, activeTab, onChange, className = '' }: Tabs
           >
             {tab.label}
             {isActive && (
-              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-900 rounded-t-md"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-900 dark:bg-white rounded-t-md"></div>
             )}
           </button>
         );
