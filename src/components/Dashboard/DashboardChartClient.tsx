@@ -12,7 +12,7 @@ interface DashboardChartClientProps {
 
 export default function DashboardChartClient({ options, series }: DashboardChartClientProps) {
   return (
-    <div className="w-full relative px-2 pt-4 pb-2" style={{ height: 360 }}>
+    <div className="w-full relative px-4 sm:px-6 pt-4 pb-4" style={{ height: 370 }}>
       {series && series.length > 0 && series[0].data.length > 0 ? (
         <Chart
           options={options}

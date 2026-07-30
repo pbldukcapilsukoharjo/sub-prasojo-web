@@ -114,7 +114,7 @@ function DashboardContent() {
     grid: {
       borderColor: '#F3F4F6',
       strokeDashArray: 4,
-      padding: { left: 8, right: 8 },
+      padding: { left: 16, right: 16, bottom: 10 },
     },
     legend: {
       show: true,

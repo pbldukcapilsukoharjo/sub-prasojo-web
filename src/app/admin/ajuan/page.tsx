@@ -109,7 +109,7 @@ export default function Ajuan() {
     placeholderData: keepPreviousData,
   });
 
-  const { data: chartRes } = useQuery({
+  const { data: chartRes, isLoading: isChartLoading } = useQuery({
     queryKey: ["ajuanChart", chartParams],
     queryFn: () => pengajuanService.getChartAjuan(chartParams),
     placeholderData: keepPreviousData,
@@ -318,7 +318,7 @@ export default function Ajuan() {
         <CustomSelect label="Status Ajuan" value={filterStatus} onChange={(val) => setFilterStatus(String(val))} options={statusOptions} />
       </FilterCard>
 
-      <AjuanCharts chartStatus={chartStatus} chartLayanan={chartLayanan} />
+      <AjuanCharts chartStatus={chartStatus} chartLayanan={chartLayanan} isLoading={isChartLoading} />
 
       {/* Table Card */}
       <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? "opacity-60 pointer-events-none" : "opacity-100"}`}>

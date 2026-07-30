@@ -456,7 +456,12 @@ export default function PeringkatOperatorPage() {
               </Button>
             </div>
             <div className="w-full min-h-[300px]">
-              {rankingsData.length > 0 ? (
+              {isListLoading ? (
+                <div className="flex flex-col items-center justify-center h-full text-sm py-12">
+                  <i className="ri-loader-4-line text-3xl animate-spin mb-3 text-primary"></i>
+                  <span className="font-bold text-text-secondary animate-pulse">Sedang memuat data...</span>
+                </div>
+              ) : rankingsData.length > 0 ? (
                 <Table 
                   columns={leaderboardColumns} 
                   data={rankingsData} 
@@ -552,7 +557,12 @@ export default function PeringkatOperatorPage() {
                 <h4 className="text-xs font-bold text-text-primary tracking-wide uppercase">Chart Jumlah Layanan per Bulan</h4>
               </div>
               <div className="w-full h-[280px]">
-                {mounted && (
+                {isDetailLoading ? (
+                  <div className="flex flex-col items-center justify-center h-full text-sm">
+                    <i className="ri-loader-4-line text-3xl animate-spin mb-3 text-primary"></i>
+                    <span className="font-bold text-text-secondary animate-pulse">Memuat Grafik...</span>
+                  </div>
+                ) : mounted && (
                   <Chart options={barOptions} series={barSeries} type="bar" width="100%" height={260} />
                 )}
               </div>
@@ -573,7 +583,12 @@ export default function PeringkatOperatorPage() {
               }} className="mb-2" />
 
               <div className="w-full border border-border rounded-xl overflow-hidden min-h-[200px]">
-                {riwayatData.length > 0 ? (
+                {isDetailLoading ? (
+                  <div className="flex flex-col items-center justify-center h-full text-sm py-10">
+                    <i className="ri-loader-4-line text-3xl animate-spin mb-3 text-primary"></i>
+                    <span className="font-bold text-text-secondary animate-pulse">Sedang memuat data...</span>
+                  </div>
+                ) : riwayatData.length > 0 ? (
                   <Table 
                     columns={historyColumns} 
                     data={riwayatData} 

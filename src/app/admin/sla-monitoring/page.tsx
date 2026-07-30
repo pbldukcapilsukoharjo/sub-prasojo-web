@@ -262,7 +262,6 @@ export default function SlaMonitoringPage() {
           value={
             <>
               <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || 0}</span>
-              <span className="text-sm font-semibold text-text-secondary">jam</span>
             </>
           }
         />
