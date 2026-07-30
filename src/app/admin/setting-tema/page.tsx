@@ -43,16 +43,7 @@ export default function SettingTemaPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-5xl mx-auto w-full">
-      {/* Page Header */}
-      <div className="card shadow-sm border border-border p-6 lg:p-8 flex flex-col text-center items-center justify-center">
-        <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-4">
-          <i className="ri-paint-brush-line text-3xl"></i>
-        </div>
-        <h1 className="text-2xl lg:text-3xl font-bold text-text-primary mb-2">Pengaturan Tema</h1>
-        <p className="text-sm text-text-secondary font-medium">
-          Sesuaikan warna utama dan mode tampilan sistem sesuai dengan preferensi visual Anda.
-        </p>
-      </div>
+
 
       <div className="grid grid-cols-1 gap-6">
         
