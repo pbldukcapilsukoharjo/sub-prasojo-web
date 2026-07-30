@@ -274,7 +274,12 @@ export default function DetailUlasanPage() {
           </div>
           {/* Reviews List */}
           <div className="flex flex-col gap-4 min-h-[400px]">
-            {reviews.length > 0 ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center h-full text-sm py-12 border border-border rounded-xl bg-surface">
+                <i className="ri-loader-4-line text-3xl animate-spin mb-3 text-primary"></i>
+                <span className="font-bold text-text-secondary animate-pulse">Sedang memuat data...</span>
+              </div>
+            ) : reviews.length > 0 ? (
               reviews.map((review) => (
                 <div key={review.id_review} className="card shadow-sm border border-border p-6">
                   <div className="flex justify-between items-start mb-4">
