@@ -114,7 +114,7 @@ function DashboardContent() {
     grid: {
       borderColor: '#F3F4F6',
       strokeDashArray: 4,
-      padding: { left: 8, right: 8 },
+      padding: { left: 16, right: 16, bottom: 10 },
     },
     legend: {
       show: true,
@@ -196,7 +196,7 @@ function DashboardContent() {
     <div className="flex flex-col gap-6">
       <DashboardFilter />
 
-      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 transition-opacity duration-300 ${loadingClass}`}>
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 transition-opacity duration-300 ${loadingClass}`}>
         {statCards.map((stat, i) => (
           <div
             key={i}

@@ -26,14 +26,14 @@
 }
 
 .dark {
-  --background: #111827;
-  --border: #374151;
-  --neutral: #4b5563;
-  --surface: #1f2937;
-  --surface-secondary: #111827;
+  --background: #0f172a;
+  --border: #334155;
+  --neutral: #475569;
+  --surface: #1e293b;
+  --surface-secondary: #0f172a;
 
-  --text-primary: #f9fafb;
-  --text-secondary: #9ca3af;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
 }
 
 :root {

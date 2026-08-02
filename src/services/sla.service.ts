@@ -109,6 +109,11 @@ export const slaService = {
     return response.data;
   },
 
+  async getSlaTarget(): Promise<ApiBaseResponse<{ sla_target_value: number, sla_target_unit: string }>> {
+    const response = await axiosInstance.get("/sla/target");
+    return response.data;
+  },
+
   async recalculateSla(): Promise<ApiBaseResponse<any>> {
     const response = await axiosInstance.post("/sla/recalculate");
     return response.data;
@@ -119,8 +124,8 @@ export const slaService = {
     return response.data;
   },
 
-  async updateOperationalHour(id: number, payload: { is_working_day: boolean, start_time: string, end_time: string }): Promise<ApiBaseResponse<OperationalHour>> {
-    const response = await axiosInstance.patch(`/operational-hours/${id}`, payload);
+  async updateOperationalHour(id: number, payload: { is_libur: boolean, jam_buka: string, jam_tutup: string }): Promise<ApiBaseResponse<OperationalHour>> {
+    const response = await axiosInstance.put(`/operational-hours/${id}`, payload);
     return response.data;
   }
 };

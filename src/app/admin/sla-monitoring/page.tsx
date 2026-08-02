@@ -223,7 +223,7 @@ export default function SlaMonitoringPage() {
       </FilterCard>
 
       {/* 2. Metric Cards (Middle) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <StatCard 
           title="Rata-Rata Waktu Proses"
           icon="ri-time-line"
@@ -262,7 +262,6 @@ export default function SlaMonitoringPage() {
           value={
             <>
               <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">&lt; {kpiData?.target_sla || 0}</span>
-              <span className="text-sm font-semibold text-text-secondary">jam</span>
             </>
           }
         />
@@ -295,7 +294,12 @@ export default function SlaMonitoringPage() {
           </Button>
         </div>
         <div className="w-full min-h-[300px]">
-          {mappedData.length > 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-sm py-12">
+              <i className="ri-loader-4-line text-3xl animate-spin mb-3 text-primary"></i>
+              <span className="font-bold text-text-secondary animate-pulse">Sedang memuat data...</span>
+            </div>
+          ) : mappedData.length > 0 ? (
             <Table 
               columns={columns} 
               data={mappedData} 

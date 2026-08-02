@@ -10,9 +10,10 @@ import { ChartDataItem } from '@/services/pengajuan.service';
 interface AjuanChartsProps {
   chartStatus?: ChartDataItem[];
   chartLayanan?: ChartDataItem[];
+  isLoading?: boolean;
 }
 
-export default function AjuanCharts({ chartStatus = [], chartLayanan = [] }: AjuanChartsProps) {
+export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoading = false }: AjuanChartsProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -204,8 +205,23 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [] }: Aju
     },
   ];
 
-  if (!mounted) {
-    return <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 h-[380px] bg-background/50 rounded-2xl animate-pulse"></div>;
+  if (!mounted || isLoading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="card shadow-sm border border-border flex items-center justify-center min-h-[380px] bg-surface">
+          <div className="flex flex-col items-center justify-center gap-3">
+             <i className="ri-loader-4-line text-3xl animate-spin text-primary"></i>
+             <span className="font-bold text-text-secondary animate-pulse text-sm">Memuat Grafik...</span>
+          </div>
+        </div>
+        <div className="card shadow-sm border border-border flex items-center justify-center min-h-[380px] bg-surface">
+          <div className="flex flex-col items-center justify-center gap-3">
+             <i className="ri-loader-4-line text-3xl animate-spin text-primary"></i>
+             <span className="font-bold text-text-secondary animate-pulse text-sm">Memuat Grafik...</span>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

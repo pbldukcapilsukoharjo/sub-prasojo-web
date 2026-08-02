@@ -19,7 +19,7 @@ export default function Table({ columns, data, className = '', onRowClick }: Tab
     <div className={`w-full overflow-x-auto ${className}`}>
       <table className="w-full min-w-[1000px] border-collapse">
         <thead>
-          <tr className="bg-[#D1D5DB] bg-opacity-50">
+          <tr className="bg-gray-100 dark:bg-white/5 border-b border-gray-200 dark:border-white/10">
             {columns.map((col) => (
               <th
                 key={col.key}
@@ -32,12 +32,12 @@ export default function Table({ columns, data, className = '', onRowClick }: Tab
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-gray-200 dark:divide-white/10">
           {data.map((row, rowIndex) => (
             <tr 
               key={rowIndex} 
               onClick={() => onRowClick && onRowClick(row)}
-              className={`transition-colors ${onRowClick ? 'cursor-pointer hover:bg-gray-100 even:bg-background' : 'hover:bg-gray-100 even:bg-background'}`}
+              className={`transition-colors ${onRowClick ? 'cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10' : 'hover:bg-gray-50 dark:hover:bg-white/5'} even:bg-gray-50/50 dark:even:bg-white/5`}
             >
               {columns.map((col) => (
                 <td

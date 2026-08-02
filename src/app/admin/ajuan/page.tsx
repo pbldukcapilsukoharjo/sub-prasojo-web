@@ -109,7 +109,7 @@ export default function Ajuan() {
     placeholderData: keepPreviousData,
   });
 
-  const { data: chartRes } = useQuery({
+  const { data: chartRes, isLoading: isChartLoading } = useQuery({
     queryKey: ["ajuanChart", chartParams],
     queryFn: () => pengajuanService.getChartAjuan(chartParams),
     placeholderData: keepPreviousData,
@@ -318,7 +318,7 @@ export default function Ajuan() {
         <CustomSelect label="Status Ajuan" value={filterStatus} onChange={(val) => setFilterStatus(String(val))} options={statusOptions} />
       </FilterCard>
 
-      <AjuanCharts chartStatus={chartStatus} chartLayanan={chartLayanan} />
+      <AjuanCharts chartStatus={chartStatus} chartLayanan={chartLayanan} isLoading={isChartLoading} />
 
       {/* Table Card */}
       <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? "opacity-60 pointer-events-none" : "opacity-100"}`}>
@@ -334,7 +334,12 @@ export default function Ajuan() {
         </div>
 
         <div className="w-full mt-2 min-h-[300px]">
-          {mappedData.length > 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-full text-sm py-12">
+              <i className="ri-loader-4-line text-3xl animate-spin mb-3 text-primary"></i>
+              <span className="font-bold text-text-secondary animate-pulse">Sedang memuat data...</span>
+            </div>
+          ) : mappedData.length > 0 ? (
             <Table columns={tableColumns} data={mappedData} onRowClick={handleRowClick} />
           ) : (
             <div className="flex items-center justify-center h-full text-sm text-text-secondary py-12">Tidak ada data ditemukan</div>
