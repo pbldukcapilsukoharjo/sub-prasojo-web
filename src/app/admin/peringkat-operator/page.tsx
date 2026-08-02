@@ -412,7 +412,7 @@ export default function PeringkatOperatorPage() {
           </FilterCard>
 
           {/* Metric Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-opacity duration-300 ${isListLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
             <StatCard 
               title="TOTAL AJUAN"
               value={<span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{kpiGlobal?.total_ajuan?.toLocaleString('id-ID') || '0'}</span>}
@@ -521,7 +521,7 @@ export default function PeringkatOperatorPage() {
             </div>
 
             {/* Middle: operator metrics cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-opacity duration-300 ${isDetailLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
               <StatCard 
                 title="TOTAL AJUAN"
                 value={<span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{operatorKpi?.total_ajuan?.toLocaleString('id-ID') || '0'}</span>}

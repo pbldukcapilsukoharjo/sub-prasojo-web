@@ -167,7 +167,7 @@ export default function DistribusiWilayahPage() {
       </FilterCard>
 
       {/* 2. Metric Cards (Middle) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <StatCard 
           title="TOTAL KECAMATAN"
           icon="ri-map-pin-line"

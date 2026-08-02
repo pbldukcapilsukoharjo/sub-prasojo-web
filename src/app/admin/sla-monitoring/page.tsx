@@ -223,7 +223,7 @@ export default function SlaMonitoringPage() {
       </FilterCard>
 
       {/* 2. Metric Cards (Middle) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <StatCard 
           title="Rata-Rata Waktu Proses"
           icon="ri-time-line"
