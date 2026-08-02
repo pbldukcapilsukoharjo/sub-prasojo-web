@@ -106,7 +106,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
 
   const deleteHolidayMutation = useMutation({
     mutationFn: (id: number) => holidayService.deleteHoliday(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       toast.success('Berhasil menghapus hari libur');
       queryClient.invalidateQueries({ queryKey: ['holidays'] });
       setSelectedHolidays((prev) => prev.filter(hid => hid !== id));
