@@ -15,8 +15,11 @@ export interface DistribusiWilayahItem {
   total_ajuan: number;
   rata_rata_waktu: string;
   rasio_selesai_persen: number;
-  id_kecamatan: string;
-  nama_kecamatan: string;
+  id_kecamatan?: string;
+  nama_kecamatan?: string;
+  id_desa?: string;
+  nama_desa?: string;
+  layanan?: Record<string, number>;
 }
 
 export interface DistribusiWilayahResponse {

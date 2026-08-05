@@ -86,7 +86,7 @@ export default function Navbar({ onMenuClick }: { onMenuClick?: () => void }) {
             )} */}
           </div>
           {subtitle && (
-            <p className="text-[11px] lg:text-xs font-medium text-text-secondary mt-0.5">{subtitle}</p>
+            <p className="hidden sm:block text-[11px] lg:text-xs font-medium text-text-secondary mt-0.5">{subtitle}</p>
           )}
         </div>
       </div>
