@@ -241,7 +241,7 @@ export default function DetailUlasanPage() {
       {/* 2. Below Filters Layout */}
       <div className={`grid grid-cols-1 lg:grid-cols-12 gap-6 items-start transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         {/* Left: Rating Breakdown (Summary Card) */}
-        <div className="card shadow-sm border border-border lg:col-span-4 p-6 flex flex-col items-center bg-surface sticky top-6">
+        <div className="card shadow-sm border border-border lg:col-span-4 p-6 flex flex-col items-center bg-surface lg:sticky lg:top-6">
           <span className="text-6xl font-bold font-manrope text-text-primary mb-2">{avgRating.toFixed(1)}</span>
           <div className="flex gap-1 text-[#F59E0B] text-2xl mb-4">
             {renderStars(avgRating)}
