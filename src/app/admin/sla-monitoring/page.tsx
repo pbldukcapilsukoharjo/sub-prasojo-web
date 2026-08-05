@@ -160,7 +160,7 @@ export default function SlaMonitoringPage() {
 
   const mappedData = useMemo(() => Array.isArray(listData) ? listData.map((item, idx) => {
     return {
-      rank: String((currentPage - 1) * perPage + idx + 1).padStart(2, '0'),
+      no: String((currentPage - 1) * perPage + idx + 1).padStart(2, '0'),
       service: item.jenis_layanan,
       count: item.jumlah_ajuan,
       avgTime: item.rata_rata_waktu
@@ -168,7 +168,7 @@ export default function SlaMonitoringPage() {
   }) : [], [listData, currentPage, perPage]);
 
   const columns = useMemo(() => [
-    { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-medium text-text-primary">{row.rank}</span> },
+    { key: 'no', header: 'No', align: 'center' as const, render: (row: any) => <span className="font-medium text-text-primary">{row.no}</span> },
     { key: 'service', header: 'Jenis Layanan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs uppercase">{row.service}</span> },
     { key: 'count', header: 'Jumlah Ajuan', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.count}</span> },
     { key: 'avgTime', header: 'Rata Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.avgTime}</span> }
