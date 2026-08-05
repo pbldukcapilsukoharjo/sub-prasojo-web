@@ -296,24 +296,26 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
         </div>
 
         {/* Tabs */}
-        <div className="px-6 flex items-center gap-8 border-b border-border">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`whitespace-nowrap py-4 text-sm font-bold transition-colors relative ${
-                  isActive ? 'text-primary' : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                {tab.label}
-                {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary rounded-t-md"></div>
-                )}
-              </button>
-            );
-          })}
+        <div className="border-b border-border">
+          <div className="px-6 flex items-center gap-6 sm:gap-8 overflow-x-auto scrollbar-hide">
+            {tabs.map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`whitespace-nowrap flex-shrink-0 py-4 text-sm font-bold transition-colors relative ${
+                    isActive ? 'text-primary' : 'text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  {tab.label}
+                  {isActive && (
+                    <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-primary rounded-t-md"></div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Content */}
@@ -331,38 +333,44 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                   </p>
                   <div className="flex flex-col gap-3">
                     {jamKerja.map((day, idx) => (
-                      <div key={day.day} className={`flex items-center justify-between p-4 rounded-xl border ${day.isActive ? 'border-primary/20 bg-primary/5' : 'border-border bg-gray-50/50 opacity-60'} transition-all`}>
-                        <div className="flex items-center gap-4 w-32">
-                          <div 
-                            className={`w-5 h-5 rounded flex items-center justify-center cursor-pointer border ${day.isActive ? 'bg-primary border-primary text-white' : 'border-neutral bg-white'}`}
-                            onClick={() => handleToggleDay(idx)}
-                          >
-                            {day.isActive && <i className="ri-check-line text-sm"></i>}
+                      <div key={day.day} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl border ${day.isActive ? 'border-primary/20 bg-primary/5' : 'border-border bg-gray-50/50 opacity-60'} transition-all`}>
+                        <div className="flex items-center justify-between sm:justify-start w-full sm:w-32">
+                          <div className="flex items-center gap-4">
+                            <div 
+                              className={`w-5 h-5 rounded flex items-center justify-center cursor-pointer border flex-shrink-0 ${day.isActive ? 'bg-primary border-primary text-white' : 'border-neutral bg-white'}`}
+                              onClick={() => handleToggleDay(idx)}
+                            >
+                              {day.isActive && <i className="ri-check-line text-sm"></i>}
+                            </div>
+                            <span className={`font-bold ${day.isActive ? 'text-text-primary' : 'text-text-secondary'}`}>{day.day}</span>
                           </div>
-                          <span className={`font-bold ${day.isActive ? 'text-text-primary' : 'text-text-secondary'}`}>{day.day}</span>
+                          
+                          <div className="text-sm text-text-secondary font-medium sm:hidden">
+                            {calculateDuration(day.open, day.close)}
+                          </div>
                         </div>
                         
-                        <div className="flex items-center gap-3 flex-1">
-                          <span className="text-sm text-text-secondary w-10">Buka</span>
+                        <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-3 flex-1 w-full">
+                          <span className="text-sm text-text-secondary w-8 sm:w-10">Buka</span>
                           <input 
                             type="time" 
                             value={day.open} 
                             onChange={(e) => handleTimeChange(idx, 'open', e.target.value)}
                             disabled={!day.isActive}
-                            className="border border-border rounded-lg px-3 py-1.5 text-sm font-semibold bg-white w-[110px] outline-none focus:border-primary disabled:opacity-50" 
+                            className="border border-border rounded-lg px-2 sm:px-3 py-1.5 text-sm font-semibold bg-white flex-1 sm:w-[110px] sm:flex-none outline-none focus:border-primary disabled:opacity-50 min-w-0" 
                           />
-                          <span className="text-sm text-text-secondary text-center w-8">—</span>
+                          <span className="text-sm text-text-secondary text-center w-4 sm:w-8">—</span>
                           <span className="text-sm text-text-secondary w-10">Tutup</span>
                           <input 
                             type="time" 
                             value={day.close} 
                             onChange={(e) => handleTimeChange(idx, 'close', e.target.value)}
                             disabled={!day.isActive}
-                            className="border border-border rounded-lg px-3 py-1.5 text-sm font-semibold bg-white w-[110px] outline-none focus:border-primary disabled:opacity-50" 
+                            className="border border-border rounded-lg px-2 sm:px-3 py-1.5 text-sm font-semibold bg-white flex-1 sm:w-[110px] sm:flex-none outline-none focus:border-primary disabled:opacity-50 min-w-0" 
                           />
                         </div>
 
-                        <div className="text-sm text-text-secondary font-medium w-16 text-right">
+                        <div className="hidden sm:block text-sm text-text-secondary font-medium w-16 text-right">
                           {calculateDuration(day.open, day.close)}
                         </div>
                       </div>
@@ -377,13 +385,13 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                     Tambahkan hari libur operasional (non-aktif). Hari libur tidak dihitung dalam kalkulasi SLA.
                   </p>
                   
-                  <div className="bg-gray-50 p-5 rounded-xl border border-border flex flex-col gap-4">
-                    <div className="flex justify-between items-center">
+                  <div className="bg-gray-50 p-4 sm:p-5 rounded-xl border border-border flex flex-col gap-4">
+                    <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-3">
                       <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Tetapkan Hari Libur</span>
-                      <div className="flex items-center gap-2">
+                      <div className="flex w-full sm:w-auto items-center gap-2">
                         <Button
                           variant="secondary"
-                          className="!py-1.5 !px-3 !text-xs !h-auto"
+                          className="!py-1.5 !px-3 !text-xs !h-auto flex-1 sm:flex-none justify-center"
                           icon="ri-download-2-line"
                           iconPosition="left"
                           onClick={() => holidayService.downloadTemplate()}
@@ -399,7 +407,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                         />
                         <Button
                           variant="secondary"
-                          className="!py-1.5 !px-3 !text-xs !h-auto"
+                          className="!py-1.5 !px-3 !text-xs !h-auto flex-1 sm:flex-none justify-center"
                           icon={importHolidayMutation.isPending ? "ri-loader-4-line animate-spin" : "ri-upload-2-line"}
                           iconPosition="left"
                           onClick={() => fileInputRef.current?.click()}
@@ -409,8 +417,8 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                         </Button>
                       </div>
                     </div>
-                    <div className="flex gap-3 items-end">
-                      <div className="flex-1">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:items-end">
+                      <div className="flex-1 w-full">
                         <Input
                           label="Tanggal"
                           type="date"
@@ -418,7 +426,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                           onChange={(e) => setNewHolidayDate(e.target.value)}
                         />
                       </div>
-                      <div className="flex-[2]">
+                      <div className="flex-[2] w-full">
                         <Input
                           label="Keterangan"
                           type="text"
@@ -429,7 +437,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                       </div>
                       <Button 
                         variant="primary" 
-                        className="!h-[46px]" 
+                        className="!h-[46px] w-full sm:w-auto" 
                         icon={addHolidayMutation.isPending ? "ri-loader-4-line animate-spin" : "ri-add-line"} 
                         iconPosition="left" 
                         onClick={() => {
@@ -447,18 +455,18 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                   </div>
 
                   <div className="flex flex-col gap-3 mt-2">
-                    <div className="flex justify-between items-center px-1">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center px-1 gap-2">
                       <div className="flex items-center gap-3">
                         <span className="text-sm font-bold text-text-primary">Daftar Libur Tahun {currentYear}</span>
                         {selectedHolidays.length > 0 && (
                           <span className="text-xs font-medium text-text-secondary">({selectedHolidays.length} terpilih)</span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                         {selectedHolidays.length > 0 && (
                           <Button
                             variant="secondary"
-                            className="!py-1.5 !px-3 !text-xs !h-8 mr-2 text-danger border-danger/30 hover:bg-danger/10"
+                            className="!py-1.5 !px-3 !text-xs !h-8 sm:mr-2 text-danger border-danger/30 hover:bg-danger/10"
                             icon={bulkDeleteHolidayMutation.isPending ? "ri-loader-4-line animate-spin" : "ri-delete-bin-line"}
                             iconPosition="left"
                             onClick={() => {
@@ -468,12 +476,14 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                             }}
                             disabled={bulkDeleteHolidayMutation.isPending}
                           >
-                            Hapus Terpilih
+                            Hapus
                           </Button>
                         )}
-                        <button onClick={() => setCurrentYear(currentYear - 1)} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 text-text-secondary"><i className="ri-arrow-left-s-line"></i></button>
-                        <span className="text-sm font-bold">{currentYear}</span>
-                        <button onClick={() => setCurrentYear(currentYear + 1)} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 text-text-secondary"><i className="ri-arrow-right-s-line"></i></button>
+                        <div className="flex items-center gap-2">
+                          <button onClick={() => setCurrentYear(currentYear - 1)} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 text-text-secondary"><i className="ri-arrow-left-s-line"></i></button>
+                          <span className="text-sm font-bold">{currentYear}</span>
+                          <button onClick={() => setCurrentYear(currentYear + 1)} className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 text-text-secondary"><i className="ri-arrow-right-s-line"></i></button>
+                        </div>
                       </div>
                     </div>
                     {isHolidaysLoading ? (
@@ -549,17 +559,17 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                       <span className="font-bold text-primary">Target Waktu SLA</span>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center justify-center flex-wrap gap-2 sm:gap-4 w-full">
                       <span className="text-3xl font-bold text-primary">&lt;</span>
-                      <div className="w-24">
+                      <div className="w-20 sm:w-24 flex-shrink-0">
                         <input 
                           type="number" 
                           value={targetSla}
                           onChange={(e) => setTargetSla(Number(e.target.value))}
-                          className="w-full text-center text-3xl font-bold text-primary bg-white border-2 border-primary rounded-xl p-2 outline-none"
+                          className="w-full text-center text-2xl sm:text-3xl font-bold text-primary bg-white border-2 border-primary rounded-xl p-2 outline-none"
                         />
                       </div>
-                      <div className="w-32">
+                      <div className="w-28 sm:w-32 flex-shrink-0">
                         <CustomSelect 
                           options={[
                             { label: 'Jam', value: 'jam' },
@@ -567,7 +577,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                           ]}
                           value={targetSlaUnit}
                           onChange={(val) => setTargetSlaUnit(String(val))}
-                          className="!h-[52px] font-bold text-lg border-2 border-primary"
+                          className="!h-[52px] font-bold text-base sm:text-lg border-2 border-primary"
                         />
                       </div>
                     </div>

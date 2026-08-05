@@ -96,25 +96,27 @@ export default function DistribusiWilayahPage() {
   }, []);
 
   const mappedData = useMemo(() => data?.data?.map((item) => ({
-    kecamatan: item.nama_kecamatan,
-    id_kecamatan: item.id_kecamatan,
+    wilayahName: item.nama_desa || item.nama_kecamatan,
+    wilayahId: item.id_desa || item.id_kecamatan,
     totalAjuan: item.total_ajuan,
     rataWaktu: item.rata_rata_waktu,
     rasioSelesai: item.rasio_selesai_persen,
   })) || [], [data]);
 
+  const isKecamatanFiltered = kecamatan !== 'all';
+
   const columns = useMemo(() => [
     { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-medium text-text-primary">{String((currentPage - 1) * perPage + idx + 1).padStart(2, '0')}</span> },
-    { key: 'kecamatan', header: 'Kecamatan', render: (row: any) => (
+    { key: 'wilayah', header: isKecamatanFiltered ? 'Desa/Kelurahan' : 'Kecamatan', render: (row: any) => (
       <div className="flex flex-col">
-        <span className="font-bold text-text-primary text-xs">{row.kecamatan}</span>
-        <span className="text-[10px] font-semibold text-text-secondary">{row.id_kecamatan}</span>
+        <span className="font-bold text-text-primary text-xs">{row.wilayahName}</span>
+        <span className="text-[10px] font-semibold text-text-secondary">{row.wilayahId}</span>
       </div>
     ) },
     { key: 'totalAjuan', header: 'Total Ajuan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.totalAjuan}</span> },
     { key: 'rataWaktu', header: 'Rata-Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rataWaktu}</span> },
     { key: 'rasioSelesai', header: 'Rasio Selesai', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rasioSelesai}%</span> }
-  ], [currentPage, perPage]);
+  ], [currentPage, perPage, isKecamatanFiltered]);
 
   const pageTotalAjuan = mappedData.reduce((acc, curr) => acc + curr.totalAjuan, 0);
   const pageRataAjuan = mappedData.length > 0 ? (pageTotalAjuan / mappedData.length).toFixed(1) : 0;
@@ -169,7 +171,7 @@ export default function DistribusiWilayahPage() {
       {/* 2. Metric Cards (Middle) */}
       <div className={`grid grid-cols-1 md:grid-cols-3 gap-6 transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <StatCard 
-          title="TOTAL KECAMATAN"
+          title={isKecamatanFiltered ? "TOTAL DESA/KELURAHAN" : "TOTAL KECAMATAN"}
           icon="ri-map-pin-line"
           iconBg="#eff6ff"
           iconColor="text-blue-600"
@@ -178,7 +180,7 @@ export default function DistribusiWilayahPage() {
           value={
             <>
               <span className="text-2xl lg:text-3xl font-bold font-manrope text-text-primary">{totalItems}</span>
-              <span className="text-sm font-semibold text-text-secondary">Kecamatan</span>
+              <span className="text-sm font-semibold text-text-secondary">{isKecamatanFiltered ? 'Desa/Kel' : 'Kecamatan'}</span>
             </>
           }
         />
@@ -215,7 +217,7 @@ export default function DistribusiWilayahPage() {
       {/* 3. Data Table (Bottom) */}
       <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <div className="p-6 flex justify-between items-center border-b border-border">
-          <h3 className="text-base font-bold text-text-primary">Daftar Ajuan per Wilayah/Kecamatan</h3>
+          <h3 className="text-base font-bold text-text-primary">Daftar Ajuan per {isKecamatanFiltered ? 'Desa/Kelurahan' : 'Wilayah/Kecamatan'}</h3>
           <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9" onClick={handleExport} disabled={isLoading}>
             <i className="ri-upload-2-line"></i>
             EKSPOR EXCEL
