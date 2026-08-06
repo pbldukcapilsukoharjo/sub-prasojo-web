@@ -8,8 +8,8 @@ const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 import { ChartDataItem } from '@/services/pengajuan.service';
 
 interface AjuanChartsProps {
-  chartStatus?: ChartDataItem[];
-  chartLayanan?: ChartDataItem[];
+  chartStatus?: any[];
+  chartLayanan?: any[];
   isLoading?: boolean;
 }
 
@@ -26,9 +26,9 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
       fontFamily: 'Inter, sans-serif',
       animations: { enabled: true, speed: 600 },
     },
-    labels: chartStatus.map(item => item.label),
+    labels: chartStatus.map(item => item.label || item.status || 'Unknown'),
     colors: chartStatus.map(item => {
-      const l = item.label.toUpperCase();
+      const l = String(item.label || item.status || '').toUpperCase();
       if (l.includes('BELUM')) return '#F59E0B'; // yellow/amber
       if (l.includes('SETUJU')) return '#10B981'; // green
       if (l.includes('TOLAK')) return '#EF4444'; // red
@@ -130,7 +130,7 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
       },
     },
   };
-  const pieSeries = chartStatus.map(item => item.value);
+  const pieSeries = chartStatus.map(item => item.value !== undefined ? item.value : (item.total || 0));
 
   const barOptions: any = {
     chart: {
@@ -149,7 +149,7 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
     dataLabels: { enabled: false },
     stroke: { show: false },
     xaxis: {
-      categories: chartLayanan.map(item => item.label),
+      categories: chartLayanan.map(item => item.label || item.layanan || 'Unknown'),
       labels: {
         rotate: -35,
         rotateAlways: true,
@@ -201,7 +201,7 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
   const barSeries = [
     {
       name: 'Jumlah Ajuan',
-      data: chartLayanan.map(item => item.value),
+      data: chartLayanan.map(item => item.value !== undefined ? item.value : (item.total || 0)),
     },
   ];
 

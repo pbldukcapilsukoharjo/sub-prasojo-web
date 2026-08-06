@@ -85,9 +85,14 @@ export default function Ajuan() {
     start_date: formatToDDMMYYYY(appliedFilters.startDate) || undefined,
     end_date: formatToDDMMYYYY(appliedFilters.endDate) || undefined,
     periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
-    id_kecamatan: appliedFilters.kecamatan !== "all" ? Number(appliedFilters.kecamatan) : undefined,
+    id_kecamatan: appliedFilters.kecamatan !== "all" ? appliedFilters.kecamatan : undefined,
+    kecamatan: appliedFilters.kecamatan !== "all" ? appliedFilters.kecamatan : undefined,
     id_layanan: activeTab !== "semua" ? activeTab : undefined,
+    layanan: activeTab !== "semua" ? activeTab : undefined,
     id_pelapor: appliedFilters.pelapor !== "all" ? appliedFilters.pelapor : undefined,
+    pelapor: appliedFilters.pelapor !== "all" ? appliedFilters.pelapor : undefined,
+    status: appliedFilters.filterStatus !== "all" ? appliedFilters.filterStatus : undefined,
+    search: appliedFilters.search || undefined,
   };
 
   const queryClient = useQueryClient();

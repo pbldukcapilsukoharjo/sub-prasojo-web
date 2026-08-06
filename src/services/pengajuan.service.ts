@@ -116,10 +116,15 @@ export interface ChartAjuanParams {
   end_date?: string;
   periode_bulan?: string | number;
   id_kecamatan?: string | number;
+  kecamatan?: string | number;
   id_layanan?: string;
+  layanan?: string;
   id_jenis_ajuan?: string | number;
   jalur?: string;
   id_pelapor?: string;
+  pelapor?: string;
+  status?: string;
+  search?: string;
 }
 
 
