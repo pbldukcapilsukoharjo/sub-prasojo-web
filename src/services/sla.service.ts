@@ -12,6 +12,7 @@ export interface SlaParams {
   periode_bulan?: number;
   start_date?: string;
   end_date?: string;
+  pelapor?: string;
 }
 
 export interface SlaKpiParams {
@@ -22,6 +23,7 @@ export interface SlaKpiParams {
   periode_bulan?: number;
   start_date?: string;
   end_date?: string;
+  pelapor?: string;
 }
 
 export interface SlaRincianItem {
