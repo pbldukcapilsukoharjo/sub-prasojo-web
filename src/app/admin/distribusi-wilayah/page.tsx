@@ -99,9 +99,9 @@ export default function DistribusiWilayahPage() {
 
   const handleExport = useCallback(async () => {
     try {
-      await wilayahService.getExportDistribusiWilayah(params);
+      await wilayahService.exportDistribusiWilayah(params);
       import('react-hot-toast').then(({ toast }) => {
-        toast.success('Berhasil memulai export data');
+        toast.success('Berhasil mendownload export data');
       });
     } catch (error) {
       handleApiError(error);

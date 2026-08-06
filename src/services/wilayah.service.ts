@@ -56,10 +56,18 @@ export const wilayahService = {
     return response.data;
   },
 
-  async getExportDistribusiWilayah(params?: DistribusiWilayahParams): Promise<ApiBaseResponse<any>> {
-    const response = await axiosInstance.get<ApiBaseResponse<any>>("/wilayah/export", {
+  async exportDistribusiWilayah(params?: DistribusiWilayahParams): Promise<void> {
+    const response = await axiosInstance.get("/wilayah/export", {
       params: buildQueryParams(params),
+      responseType: 'blob',
     });
-    return response.data;
+    
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `export_distribusi_wilayah_${new Date().getTime()}.xlsx`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
   }
 };
