@@ -198,14 +198,6 @@ export default function DetailUlasanPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <CustomDateRangePicker
-          label="Rentang Tanggal"
-          startDate={startDate}
-          endDate={endDate}
-          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
-          disabled={isRentangTanggalDisabled}
-          placeholder="Pilih Rentang Tanggal"
-        />
         <CustomSelect
           label="Rating"
           value={rating}
@@ -224,6 +216,14 @@ export default function DetailUlasanPage() {
           value={jenisLayanan}
           onChange={(val) => setJenisLayanan(String(val))}
           options={layananOptions}
+        />
+        <CustomDateRangePicker
+          label="Rentang Tanggal"
+          startDate={startDate}
+          endDate={endDate}
+          onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+          disabled={isRentangTanggalDisabled}
+          placeholder="Pilih Rentang Tanggal"
         />
         <CustomSelect
           label="Urutkan Dari"

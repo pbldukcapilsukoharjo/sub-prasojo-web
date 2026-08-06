@@ -22,6 +22,15 @@ export default function DistribusiWilayahPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  const [appliedFilters, setAppliedFilters] = useState({
+    search: '',
+    kecamatan: 'all',
+    periode: '' as string | number,
+    sortBy: '',
+    startDate: '',
+    endDate: '',
+  });
+
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -41,12 +50,12 @@ export default function DistribusiWilayahPage() {
 
   const params: DistribusiWilayahParams = {
     page: currentPage,
-    search: search || undefined,
-    id_kecamatan: kecamatan !== 'all' ? kecamatan : undefined,
-    sort_by: sortBy || undefined,
-    periode_bulan: periode ? Number(periode) : undefined,
-    start_date: formatToDDMMYYYY(startDate) || undefined,
-    end_date: formatToDDMMYYYY(endDate) || undefined,
+    search: appliedFilters.search || undefined,
+    id_kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
+    sort_by: appliedFilters.sortBy || undefined,
+    periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
+    start_date: formatToDDMMYYYY(appliedFilters.startDate) || undefined,
+    end_date: formatToDDMMYYYY(appliedFilters.endDate) || undefined,
   };
 
   const queryClient = useQueryClient();
@@ -77,6 +86,14 @@ export default function DistribusiWilayahPage() {
     setSortBy('');
     setStartDate('');
     setEndDate('');
+    setAppliedFilters({
+      search: '',
+      kecamatan: 'all',
+      periode: '',
+      sortBy: '',
+      startDate: '',
+      endDate: '',
+    });
     setCurrentPage(1);
   }, []);
 
@@ -92,8 +109,16 @@ export default function DistribusiWilayahPage() {
   }, [params]);
 
   const handleFilter = useCallback(() => {
+    setAppliedFilters({
+      search,
+      kecamatan,
+      periode,
+      sortBy,
+      startDate,
+      endDate,
+    });
     setCurrentPage(1);
-  }, []);
+  }, [search, kecamatan, periode, sortBy, startDate, endDate]);
 
   const mappedData = useMemo(() => data?.data?.map((item) => ({
     wilayahName: item.nama_desa || item.nama_kecamatan,
@@ -101,22 +126,35 @@ export default function DistribusiWilayahPage() {
     totalAjuan: item.total_ajuan,
     rataWaktu: item.rata_rata_waktu,
     rasioSelesai: item.rasio_selesai_persen,
+    layanan: item.layanan || {},
   })) || [], [data]);
 
-  const isKecamatanFiltered = kecamatan !== 'all';
+  const isKecamatanFiltered = appliedFilters.kecamatan !== 'all';
 
-  const columns = useMemo(() => [
-    { key: 'no', header: 'No', align: 'center' as const, render: (row: any, idx: number) => <span className="font-medium text-text-primary">{String((currentPage - 1) * perPage + idx + 1).padStart(2, '0')}</span> },
-    { key: 'wilayah', header: isKecamatanFiltered ? 'Desa/Kelurahan' : 'Kecamatan', render: (row: any) => (
-      <div className="flex flex-col">
-        <span className="font-bold text-text-primary text-xs">{row.wilayahName}</span>
-        <span className="text-[10px] font-semibold text-text-secondary">{row.wilayahId}</span>
-      </div>
-    ) },
-    { key: 'totalAjuan', header: 'Total Ajuan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.totalAjuan}</span> },
-    { key: 'rataWaktu', header: 'Rata-Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rataWaktu}</span> },
-    { key: 'rasioSelesai', header: 'Rasio Selesai', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rasioSelesai}%</span> }
-  ], [currentPage, perPage, isKecamatanFiltered]);
+  const columns = useMemo(() => {
+    const baseColumns = [
+      { key: 'no', header: 'No', align: 'center' as const, fixed: true, left: 0, minWidth: 70, width: 70, render: (row: any, idx: number) => <span className="font-medium text-text-primary">{String((currentPage - 1) * perPage + idx + 1).padStart(2, '0')}</span> },
+      { key: 'wilayah', header: isKecamatanFiltered ? 'Desa/Kelurahan' : 'Kecamatan', fixed: true, left: 70, minWidth: 250, render: (row: any) => (
+        <div className="flex flex-col">
+          <span className="font-bold text-text-primary text-xs whitespace-nowrap">{row.wilayahName}</span>
+          <span className="text-[10px] font-semibold text-text-secondary">{row.wilayahId}</span>
+        </div>
+      ) },
+      { key: 'totalAjuan', header: 'Total Ajuan', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-primary text-xs">{row.totalAjuan}</span> },
+      { key: 'rataWaktu', header: 'Rata-Rata Waktu', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs whitespace-nowrap">{row.rataWaktu}</span> },
+      { key: 'rasioSelesai', header: 'Rasio Selesai', align: 'center' as const, render: (row: any) => <span className="text-text-primary font-medium text-xs">{row.rasioSelesai}%</span> }
+    ];
+
+    const layananKeys = ['KK', 'KTP', 'KIA', 'AKL', 'AKM', 'SKP', 'SKD', 'UPD', 'RKM', 'SKT'];
+    const layananColumns = layananKeys.map(key => ({
+      key: `layanan_${key}`,
+      header: key,
+      align: 'center' as const,
+      render: (row: any) => <span className="font-medium text-text-primary text-xs">{row.layanan?.[key] || 0}</span>
+    }));
+
+    return [...baseColumns, ...layananColumns];
+  }, [currentPage, perPage, isKecamatanFiltered]);
 
   const pageTotalAjuan = mappedData.reduce((acc, curr) => acc + curr.totalAjuan, 0);
   const pageRataAjuan = mappedData.length > 0 ? (pageTotalAjuan / mappedData.length).toFixed(1) : 0;
