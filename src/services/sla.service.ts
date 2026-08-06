@@ -13,10 +13,13 @@ export interface SlaParams {
   start_date?: string;
   end_date?: string;
   pelapor?: string;
+  jenis_ajuan?: string | number;
+  jalur?: string | number;
 }
 
 export interface SlaKpiParams {
   max_sla_minutes?: number;
+  search?: string;
   id_kecamatan?: string | number;
   operator_id?: string | number;
   id_layanan?: string | number;
@@ -24,6 +27,8 @@ export interface SlaKpiParams {
   start_date?: string;
   end_date?: string;
   pelapor?: string;
+  jenis_ajuan?: string | number;
+  jalur?: string | number;
 }
 
 export interface SlaRincianItem {

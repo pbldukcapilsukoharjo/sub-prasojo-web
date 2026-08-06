@@ -14,7 +14,7 @@ import dynamic from 'next/dynamic';
 const SlaConfigModal = dynamic(() => import('@/components/Common/SlaConfigModal'), { ssr: false });
 import { slaService, SlaRincianItem, SlaKpiData, SlaParams, SlaKpiParams } from '@/services/sla.service';
 import { handleApiError } from '@/lib/api-error';
-import { useLayananOptions, useKecamatanOptions, usePelaporOptions } from '@/hooks/useFilterOptions';
+import { useLayananOptions, useKecamatanOptions, usePelaporOptions, useJenisAjuanOptions, useJalurOptions } from '@/hooks/useFilterOptions';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 
 export default function SlaMonitoringPage() {
@@ -30,7 +30,8 @@ export default function SlaMonitoringPage() {
   const [kecamatan, setKecamatan] = useState('all');
   const [layanan, setLayanan] = useState('all');
   const [pelapor, setPelapor] = useState('all');
-
+  const [jenisAjuan, setJenisAjuan] = useState('all');
+  const [jalur, setJalur] = useState('all');
   const [appliedFilters, setAppliedFilters] = useState({
     search: '',
     periode: '' as string | number,
@@ -40,11 +41,15 @@ export default function SlaMonitoringPage() {
     kecamatan: 'all',
     layanan: 'all',
     pelapor: 'all',
+    jenisAjuan: 'all',
+    jalur: 'all',
   });
 
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Layanan' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Semua Kecamatan' });
   const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
+  const { data: jenisAjuanOptions = [] } = useJenisAjuanOptions({ addAllOption: true, allOptionLabel: 'Semua Jenis Ajuan' });
+  const { data: jalurOptions = [] } = useJalurOptions({ addAllOption: true, allOptionLabel: 'Semua Jalur' });
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -75,6 +80,8 @@ export default function SlaMonitoringPage() {
     start_date: formattedStartDate,
     end_date: formattedEndDate,
     pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
+    jenis_ajuan: appliedFilters.jenisAjuan !== 'all' ? appliedFilters.jenisAjuan : undefined,
+    jalur: appliedFilters.jalur !== 'all' ? appliedFilters.jalur : undefined,
   };
 
   const kpiParams: SlaKpiParams = {
@@ -85,6 +92,9 @@ export default function SlaMonitoringPage() {
     start_date: formattedStartDate,
     end_date: formattedEndDate,
     pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
+    search: appliedFilters.search || undefined,
+    jenis_ajuan: appliedFilters.jenisAjuan !== 'all' ? appliedFilters.jenisAjuan : undefined,
+    jalur: appliedFilters.jalur !== 'all' ? appliedFilters.jalur : undefined,
   };
 
   const queryClient = useQueryClient();
@@ -124,6 +134,8 @@ export default function SlaMonitoringPage() {
     setKecamatan('all');
     setLayanan('all');
     setPelapor('all');
+    setJenisAjuan('all');
+    setJalur('all');
     setAppliedFilters({
       search: '',
       periode: '' as string | number,
@@ -133,6 +145,8 @@ export default function SlaMonitoringPage() {
       kecamatan: 'all',
       layanan: 'all',
       pelapor: 'all',
+      jenisAjuan: 'all',
+      jalur: 'all',
     });
     setCurrentPage(1);
   }, []);
@@ -147,17 +161,28 @@ export default function SlaMonitoringPage() {
       kecamatan,
       layanan,
       pelapor,
+      jenisAjuan,
+      jalur,
     });
     setCurrentPage(1);
-  }, [search, periode, sortBy, startDate, endDate, kecamatan, layanan, pelapor]);
+  }, [search, periode, sortBy, startDate, endDate, kecamatan, layanan, pelapor, jenisAjuan, jalur]);
 
   const handleExport = useCallback(async () => {
     try {
-      await slaService.exportSla({ max_sla_minutes: 1 });
+      await slaService.exportSla({
+        max_sla_minutes: 1,
+        search: appliedFilters.search || undefined,
+        id_kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
+        id_layanan: appliedFilters.layanan !== 'all' ? appliedFilters.layanan : undefined,
+        periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
+        start_date: formattedStartDate,
+        end_date: formattedEndDate,
+        pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
+      });
     } catch (error) {
       handleApiError(error);
     }
-  }, []);
+  }, [appliedFilters, formattedStartDate, formattedEndDate]);
 
   // Determine SLA status dynamically based on target_sla
   const getStatus = (rata_rata_waktu: number, target: number) => {
@@ -204,6 +229,18 @@ export default function SlaMonitoringPage() {
           value={pelapor}
           onChange={(val) => setPelapor(String(val))}
           options={pelaporOptions}
+        />
+        <CustomSelect
+          label="Jenis Ajuan"
+          value={jenisAjuan}
+          onChange={(val) => setJenisAjuan(String(val))}
+          options={jenisAjuanOptions}
+        />
+        <CustomSelect
+          label="Jalur"
+          value={jalur}
+          onChange={(val) => setJalur(String(val))}
+          options={jalurOptions}
         />
         <CustomDateRangePicker
           label="Rentang Tanggal"
