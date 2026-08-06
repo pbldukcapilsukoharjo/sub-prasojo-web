@@ -8,8 +8,8 @@ const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 import { ChartDataItem } from '@/services/pengajuan.service';
 
 interface AjuanChartsProps {
-  chartStatus?: ChartDataItem[];
-  chartLayanan?: ChartDataItem[];
+  chartStatus?: any[];
+  chartLayanan?: any[];
   isLoading?: boolean;
 }
 
@@ -26,9 +26,9 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
       fontFamily: 'Inter, sans-serif',
       animations: { enabled: true, speed: 600 },
     },
-    labels: chartStatus.map(item => item.label),
+    labels: chartStatus.map(item => item.label || item.status || 'Unknown'),
     colors: chartStatus.map(item => {
-      const l = item.label.toUpperCase();
+      const l = String(item.label || item.status || '').toUpperCase();
       if (l.includes('BELUM')) return '#F59E0B'; // yellow/amber
       if (l.includes('SETUJU')) return '#10B981'; // green
       if (l.includes('TOLAK')) return '#EF4444'; // red
@@ -130,7 +130,7 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
       },
     },
   };
-  const pieSeries = chartStatus.map(item => item.value);
+  const pieSeries = chartStatus.map(item => item.value !== undefined ? item.value : (item.total || 0));
 
   const barOptions: any = {
     chart: {
@@ -149,7 +149,7 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
     dataLabels: { enabled: false },
     stroke: { show: false },
     xaxis: {
-      categories: chartLayanan.map(item => item.label),
+      categories: chartLayanan.map(item => item.label || item.layanan || 'Unknown'),
       labels: {
         rotate: -35,
         rotateAlways: true,
@@ -201,20 +201,20 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
   const barSeries = [
     {
       name: 'Jumlah Ajuan',
-      data: chartLayanan.map(item => item.value),
+      data: chartLayanan.map(item => item.value !== undefined ? item.value : (item.total || 0)),
     },
   ];
 
   if (!mounted || isLoading) {
     return (
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card shadow-sm border border-border flex items-center justify-center min-h-[380px] bg-surface">
+        <div className="card shadow-sm border border-border flex items-center justify-center min-h-95 bg-surface">
           <div className="flex flex-col items-center justify-center gap-3">
              <i className="ri-loader-4-line text-3xl animate-spin text-primary"></i>
              <span className="font-bold text-text-secondary animate-pulse text-sm">Memuat Grafik...</span>
           </div>
         </div>
-        <div className="card shadow-sm border border-border flex items-center justify-center min-h-[380px] bg-surface">
+        <div className="card shadow-sm border border-border flex items-center justify-center min-h-95 bg-surface">
           <div className="flex flex-col items-center justify-center gap-3">
              <i className="ri-loader-4-line text-3xl animate-spin text-primary"></i>
              <span className="font-bold text-text-secondary animate-pulse text-sm">Memuat Grafik...</span>
@@ -236,7 +236,7 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
           </p>
         </div>
         {/* Chart Area */}
-        <div className="p-6 flex-1 flex items-center justify-center min-h-[300px]">
+        <div className="p-6 flex-1 flex items-center justify-center min-h-75">
           <div className="w-full">
             <Chart options={pieOptions} series={pieSeries} type="donut" width="100%" height={280} />
           </div>
@@ -253,14 +253,14 @@ export default function AjuanCharts({ chartStatus = [], chartLayanan = [], isLoa
           </p>
         </div>
         {/* Chart Area */}
-        <div className="p-6 flex-1 flex flex-col justify-between min-h-[300px]">
+        <div className="p-6 flex-1 flex flex-col justify-between min-h-75">
           <div className="w-full">
             <Chart options={barOptions} series={barSeries} type="bar" width="100%" height={300} />
           </div>
           {/* Custom Indicator */}
           <div className="flex items-center justify-center gap-4 border-t border-gray-50 mt-auto">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-primary flex-shrink-0"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></span>
               <span className="text-[11px] font-semibold text-text-secondary">Volume Pengajuan (Juni)</span>
             </div>
           </div>

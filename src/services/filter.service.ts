@@ -40,7 +40,14 @@ export const filterService = {
   },
 
   async getOperator(): Promise<FilterResponse> {
-    const response = await axiosInstance.get<FilterResponse>("/filter/operator");
-    return response.data;
+    const response = await axiosInstance.get<any>("/operator/peringkat", {
+      params: { page: 1, limit: 100 },
+    });
+    // Transform from { id, operator } to { id, name } format expected by filter hooks
+    const list = response.data?.data?.list || [];
+    return {
+      ...response.data,
+      data: list.map((item: any) => ({ id: item.id, name: item.operator })),
+    };
   }
 };
