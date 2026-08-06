@@ -2,6 +2,7 @@
 
 import React, { ReactNode } from 'react';
 import Button from '@/components/Common/Button';
+import toast from 'react-hot-toast';
 
 interface FilterCardProps {
   children: ReactNode;
@@ -15,6 +16,16 @@ interface FilterCardProps {
  * - Right side: vertical Reset / Apply buttons separated by a divider
  */
 export default function FilterCard({ children, onReset, onApply }: FilterCardProps) {
+  const handleReset = () => {
+    onReset();
+    toast.success('Filter berhasil di-reset', { duration: 2000 });
+  };
+
+  const handleApply = () => {
+    onApply();
+    toast.success('Filter berhasil diterapkan', { duration: 2000 });
+  };
+
   return (
     <div className="card shadow-sm border border-border p-6">
       <div className="flex flex-col lg:flex-row gap-6 items-stretch">
@@ -32,14 +43,14 @@ export default function FilterCard({ children, onReset, onApply }: FilterCardPro
         <div className="flex flex-col justify-start gap-2.5 min-w-[180px] lg:pl-2">
           <Button
             variant="secondary"
-            onClick={onReset}
+            onClick={handleReset}
             className="w-full h-[44px] uppercase tracking-wider font-bold text-xs"
           >
             RESET FILTER
           </Button>
           <Button
             variant="primary"
-            onClick={onApply}
+            onClick={handleApply}
             className="w-full h-[44px] uppercase tracking-wider font-bold text-xs"
           >
             TERAPKAN FILTER
