@@ -129,5 +129,25 @@ export const slaService = {
   async updateOperationalHour(id: number, payload: { is_libur: boolean, jam_buka: string, jam_tutup: string }): Promise<ApiBaseResponse<OperationalHour>> {
     const response = await axiosInstance.put(`/operational-hours/${id}`, payload);
     return response.data;
+  },
+
+  async getSlaSettings(): Promise<ApiBaseResponse<{ sla_start_status: string; sla_end_status: string }>> {
+    const response = await axiosInstance.get("/sla/settings");
+    return response.data;
+  },
+
+  async updateSlaSettings(payload: { sla_start_status: string; sla_end_status: string }): Promise<ApiBaseResponse<any>> {
+    const response = await axiosInstance.put("/sla/settings", payload);
+    return response.data;
+  },
+
+  async getAjuanSlaTarget(ajuan_id: number): Promise<ApiBaseResponse<{ target_sla_value: number; target_sla_unit: string; target_sla_menit: number }>> {
+    const response = await axiosInstance.get(`/sla/ajuan/${ajuan_id}/target`);
+    return response.data;
+  },
+
+  async updateAjuanSlaTarget(ajuan_id: number, payload: { target_sla_value: number; target_sla_unit: string }): Promise<ApiBaseResponse<any>> {
+    const response = await axiosInstance.put(`/sla/ajuan/${ajuan_id}/target`, payload);
+    return response.data;
   }
 };

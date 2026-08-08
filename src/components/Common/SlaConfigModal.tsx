@@ -7,6 +7,7 @@ import { slaService, OperationalHour } from '@/services/sla.service';
 import { holidayService } from '@/services/holiday.service';
 import { handleApiError } from '@/lib/api-error';
 import toast from 'react-hot-toast';
+import { useStatusOptions } from '@/hooks/useFilterOptions';
 
 interface SlaConfigModalProps {
   isOpen: boolean;
@@ -30,6 +31,10 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
   const [jamKerja, setJamKerja] = useState<JamKerjaState[]>([]);
   const [targetSla, setTargetSla] = useState(currentSlaTarget);
   const [targetSlaUnit, setTargetSlaUnit] = useState('jam');
+  
+  const [slaStartStatus, setSlaStartStatus] = useState<string>('');
+  const [slaEndStatus, setSlaEndStatus] = useState<string>('');
+
   const [isSaving, setIsSaving] = useState(false);
 
   // Custom Holiday State
@@ -84,6 +89,28 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
       }
     }
   }, [isOpen, currentSlaTarget, isSlaTargetSuccess, slaTargetRes]);
+
+  // Fetch SLA Settings
+  const { data: slaSettingsRes, isLoading: isSlaSettingsLoading, isSuccess: isSlaSettingsSuccess } = useQuery({
+    queryKey: ['slaSettings'],
+    queryFn: () => slaService.getSlaSettings(),
+    enabled: isOpen,
+    staleTime: Infinity,
+  });
+
+  useEffect(() => {
+    if (isOpen && isSlaSettingsSuccess && slaSettingsRes?.data) {
+      setSlaStartStatus(slaSettingsRes.data.sla_start_status);
+      setSlaEndStatus(slaSettingsRes.data.sla_end_status);
+    }
+  }, [isOpen, isSlaSettingsSuccess, slaSettingsRes]);
+
+  const { data: statusOptions = [] } = useStatusOptions();
+  const startStatusOptions = [
+    { label: '[FIRST_LOG] (Log Pertama)', value: '[FIRST_LOG]' },
+    ...(statusOptions.map((opt: any) => ({ label: opt.label, value: opt.label })))
+  ];
+  const endStatusOptions = statusOptions.map((opt: any) => ({ label: opt.label, value: opt.label }));
 
   // Fetch Holidays
   const { data: holidaysRes, isLoading: isHolidaysLoading } = useQuery({
@@ -174,6 +201,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
     { id: 'jam_kerja', label: <span className="flex items-center gap-2"><i className="ri-time-line text-lg"></i> Jam Kerja</span> },
     { id: 'hari_libur', label: <span className="flex items-center gap-2"><i className="ri-calendar-event-line text-lg"></i> Hari Libur</span> },
     { id: 'target_sla', label: <span className="flex items-center gap-2"><i className="ri-focus-2-line text-lg"></i> Target SLA</span> },
+    { id: 'status_sla', label: <span className="flex items-center gap-2"><i className="ri-settings-4-line text-lg"></i> Status SLA</span> },
   ];
 
   const calculateDuration = (open: string, close: string) => {
@@ -214,6 +242,15 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
       
       if (targetRes && (targetRes as any).message) {
         successMessage = (targetRes as any).message;
+      }
+
+      // Update SLA Settings
+      const settingsRes = await slaService.updateSlaSettings({
+        sla_start_status: slaStartStatus,
+        sla_end_status: slaEndStatus
+      });
+      if (settingsRes && (settingsRes as any).message) {
+        successMessage = (settingsRes as any).message;
       }
 
       // Update Operational Hours (only those that changed)
@@ -265,6 +302,7 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
       queryClient.invalidateQueries({ queryKey: ['slaKpi'] });
       queryClient.invalidateQueries({ queryKey: ['slaList'] });
       queryClient.invalidateQueries({ queryKey: ['slaTarget'] });
+      queryClient.invalidateQueries({ queryKey: ['slaSettings'] });
 
       toast.success(successMessage);
       onClose();
@@ -320,7 +358,9 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 relative">
-          {((isOpHoursLoading && activeTab !== 'target_sla') || (isSlaTargetLoading && activeTab === 'target_sla')) ? (
+          {((isOpHoursLoading && activeTab !== 'target_sla' && activeTab !== 'status_sla') || 
+            (isSlaTargetLoading && activeTab === 'target_sla') ||
+            (isSlaSettingsLoading && activeTab === 'status_sla')) ? (
             <div className="flex items-center justify-center py-10">
               <i className="ri-loader-4-line animate-spin text-3xl text-primary"></i>
             </div>
@@ -601,6 +641,40 @@ export default function SlaConfigModal({ isOpen, onClose, currentSlaTarget = 6 }
                     <div className="flex justify-between items-center text-sm">
                       <span className="text-text-secondary font-medium">Dokumen Kependudukan Khusus</span>
                       <span className="font-bold text-text-primary">14 hari kerja</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'status_sla' && (
+                <div className="flex flex-col gap-4 animate-in fade-in duration-300">
+                  <p className="text-sm text-text-secondary mb-2">
+                    Atur status awal (mulai perhitungan) dan status akhir (selesai perhitungan) untuk kalkulasi SLA.
+                  </p>
+                  
+                  <div className="bg-gray-50 p-6 rounded-2xl border border-border flex flex-col gap-6 mt-2">
+                    <div className="flex flex-col gap-2">
+                      <span className="font-bold text-text-primary text-sm">Status Mulai (Start Status)</span>
+                      <p className="text-xs text-text-secondary mb-1">Pilih '[FIRST_LOG]' untuk memulai dari log pertama, atau pilih status spesifik.</p>
+                      <CustomSelect 
+                        options={startStatusOptions}
+                        value={slaStartStatus}
+                        onChange={(val) => setSlaStartStatus(String(val))}
+                        placeholder="Pilih status mulai"
+                        className="!bg-white"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      <span className="font-bold text-text-primary text-sm">Status Selesai (End Status)</span>
+                      <p className="text-xs text-text-secondary mb-1">Status yang menandakan SLA telah terpenuhi atau selesai diproses.</p>
+                      <CustomSelect 
+                        options={endStatusOptions}
+                        value={slaEndStatus}
+                        onChange={(val) => setSlaEndStatus(String(val))}
+                        placeholder="Pilih status selesai"
+                        className="!bg-white"
+                      />
                     </div>
                   </div>
                 </div>

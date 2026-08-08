@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { pengajuanService, TimelineDetail } from '@/services/pengajuan.service';
+import { slaService } from '@/services/sla.service';
 import { handleApiError } from '@/lib/api-error';
+import toast from 'react-hot-toast';
+import CustomSelect from '@/components/Forms/CustomSelect';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface DetailModalProps {
   isOpen: boolean;
@@ -23,14 +27,57 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
   const [timelineStatus, setTimelineStatus] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const [targetSlaValue, setTargetSlaValue] = useState<number>(0);
+  const [targetSlaUnit, setTargetSlaUnit] = useState<string>('jam');
+  const [targetSlaMenit, setTargetSlaMenit] = useState<number>(0);
+  const [isEditingSla, setIsEditingSla] = useState(false);
+  const [isSavingSla, setIsSavingSla] = useState(false);
+  
+  const queryClient = useQueryClient();
+
   useEffect(() => {
     if (isOpen && data?.id) {
       fetchDetail(data.id);
+      fetchSlaTarget(data.id);
+      setIsEditingSla(false);
     } else {
       setTimelineData([]);
       setTimelineStatus('');
+      setTargetSlaValue(0);
     }
   }, [isOpen, data?.id]);
+
+  const fetchSlaTarget = async (id: number) => {
+    try {
+      const res = await slaService.getAjuanSlaTarget(id);
+      if (res.data) {
+        setTargetSlaValue(res.data.target_sla_value);
+        setTargetSlaUnit(res.data.target_sla_unit);
+        setTargetSlaMenit(res.data.target_sla_menit || 0);
+      }
+    } catch (error) {
+      console.error("Failed to fetch SLA target", error);
+    }
+  };
+
+  const handleSaveSla = async () => {
+    if (!data?.id) return;
+    setIsSavingSla(true);
+    try {
+      await slaService.updateAjuanSlaTarget(data.id, {
+        target_sla_value: targetSlaValue,
+        target_sla_unit: targetSlaUnit
+      });
+      toast.success('Target SLA berhasil diperbarui');
+      setIsEditingSla(false);
+      fetchSlaTarget(data.id); // Refresh data to get new target_sla_menit
+      queryClient.invalidateQueries({ queryKey: ['ajuan'] }); // Invalidate list queries
+    } catch (error) {
+      handleApiError(error);
+    } finally {
+      setIsSavingSla(false);
+    }
+  };
 
   const fetchDetail = async (id: number) => {
     setIsLoading(true);
@@ -96,6 +143,64 @@ export default function DetailModal({ isOpen, onClose, data }: DetailModalProps)
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Kecamatan</p>
               <p className="text-sm font-bold text-slate-900">{data.kecamatan}</p>
             </div>
+          </div>
+        </div>
+
+        {/* Target SLA */}
+        <div className="border border-border rounded-[16px] p-6 mb-8 bg-surface shadow-xs relative">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xs font-bold text-slate-950 uppercase tracking-wider flex items-center gap-2">
+              <i className="ri-focus-2-line text-lg text-primary"></i>
+              TARGET SLA AJUAN
+            </h3>
+            {!isEditingSla ? (
+              <button onClick={() => setIsEditingSla(true)} className="text-xs font-bold text-primary hover:text-primary/80 transition-colors">
+                <i className="ri-edit-line mr-1"></i>Ubah Target
+              </button>
+            ) : (
+              <div className="flex items-center gap-3">
+                <button onClick={() => setIsEditingSla(false)} className="text-xs font-bold text-slate-500 hover:text-slate-700 transition-colors" disabled={isSavingSla}>
+                  Batal
+                </button>
+                <button onClick={handleSaveSla} className="text-xs font-bold text-primary hover:text-primary/80 transition-colors bg-primary/10 px-3 py-1.5 rounded-lg" disabled={isSavingSla}>
+                  {isSavingSla ? 'Menyimpan...' : 'Simpan'}
+                </button>
+              </div>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-4">
+            {!isEditingSla ? (
+              <div className="flex flex-col">
+                <div className="text-2xl font-bold text-primary">
+                  {targetSlaValue > 0 ? `${targetSlaValue} ${targetSlaUnit}` : '-'}
+                </div>
+                {targetSlaMenit > 0 && (
+                  <span className="text-xs font-semibold text-text-secondary mt-1">Ekuivalen: {targetSlaMenit} Menit</span>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 w-full sm:w-2/3">
+                <input 
+                  type="number"
+                  value={targetSlaValue}
+                  onChange={(e) => setTargetSlaValue(Number(e.target.value))}
+                  className="w-20 text-center text-lg font-bold text-slate-900 bg-white border border-border rounded-lg p-2 outline-none focus:border-primary"
+                />
+                <div className="w-32">
+                  <CustomSelect 
+                    options={[
+                      { label: 'Menit', value: 'menit' },
+                      { label: 'Jam', value: 'jam' },
+                      { label: 'Hari', value: 'hari' }
+                    ]}
+                    value={targetSlaUnit}
+                    onChange={(val) => setTargetSlaUnit(String(val))}
+                    className="!bg-white !min-h-[46px]"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
