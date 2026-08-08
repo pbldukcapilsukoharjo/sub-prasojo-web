@@ -9,6 +9,7 @@ export interface UlasanParams {
   end_date?: string;
   rating?: number | string;
   layanan_kode?: string;
+  pelapor?: string;
 }
 
 export interface UlasanItem {

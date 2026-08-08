@@ -7,6 +7,7 @@ export interface DashboardFilterParams {
   periode_bulan?: number;
   start_date?: string;
   end_date?: string;
+  pelapor?: string;
 }
 
 export interface KpiData {
@@ -52,6 +53,7 @@ const buildQueryParams = (params?: DashboardFilterParams) => {
   if (params.periode_bulan !== undefined) query.periode_bulan = params.periode_bulan;
   if (params.start_date !== undefined) query.start_date = params.start_date;
   if (params.end_date !== undefined) query.end_date = params.end_date;
+  if (params.pelapor !== undefined && params.pelapor !== 'all') query.pelapor = params.pelapor;
 
   return query;
 };

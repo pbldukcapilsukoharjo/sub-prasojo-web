@@ -9,13 +9,14 @@ import FilterCard from '@/components/Common/FilterCard';
 import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
 import Pagination from '@/components/Common/Pagination';
-import { useKecamatanOptions } from '@/hooks/useFilterOptions';
+import { useKecamatanOptions, usePelaporOptions } from '@/hooks/useFilterOptions';
 import { wilayahService, DistribusiWilayahResponse, DistribusiWilayahParams } from '@/services/wilayah.service';
 import { handleApiError } from '@/lib/api-error';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 
 export default function DistribusiWilayahPage() {
   const [search, setSearch] = useState('');
+  const [pelapor, setPelapor] = useState('all');
   const [kecamatan, setKecamatan] = useState('all');
   const [periode, setPeriode] = useState<string | number>('');
   const [sortBy, setSortBy] = useState('');
@@ -24,6 +25,7 @@ export default function DistribusiWilayahPage() {
 
   const [appliedFilters, setAppliedFilters] = useState({
     search: '',
+    pelapor: 'all',
     kecamatan: 'all',
     periode: '' as string | number,
     sortBy: '',
@@ -32,6 +34,7 @@ export default function DistribusiWilayahPage() {
   });
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
+  const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -56,6 +59,7 @@ export default function DistribusiWilayahPage() {
     periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
     start_date: formatToDDMMYYYY(appliedFilters.startDate) || undefined,
     end_date: formatToDDMMYYYY(appliedFilters.endDate) || undefined,
+    pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
   };
 
   const queryClient = useQueryClient();
@@ -81,6 +85,7 @@ export default function DistribusiWilayahPage() {
 
   const handleReset = useCallback(() => {
     setSearch('');
+    setPelapor('all');
     setKecamatan('all');
     setPeriode('');
     setSortBy('');
@@ -88,6 +93,7 @@ export default function DistribusiWilayahPage() {
     setEndDate('');
     setAppliedFilters({
       search: '',
+      pelapor: 'all',
       kecamatan: 'all',
       periode: '',
       sortBy: '',
@@ -111,6 +117,7 @@ export default function DistribusiWilayahPage() {
   const handleFilter = useCallback(() => {
     setAppliedFilters({
       search,
+      pelapor,
       kecamatan,
       periode,
       sortBy,
@@ -118,7 +125,7 @@ export default function DistribusiWilayahPage() {
       endDate,
     });
     setCurrentPage(1);
-  }, [search, kecamatan, periode, sortBy, startDate, endDate]);
+  }, [search, pelapor, kecamatan, periode, sortBy, startDate, endDate]);
 
   const mappedData = useMemo(() => data?.data?.map((item) => ({
     wilayahName: item.nama_desa || item.nama_kecamatan,
@@ -168,6 +175,12 @@ export default function DistribusiWilayahPage() {
           placeholder="Nama Kecamatan/Desa"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
+        />
+        <CustomSelect
+          label="Pelapor"
+          value={pelapor}
+          onChange={(val) => setPelapor(String(val))}
+          options={pelaporOptions}
         />
         <CustomSelect
           label="Kecamatan"

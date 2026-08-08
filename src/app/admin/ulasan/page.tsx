@@ -9,7 +9,7 @@ import dynamic from 'next/dynamic';
 
 const DetailUlasanModal = dynamic(() => import('@/components/Common/DetailUlasanModal'), { ssr: false });
 import Pagination from '@/components/Common/Pagination';
-import { useLayananOptions } from '@/hooks/useFilterOptions';
+import { useLayananOptions, usePelaporOptions } from '@/hooks/useFilterOptions';
 import Button from '@/components/Common/Button';
 import { ulasanService, UlasanItem, UlasanKpiData, UlasanParams } from '@/services/ulasan.service';
 import { handleApiError } from '@/lib/api-error';
@@ -23,6 +23,7 @@ export default function DetailUlasanPage() {
   const [periode, setPeriode] = useState<string | number>('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [pelapor, setPelapor] = useState('all');
 
   const [appliedFilters, setAppliedFilters] = useState({
     search: '',
@@ -32,9 +33,11 @@ export default function DetailUlasanPage() {
     periode: '' as string | number,
     startDate: '',
     endDate: '',
+    pelapor: 'all',
   });
   
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Semua Jenis Layanan' });
+  const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
 
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -65,6 +68,7 @@ export default function DetailUlasanPage() {
     end_date: formattedEndDate,
     rating: appliedFilters.rating !== 'all' ? Number(appliedFilters.rating) : undefined,
     layanan_kode: appliedFilters.jenisLayanan !== 'all' ? appliedFilters.jenisLayanan : undefined,
+    pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
   };
 
   const kpiParams = {
@@ -72,7 +76,8 @@ export default function DetailUlasanPage() {
     start_date: params.start_date,
     end_date: params.end_date,
     rating: params.rating,
-    layanan_kode: params.layanan_kode
+    layanan_kode: params.layanan_kode,
+    pelapor: params.pelapor,
   };
 
   const queryClient = useQueryClient();
@@ -111,6 +116,7 @@ export default function DetailUlasanPage() {
     setPeriode('');
     setStartDate('');
     setEndDate('');
+    setPelapor('all');
     setAppliedFilters({
       search: '',
       sortBy: 'newest',
@@ -119,6 +125,7 @@ export default function DetailUlasanPage() {
       periode: '' as string | number,
       startDate: '',
       endDate: '',
+      pelapor: 'all'
     });
     setCurrentPage(1);
   }, []);
@@ -131,10 +138,11 @@ export default function DetailUlasanPage() {
       jenisLayanan,
       periode,
       startDate,
-      endDate
+      endDate,
+      pelapor
     });
     setCurrentPage(1);
-  }, [search, sortBy, rating, jenisLayanan, periode, startDate, endDate]);
+  }, [search, sortBy, rating, jenisLayanan, periode, startDate, endDate, pelapor]);
 
   const handleExport = useCallback(async () => {
     try {
@@ -147,12 +155,13 @@ export default function DetailUlasanPage() {
         end_date: formattedEndDate,
         rating: rating !== 'all' ? Number(rating) : undefined,
         layanan_kode: jenisLayanan !== 'all' ? jenisLayanan : undefined,
+        pelapor: pelapor !== 'all' ? pelapor : undefined,
       };
       await ulasanService.exportUlasan(exportParams);
     } catch (error) {
       handleApiError(error);
     }
-  }, [startDate, endDate, search, rating, jenisLayanan]);
+  }, [startDate, endDate, search, rating, jenisLayanan, pelapor]);
 
   const renderStars = (ratingNum: number) => {
     const stars = [];
@@ -216,6 +225,12 @@ export default function DetailUlasanPage() {
           value={jenisLayanan}
           onChange={(val) => setJenisLayanan(String(val))}
           options={layananOptions}
+        />
+        <CustomSelect
+          label="Pelapor"
+          value={pelapor}
+          onChange={(val) => setPelapor(String(val))}
+          options={pelaporOptions}
         />
         <CustomDateRangePicker
           label="Rentang Tanggal"

@@ -14,7 +14,7 @@ import Pagination from '@/components/Common/Pagination';
 import dynamic from 'next/dynamic';
 
 const DetailProdukModal = dynamic(() => import('@/components/Common/DetailProdukModal'), { ssr: false });
-import { useKecamatanOptions, useLayananOptions } from '@/hooks/useFilterOptions';
+import { useKecamatanOptions, useLayananOptions, usePelaporOptions } from '@/hooks/useFilterOptions';
 import { pengajuanService, ProdukItem, PengajuanProdukParams } from '@/services/pengajuan.service';
 import { handleApiError } from '@/lib/api-error';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
@@ -33,6 +33,7 @@ export default function Produk() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+  const [pelapor, setPelapor] = useState('all');
 
   const [appliedFilters, setAppliedFilters] = useState({
     search: '',
@@ -41,11 +42,13 @@ export default function Produk() {
     periode: '' as string | number,
     startDate: '',
     endDate: '',
-    sortBy: 'newest'
+    sortBy: 'newest',
+    pelapor: 'all'
   });
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'SEMUA', allOptionValue: 'semua' });
+  const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
@@ -72,6 +75,7 @@ export default function Produk() {
     sort: appliedFilters.sortBy,
     page: currentPage,
     per_page: perPage,
+    pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
   };
 
   const queryClient = useQueryClient();
@@ -102,6 +106,7 @@ export default function Produk() {
     setPeriode('');
     setSortBy('newest');
     setNamaIdentitas('');
+    setPelapor('all');
     setAppliedFilters({
       search: '',
       namaIdentitas: '',
@@ -109,7 +114,8 @@ export default function Produk() {
       periode: '' as string | number,
       startDate: '',
       endDate: '',
-      sortBy: 'newest'
+      sortBy: 'newest',
+      pelapor: 'all'
     });
     setCurrentPage(1);
   }, []);
@@ -122,10 +128,11 @@ export default function Produk() {
       periode,
       startDate,
       endDate,
-      sortBy
+      sortBy,
+      pelapor
     });
     setCurrentPage(1);
-  }, [search, namaIdentitas, kecamatan, periode, startDate, endDate, sortBy]);
+  }, [search, namaIdentitas, kecamatan, periode, startDate, endDate, sortBy, pelapor]);
 
   const tabs = useMemo(() => layananOptions.map((option: any) => ({
     id: String(option.value),
@@ -237,6 +244,12 @@ export default function Produk() {
           icon="ri-user-line"
           value={namaIdentitas}
           onChange={(e) => setNamaIdentitas(e.target.value)}
+        />
+        <CustomSelect
+          label="Pelapor"
+          value={pelapor}
+          onChange={(val) => setPelapor(String(val))}
+          options={pelaporOptions}
         />
         <CustomSelect
           label="Kecamatan"

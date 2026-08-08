@@ -9,6 +9,7 @@ export interface DistribusiWilayahParams {
   periode_bulan?: number;
   start_date?: string;
   end_date?: string;
+  pelapor?: string;
 }
 
 export interface DistribusiWilayahItem {

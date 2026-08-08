@@ -7,6 +7,7 @@ export interface KpiGlobalParams {
   start_date?: string;
   end_date?: string;
   id_operator?: number;
+  pelapor?: string;
 }
 
 export interface KpiGlobalData {
@@ -26,6 +27,7 @@ export interface OperatorPeringkatParams {
   start_date?: string;
   end_date?: string;
   id_operator?: number;
+  pelapor?: string;
 }
 
 export interface OperatorItem {
@@ -51,6 +53,7 @@ export interface OperatorKpiParams {
   tahun: number;
   periode_bulan?: number;
   id_layanan?: number | string;
+  pelapor?: string;
 }
 
 export interface OperatorKpiData {
@@ -71,6 +74,7 @@ export interface OperatorRiwayatParams {
   periode_bulan?: number;
   id_layanan?: number | string;
   search?: string;
+  pelapor?: string;
 }
 
 export interface RiwayatItem {
