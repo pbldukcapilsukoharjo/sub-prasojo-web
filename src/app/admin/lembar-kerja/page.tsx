@@ -130,8 +130,8 @@ export default function LembarKerja() {
   })), [layananOptions]);
 
   const tableColumns = useMemo(() => [
-    { key: 'no', header: 'No' },
-    { key: 'noRegis', header: 'NO. REG' },
+    { key: 'no', header: 'No', fixed: true, width: 60, minWidth: 60, left: 0 },
+    { key: 'noRegis', header: 'NO. REG', fixed: true, minWidth: 160, left: 60 },
     { key: 'kodeAjuan', header: 'KODE AJUAN' },
     { key: 'kodeProduk', header: 'KODE PRODUK' },
     { key: 'jalur', header: 'JALUR ONLINE / OFFLINE' },

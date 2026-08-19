@@ -170,8 +170,8 @@ export default function Ajuan() {
 
   const tableColumns = useMemo(
     () => [
-      { key: "no", header: "No" },
-      { key: "noRegis", header: "NO. REG" },
+      { key: "no", header: "No", fixed: true, width: 60, minWidth: 60, left: 0 },
+      { key: "noRegis", header: "NO. REG", fixed: true, minWidth: 160, left: 60 },
       { key: "kodeLayanan", header: "KODE LAYANAN" },
       { key: "jenisAjuan", header: "JENIS AJUAN" },
       { key: "jalur", header: "JALUR ONLINE / OFFLINE" },

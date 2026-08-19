@@ -63,6 +63,56 @@ export interface OperationalHour {
   is_libur: boolean;
 }
 
+export interface SampleSlaItem {
+  ajuan_id: number;
+  no_reg: string;
+  layanan_kode: string;
+  jenis_layanan: string;
+  pelapor_role: string;
+  pelapor_nama: string;
+  pelapor_channel: string;
+  pelapor_display: string;
+  tanggal_diterima: string;
+  waktu_mulai_proses: string;
+  waktu_selesai: string;
+  durasi_penyelesaian_menit: number;
+  durasi_penyelesaian_text: string;
+  target_sla_menit: number;
+  target_sla_text: string;
+  status_sla: string;
+  is_tepat_waktu: boolean;
+}
+
+export interface SampleSlaParams {
+  kategori?: string;
+  ajuan_id?: number | string;
+  search?: string;
+  pelapor?: string;
+  id_layanan?: string | number;
+  id_kecamatan?: string | number;
+  operator_id?: string | number;
+  start_date?: string;
+  end_date?: string;
+  periode_bulan?: number;
+  sort_by?: string;
+  page?: number;
+  per_page?: number;
+}
+
+export interface SampleSlaResponse {
+  success?: boolean;
+  status?: boolean;
+  code: number;
+  message: string;
+  data: SampleSlaItem[];
+  meta: {
+    page: number;
+    per_page: number;
+    total: number;
+    total_page: number;
+  };
+}
+
 const buildQueryParams = (params?: Record<string, any>) => {
   const query: Record<string, any> = {};
   if (!params) return query;
@@ -148,6 +198,13 @@ export const slaService = {
 
   async updateAjuanSlaTarget(ajuan_id: number, payload: { target_sla_value: number; target_sla_unit: string }): Promise<ApiBaseResponse<any>> {
     const response = await axiosInstance.put(`/sla/ajuan/${ajuan_id}/target`, payload);
+    return response.data;
+  },
+
+  async getSampleSla(params?: SampleSlaParams): Promise<SampleSlaResponse> {
+    const response = await axiosInstance.get<SampleSlaResponse>("/sla/samples", {
+      params: buildQueryParams(params),
+    });
     return response.data;
   }
 };
