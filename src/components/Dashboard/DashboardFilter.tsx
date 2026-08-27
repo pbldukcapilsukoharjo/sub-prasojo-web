@@ -6,7 +6,7 @@ import Input from '@/components/Forms/Input';
 import CustomSelect from '@/components/Forms/CustomSelect';
 import CustomDateRangePicker from '@/components/Forms/CustomDateRangePicker';
 import { DashboardFilterParams } from '@/services/dashboard.service';
-import { useLayananOptions, useKecamatanOptions } from '@/hooks/useFilterOptions';
+import { useLayananOptions, useKecamatanOptions, usePelaporOptions } from '@/hooks/useFilterOptions';
 
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -19,12 +19,14 @@ export default function DashboardFilter() {
   const [periode, setPeriode] = useState<string | number>(searchParams.get('periode_bulan') || '');
   const [startDate, setStartDate] = useState(searchParams.get('start_date') || '');
   const [endDate, setEndDate] = useState(searchParams.get('end_date') || '');
+  const [pelapor, setPelapor] = useState<string | number>(searchParams.get('pelapor') || 'all');
 
   const isRentangTanggalDisabled = !!periode;
   const isPeriodeDisabled = !!startDate || !!endDate;
 
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'Seluruh Jenis Layanan' });
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
+  const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
 
   const handleReset = () => {
     setJenisLayanan('all');
@@ -32,6 +34,7 @@ export default function DashboardFilter() {
     setPeriode('');
     setStartDate('');
     setEndDate('');
+    setPelapor('all');
     
     router.push('/admin/dashboard');
   };
@@ -57,6 +60,7 @@ export default function DashboardFilter() {
     const end = formatToDDMMYYYY(endDate);
     if (start) params.set('start_date', start);
     if (end) params.set('end_date', end);
+    if (pelapor !== 'all') params.set('pelapor', String(pelapor));
 
     router.push(`/admin/dashboard?${params.toString()}`);
   };
@@ -74,6 +78,20 @@ export default function DashboardFilter() {
         value={kecamatan}
         onChange={setKecamatan}
         options={kecamatanOptions}
+      />
+      <CustomSelect
+        label="Pelapor"
+        value={pelapor}
+        onChange={setPelapor}
+        options={pelaporOptions}
+      />
+      <CustomDateRangePicker
+        label="Rentang Tanggal"
+        startDate={startDate}
+        endDate={endDate}
+        onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+        disabled={isRentangTanggalDisabled}
+        placeholder="Pilih Rentang Tanggal"
       />
       <CustomSelect
         label="Periode"
@@ -95,14 +113,6 @@ export default function DashboardFilter() {
           { label: 'November', value: 11 },
           { label: 'Desember', value: 12 },
         ]}
-      />
-      <CustomDateRangePicker
-        label="Rentang Tanggal"
-        startDate={startDate}
-        endDate={endDate}
-        onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
-        disabled={isRentangTanggalDisabled}
-        placeholder="Pilih Rentang Tanggal"
       />
     </FilterCard>
   );

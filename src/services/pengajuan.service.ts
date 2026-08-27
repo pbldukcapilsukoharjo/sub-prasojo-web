@@ -140,6 +140,7 @@ export interface PengajuanProdukParams {
   sort?: string;
   per_page?: number;
   page?: number;
+  pelapor?: string;
 }
 
 export interface PengajuanProdukResponse {

@@ -12,6 +12,7 @@ import Badge from '@/components/Common/Badge';
 import Pagination from '@/components/Common/Pagination';
 import dynamic from 'next/dynamic';
 const SlaConfigModal = dynamic(() => import('@/components/Common/SlaConfigModal'), { ssr: false });
+const SampleSlaModal = dynamic(() => import('@/components/Common/SampleSlaModal'), { ssr: false });
 import { slaService, SlaRincianItem, SlaKpiData, SlaParams, SlaKpiParams } from '@/services/sla.service';
 import { handleApiError } from '@/lib/api-error';
 import { useLayananOptions, useKecamatanOptions, usePelaporOptions, useJenisAjuanOptions, useJalurOptions } from '@/hooks/useFilterOptions';
@@ -25,6 +26,9 @@ export default function SlaMonitoringPage() {
   const [endDate, setEndDate] = useState('');
   
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+  const [isSampleModalOpen, setIsSampleModalOpen] = useState(false);
+  const [selectedLayananId, setSelectedLayananId] = useState<number | null>(null);
+  const [selectedLayananName, setSelectedLayananName] = useState<string>('');
   
   // Custom API states
   const [kecamatan, setKecamatan] = useState('all');
@@ -193,6 +197,7 @@ export default function SlaMonitoringPage() {
 
   const mappedData = useMemo(() => Array.isArray(listData) ? listData.map((item, idx) => {
     return {
+      id: item.id,
       no: String((currentPage - 1) * perPage + idx + 1).padStart(2, '0'),
       service: item.jenis_layanan,
       count: item.jumlah_ajuan,
@@ -339,10 +344,12 @@ export default function SlaMonitoringPage() {
       <div className={`card shadow-sm border border-border flex flex-col p-0 overflow-hidden transition-opacity duration-300 ${isLoading ? 'opacity-60 pointer-events-none' : 'opacity-100'}`}>
         <div className="p-6 flex justify-between items-center border-b border-border">
           <h3 className="text-base font-bold text-text-primary">Daftar Rincian Per Jenis Layanan</h3>
-          <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9" onClick={handleExport}>
-            <i className="ri-upload-2-line"></i>
-            EKSPOR EXCEL
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="primary" className="flex items-center justify-center gap-2 text-xs px-4 py-2 h-9" onClick={handleExport}>
+              <i className="ri-upload-2-line"></i>
+              EKSPOR EXCEL
+            </Button>
+          </div>
         </div>
         <div className="w-full min-h-[300px]">
           {isLoading ? (
@@ -354,6 +361,11 @@ export default function SlaMonitoringPage() {
             <Table 
               columns={columns} 
               data={mappedData} 
+              onRowClick={(row) => {
+                setSelectedLayananId(row.id);
+                setSelectedLayananName(row.service);
+                setIsSampleModalOpen(true);
+              }}
             />
           ) : (
             <div className="flex items-center justify-center h-full text-sm text-text-secondary py-12">
@@ -377,6 +389,20 @@ export default function SlaMonitoringPage() {
         isOpen={isConfigModalOpen} 
         onClose={() => setIsConfigModalOpen(false)} 
         currentSlaTarget={kpiData?.target_sla || 6}
+      />
+      <SampleSlaModal 
+        isOpen={isSampleModalOpen} 
+        onClose={() => setIsSampleModalOpen(false)} 
+        layananName={selectedLayananName}
+        initialFilters={{
+          search: appliedFilters.search,
+          pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
+          id_layanan: selectedLayananId !== null ? selectedLayananId : (appliedFilters.layanan !== 'all' ? appliedFilters.layanan : undefined),
+          id_kecamatan: appliedFilters.kecamatan !== 'all' ? appliedFilters.kecamatan : undefined,
+          start_date: formattedStartDate,
+          end_date: formattedEndDate,
+          periode_bulan: appliedFilters.periode ? Number(appliedFilters.periode) : undefined,
+        }}
       />
     </div>
   );

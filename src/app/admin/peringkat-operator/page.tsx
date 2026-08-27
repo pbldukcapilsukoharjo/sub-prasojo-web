@@ -12,7 +12,7 @@ import Tabs from '@/components/Common/Tabs';
 import Pagination from '@/components/Common/Pagination';
 import Table from '@/components/Common/Table';
 import StatCard from '@/components/Common/StatCard';
-import { useKecamatanOptions, useLayananOptions, useOperatorOptions } from '@/hooks/useFilterOptions';
+import { useKecamatanOptions, useLayananOptions, useOperatorOptions, usePelaporOptions } from '@/hooks/useFilterOptions';
 import { operatorService, KpiGlobalData, OperatorItem, OperatorKpiData, RiwayatItem } from '@/services/operator.service';
 import { handleApiError } from '@/lib/api-error';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
@@ -32,6 +32,7 @@ export default function PeringkatOperatorPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [operatorFilter, setOperatorFilter] = useState('all');
+  const [pelapor, setPelapor] = useState('all');
 
   const [appliedFilters, setAppliedFilters] = useState({
     search: '',
@@ -41,11 +42,13 @@ export default function PeringkatOperatorPage() {
     startDate: '',
     endDate: '',
     operatorFilter: 'all',
+    pelapor: 'all',
   });
 
   const { data: kecamatanOptions = [] } = useKecamatanOptions({ addAllOption: true, allOptionLabel: 'Seluruh Kecamatan' });
   const { data: layananOptions = [] } = useLayananOptions({ addAllOption: true, allOptionLabel: 'SEMUA', allOptionValue: 'semua' });
   const { data: operatorOptions = [] } = useOperatorOptions({ addAllOption: true, allOptionLabel: 'Semua Operator' });
+  const { data: pelaporOptions = [] } = usePelaporOptions({ addAllOption: true, allOptionLabel: 'Semua Pelapor' });
 
   // List View Data States
   const [listCurrentPage, setListCurrentPage] = useState(1);
@@ -82,6 +85,7 @@ export default function PeringkatOperatorPage() {
     start_date: formatToDDMMYYYY(appliedFilters.startDate),
     end_date: formatToDDMMYYYY(appliedFilters.endDate),
     id_operator: appliedFilters.operatorFilter !== 'all' ? Number(appliedFilters.operatorFilter) : undefined,
+    pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
   };
 
   const queryClient = useQueryClient();
@@ -100,7 +104,8 @@ export default function PeringkatOperatorPage() {
       periode_bulan: listParams.periode_bulan,
       start_date: listParams.start_date,
       end_date: listParams.end_date,
-      id_operator: listParams.id_operator
+      id_operator: listParams.id_operator,
+      pelapor: listParams.pelapor
     }),
     enabled: !selectedOperator,
     placeholderData: keepPreviousData,
@@ -180,6 +185,7 @@ export default function PeringkatOperatorPage() {
     setStartDate('');
     setEndDate('');
     setOperatorFilter('all');
+    setPelapor('all');
     setAppliedFilters({
       search: '',
       kecamatan: 'all',
@@ -187,7 +193,8 @@ export default function PeringkatOperatorPage() {
       sortBy: 'newest',
       startDate: '',
       endDate: '',
-      operatorFilter: 'all'
+      operatorFilter: 'all',
+      pelapor: 'all'
     });
     setListCurrentPage(1);
   }, []);
@@ -200,10 +207,11 @@ export default function PeringkatOperatorPage() {
       sortBy,
       startDate,
       endDate,
-      operatorFilter
+      operatorFilter,
+      pelapor
     });
     setListCurrentPage(1);
-  }, [search, kecamatan, periode, sortBy, startDate, endDate, operatorFilter]);
+  }, [search, kecamatan, periode, sortBy, startDate, endDate, operatorFilter, pelapor]);
 
   const handleExport = useCallback(async () => {
     try {
@@ -215,6 +223,7 @@ export default function PeringkatOperatorPage() {
         start_date: formatToDDMMYYYY(appliedFilters.startDate),
         end_date: formatToDDMMYYYY(appliedFilters.endDate),
         id_operator: appliedFilters.operatorFilter !== 'all' ? Number(appliedFilters.operatorFilter) : undefined,
+        pelapor: appliedFilters.pelapor !== 'all' ? appliedFilters.pelapor : undefined,
       };
       await operatorService.getExportPeringkat(exportParams);
       import('react-hot-toast').then(({ toast }) => {
@@ -223,7 +232,7 @@ export default function PeringkatOperatorPage() {
     } catch (error) {
       handleApiError(error);
     }
-  }, [search, kecamatan, periode, sortBy, startDate, endDate, operatorFilter]);
+  }, [search, kecamatan, periode, sortBy, startDate, endDate, operatorFilter, pelapor, appliedFilters]);
 
   const leaderboardColumns = useMemo(() => [
     { key: 'rank', header: 'Peringkat', align: 'center' as const, render: (row: any) => <span className="font-bold text-text-secondary">{String(row.peringkat).padStart(2, '0')}</span> },
@@ -381,6 +390,20 @@ export default function PeringkatOperatorPage() {
               options={kecamatanOptions}
             />
             <CustomSelect
+              label="Pelapor"
+              value={pelapor}
+              onChange={(val) => setPelapor(String(val))}
+              options={pelaporOptions}
+            />
+            <CustomDateRangePicker
+              label="Rentang Tanggal"
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+              disabled={isRentangTanggalDisabled}
+              placeholder="Pilih Rentang Tanggal"
+            />
+            <CustomSelect
               label="Periode"
               value={periode}
               onChange={(val) => setPeriode(val)}
@@ -400,14 +423,6 @@ export default function PeringkatOperatorPage() {
                 { label: 'November', value: 11 },
                 { label: 'Desember', value: 12 },
               ]}
-            />
-            <CustomDateRangePicker
-              label="Rentang Tanggal"
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
-              disabled={isRentangTanggalDisabled}
-              placeholder="Pilih Rentang Tanggal"
             />
           </FilterCard>
 

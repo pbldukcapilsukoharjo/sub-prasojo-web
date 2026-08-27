@@ -175,8 +175,8 @@ export default function Ajuan() {
 
   const tableColumns = useMemo(
     () => [
-      { key: "no", header: "No" },
-      { key: "noRegis", header: "NO. REG" },
+      { key: "no", header: "No", fixed: true, width: 60, minWidth: 60, left: 0 },
+      { key: "noRegis", header: "NO. REG", fixed: true, minWidth: 160, left: 60 },
       { key: "kodeLayanan", header: "KODE LAYANAN" },
       { key: "jenisAjuan", header: "JENIS AJUAN" },
       { key: "jalur", header: "JALUR ONLINE / OFFLINE" },
@@ -277,8 +277,8 @@ export default function Ajuan() {
       {/* Filter Card */}
       <FilterCard onReset={handleReset} onApply={handleFilter}>
         <Input label="Pencarian Cepat" placeholder="No. Regis, dll" icon="ri-search-line" value={search} onChange={(e) => setSearch(e.target.value)} />
-        <CustomSelect label="Pelapor" value={pelapor} onChange={(val) => setPelapor(String(val))} options={pelaporOptions} />
         <CustomSelect label="Kecamatan" value={kecamatan} onChange={(val) => setKecamatan(String(val))} options={kecamatanOptions} />
+        <CustomSelect label="Pelapor" value={pelapor} onChange={(val) => setPelapor(String(val))} options={pelaporOptions} />
         <CustomDateRangePicker
           label="Rentang Tanggal"
           startDate={startDate}

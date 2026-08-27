@@ -25,6 +25,7 @@ function DashboardContent() {
     periode_bulan: searchParams.get('periode_bulan') ? Number(searchParams.get('periode_bulan')) : undefined,
     start_date: searchParams.get('start_date') || undefined,
     end_date: searchParams.get('end_date') || undefined,
+    pelapor: searchParams.get('pelapor') || undefined,
   }), [searchParams]);
 
   const { data: kpiRes, isLoading: isKpiLoading } = useQuery({

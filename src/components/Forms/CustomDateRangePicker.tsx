@@ -239,9 +239,28 @@ export default function CustomDateRangePicker({
               >
                 <i className="ri-arrow-left-s-line text-lg"></i>
               </button>
-              <span className="text-sm font-bold text-text-primary">
-                {monthNames[viewMonth]} {viewYear}
-              </span>
+              <div className="flex items-center gap-1">
+                <select
+                  value={viewMonth}
+                  onChange={(e) => setViewMonth(Number(e.target.value))}
+                  className="text-sm font-bold text-text-primary bg-transparent outline-none cursor-pointer hover:bg-gray-100 rounded px-1 py-0.5"
+                  title="Pilih Bulan"
+                >
+                  {monthNames.map((month, idx) => (
+                    <option key={month} value={idx}>{month}</option>
+                  ))}
+                </select>
+                <select
+                  value={viewYear}
+                  onChange={(e) => setViewYear(Number(e.target.value))}
+                  className="text-sm font-bold text-text-primary bg-transparent outline-none cursor-pointer hover:bg-gray-100 rounded px-1 py-0.5"
+                  title="Pilih Tahun"
+                >
+                  {Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - 25 + i).map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+              </div>
               <button
                 type="button"
                 onClick={handleNextMonth}
