@@ -85,6 +85,14 @@ export default function DashboardFilter() {
         onChange={setPelapor}
         options={pelaporOptions}
       />
+      <CustomDateRangePicker
+        label="Rentang Tanggal"
+        startDate={startDate}
+        endDate={endDate}
+        onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+        disabled={isRentangTanggalDisabled}
+        placeholder="Pilih Rentang Tanggal"
+      />
       <CustomSelect
         label="Periode"
         value={periode}
@@ -105,14 +113,6 @@ export default function DashboardFilter() {
           { label: 'November', value: 11 },
           { label: 'Desember', value: 12 },
         ]}
-      />
-      <CustomDateRangePicker
-        label="Rentang Tanggal"
-        startDate={startDate}
-        endDate={endDate}
-        onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
-        disabled={isRentangTanggalDisabled}
-        placeholder="Pilih Rentang Tanggal"
       />
     </FilterCard>
   );

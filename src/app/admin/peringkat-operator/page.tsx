@@ -384,16 +384,24 @@ export default function PeringkatOperatorPage() {
               onChange={(e) => setSearch(e.target.value)}
             />
             <CustomSelect
+              label="Kecamatan"
+              value={kecamatan}
+              onChange={(val) => setKecamatan(String(val))}
+              options={kecamatanOptions}
+            />
+            <CustomSelect
               label="Pelapor"
               value={pelapor}
               onChange={(val) => setPelapor(String(val))}
               options={pelaporOptions}
             />
-            <CustomSelect
-              label="Kecamatan"
-              value={kecamatan}
-              onChange={(val) => setKecamatan(String(val))}
-              options={kecamatanOptions}
+            <CustomDateRangePicker
+              label="Rentang Tanggal"
+              startDate={startDate}
+              endDate={endDate}
+              onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
+              disabled={isRentangTanggalDisabled}
+              placeholder="Pilih Rentang Tanggal"
             />
             <CustomSelect
               label="Periode"
@@ -415,14 +423,6 @@ export default function PeringkatOperatorPage() {
                 { label: 'November', value: 11 },
                 { label: 'Desember', value: 12 },
               ]}
-            />
-            <CustomDateRangePicker
-              label="Rentang Tanggal"
-              startDate={startDate}
-              endDate={endDate}
-              onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
-              disabled={isRentangTanggalDisabled}
-              placeholder="Pilih Rentang Tanggal"
             />
           </FilterCard>
 

@@ -208,6 +208,12 @@ export default function DetailUlasanPage() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <CustomSelect
+          label="Jenis Layanan"
+          value={jenisLayanan}
+          onChange={(val) => setJenisLayanan(String(val))}
+          options={layananOptions}
+        />
+        <CustomSelect
           label="Rating"
           value={rating}
           onChange={(val) => setRating(String(val))}
@@ -220,18 +226,6 @@ export default function DetailUlasanPage() {
             { label: '1 Bintang', value: '1' },
           ]}
         />
-        <CustomSelect
-          label="Jenis Layanan"
-          value={jenisLayanan}
-          onChange={(val) => setJenisLayanan(String(val))}
-          options={layananOptions}
-        />
-        <CustomSelect
-          label="Pelapor"
-          value={pelapor}
-          onChange={(val) => setPelapor(String(val))}
-          options={pelaporOptions}
-        />
         <CustomDateRangePicker
           label="Rentang Tanggal"
           startDate={startDate}
@@ -239,6 +233,12 @@ export default function DetailUlasanPage() {
           onChange={(start, end) => { setStartDate(start); setEndDate(end); }}
           disabled={isRentangTanggalDisabled}
           placeholder="Pilih Rentang Tanggal"
+        />
+        <CustomSelect
+          label="Pelapor"
+          value={pelapor}
+          onChange={(val) => setPelapor(String(val))}
+          options={pelaporOptions}
         />
         <CustomSelect
           label="Urutkan Dari"

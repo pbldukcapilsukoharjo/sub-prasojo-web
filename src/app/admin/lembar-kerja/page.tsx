@@ -209,16 +209,16 @@ export default function LembarKerja() {
           onChange={(e) => setSearch(e.target.value)}
         />
         <CustomSelect
-          label="Pelapor"
-          value={pelapor}
-          onChange={(val) => setPelapor(String(val))}
-          options={pelaporOptions}
-        />
-        <CustomSelect
           label="Kecamatan"
           value={kecamatan}
           onChange={(val) => setKecamatan(String(val))}
           options={kecamatanOptions}
+        />
+        <CustomSelect
+          label="Pelapor"
+          value={pelapor}
+          onChange={(val) => setPelapor(String(val))}
+          options={pelaporOptions}
         />
         <CustomDateRangePicker
           label="Rentang Tanggal"
