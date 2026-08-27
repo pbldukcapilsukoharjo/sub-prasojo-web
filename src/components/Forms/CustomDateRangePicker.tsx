@@ -36,6 +36,7 @@ export default function CustomDateRangePicker({
   const [tempStart, setTempStart] = useState<string>(startDate);
   const [tempEnd, setTempEnd] = useState<string>(endDate);
   const [hoveredDate, setHoveredDate] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<'month' | 'year' | null>(null);
 
   // Synchronize when the picker opens
   useEffect(() => {
@@ -239,27 +240,70 @@ export default function CustomDateRangePicker({
               >
                 <i className="ri-arrow-left-s-line text-lg"></i>
               </button>
-              <div className="flex items-center gap-1">
-                <select
-                  value={viewMonth}
-                  onChange={(e) => setViewMonth(Number(e.target.value))}
-                  className="text-sm font-bold text-text-primary bg-transparent outline-none cursor-pointer hover:bg-gray-100 rounded px-1 py-0.5"
-                  title="Pilih Bulan"
-                >
-                  {monthNames.map((month, idx) => (
-                    <option key={month} value={idx}>{month}</option>
-                  ))}
-                </select>
-                <select
-                  value={viewYear}
-                  onChange={(e) => setViewYear(Number(e.target.value))}
-                  className="text-sm font-bold text-text-primary bg-transparent outline-none cursor-pointer hover:bg-gray-100 rounded px-1 py-0.5"
-                  title="Pilih Tahun"
-                >
-                  {Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - 25 + i).map((year) => (
-                    <option key={year} value={year}>{year}</option>
-                  ))}
-                </select>
+              <div className="flex items-center gap-1 relative">
+                {openDropdown && (
+                  <div className="fixed inset-0 z-[100]" onClick={() => setOpenDropdown(null)} />
+                )}
+                
+                {/* Month Picker */}
+                <div className="relative z-[101]">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown(openDropdown === 'month' ? null : 'month')}
+                    className="text-sm font-bold text-text-primary hover:bg-gray-100 rounded px-2 py-1 flex items-center gap-1"
+                  >
+                    {monthNames[viewMonth]}
+                    <i className={`ri-arrow-down-s-line text-text-secondary transition-transform ${openDropdown === 'month' ? 'rotate-180 text-primary' : ''}`}></i>
+                  </button>
+                  {openDropdown === 'month' && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-36 max-h-[250px] overflow-y-auto bg-surface border border-border rounded-xl shadow-lg py-1 custom-scrollbar">
+                      {monthNames.map((month, idx) => (
+                        <div
+                          key={month}
+                          className={`px-3 py-2 text-sm cursor-pointer transition-colors hover:bg-background ${
+                            viewMonth === idx ? 'text-primary font-bold bg-primary/5' : 'text-text-secondary font-medium'
+                          }`}
+                          onClick={() => {
+                            setViewMonth(idx);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          {month}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Year Picker */}
+                <div className="relative z-[101]">
+                  <button
+                    type="button"
+                    onClick={() => setOpenDropdown(openDropdown === 'year' ? null : 'year')}
+                    className="text-sm font-bold text-text-primary hover:bg-gray-100 rounded px-2 py-1 flex items-center gap-1"
+                  >
+                    {viewYear}
+                    <i className={`ri-arrow-down-s-line text-text-secondary transition-transform ${openDropdown === 'year' ? 'rotate-180 text-primary' : ''}`}></i>
+                  </button>
+                  {openDropdown === 'year' && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 w-24 max-h-[250px] overflow-y-auto bg-surface border border-border rounded-xl shadow-lg py-1 custom-scrollbar">
+                      {Array.from({ length: 30 }, (_, i) => new Date().getFullYear() - 25 + i).map((year) => (
+                        <div
+                          key={year}
+                          className={`px-3 py-2 text-sm cursor-pointer transition-colors hover:bg-background text-center ${
+                            viewYear === year ? 'text-primary font-bold bg-primary/5' : 'text-text-secondary font-medium'
+                          }`}
+                          onClick={() => {
+                            setViewYear(year);
+                            setOpenDropdown(null);
+                          }}
+                        >
+                          {year}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <button
                 type="button"
